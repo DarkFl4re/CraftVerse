@@ -347,7 +347,7 @@ function menuSheetHtml() {
     ["Terms", "terms"], ["DMCA", "dmca"], ["Admin Panel", "adminGate"],
   ];
   return `<div data-action="close-menu" class="fixed inset-0 z-50 flex items-start justify-end" style="background:rgba(0,0,0,0.5);">
-    <div class="mt-[68px] mr-4 bg-panel border border-bd rounded-2xl overflow-hidden shadow-2xl min-w-[190px]" onclick="event.stopPropagation()">
+    <div data-action="noop" class="mt-[68px] mr-4 bg-panel border border-bd rounded-2xl overflow-hidden shadow-2xl min-w-[190px]">
       ${items.map(([label, key], i) => `<button data-action="nav" data-id="${key}" class="w-full text-left px-4 py-3 font-inter text-sm ${i < items.length - 1 ? "border-b border-bd" : ""}">${label}</button>`).join("")}
     </div>
   </div>`;
@@ -406,7 +406,7 @@ function feedScreen(mode) {
   } else {
     html += rows.map((row) => (row.kind === "ad" ? adSlot("native") : postCardHtml(row.post, getAuthor(row.post.authorId)))).join("");
   }
-  html += `</div>${footerHtml()}`;
+  html += `</div>`;
   return html;
 }
 
@@ -1022,9 +1022,10 @@ function render() {
   }
 
   let html = "";
+  let showFooter = false;
   switch (screen) {
-    case "home": html = feedScreen("home"); break;
-    case "favorites": html = feedScreen("favorites"); break;
+    case "home": html = feedScreen("home"); showFooter = true; break;
+    case "favorites": html = feedScreen("favorites"); showFooter = true; break;
     case "about": html = staticPageHtml("About", state.siteContent.about); break;
     case "terms": html = staticPageHtml("Terms", state.siteContent.terms); break;
     case "dmca": html = staticPageHtml("DMCA Policy", state.siteContent.dmca); break;
@@ -1048,10 +1049,11 @@ function render() {
       html = state.session && state.session.role === "admin" ? adminPanelHtml() : adminGateScreenHtml();
       break;
     case "bootstrapOwner": html = bootstrapOwnerScreenHtml(); break;
-    default: html = feedScreen("home");
+    default: html = feedScreen("home"); showFooter = true;
   }
 
-  app.innerHTML = html + (state.ui.menuOpen ? menuSheetHtml() : "") + (state.ui.exploreOpen ? exploreScreenHtml() : "") + confirmModalHtml() + toastHtml() + scrollTopHtml();
+  const page = `<div class="flex-1">${html}</div>${showFooter ? footerHtml() : ""}`;
+  app.innerHTML = page + (state.ui.menuOpen ? menuSheetHtml() : "") + (state.ui.exploreOpen ? exploreScreenHtml() : "") + confirmModalHtml() + toastHtml() + scrollTopHtml();
 
   // Re-bind form inputs for whichever editor is currently visible.
   if (document.getElementById("post-editor")) bindPostEditorInputs();
