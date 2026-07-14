@@ -46,5 +46,9 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isOwner();
     }
+    match /branding/{doc} {
+      allow read: if true;
+      allow write: if isOwner();
+    }
   }
 }
