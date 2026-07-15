@@ -32,44 +32,55 @@ function getSecondaryAuth() {
 /* ---------------------------------------------------------------- */
 const svgIcon = (paths, size = 18) =>
   `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+const brandIcon = (paths, size = 18) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 640 640" fill="currentColor">${paths}</svg>`;
 
 const ICONS = {
-  heart: (f) => svgIcon(`<path d="M12 21s-7-4.35-9.5-9C1 8.5 2.5 5 6 5c2 0 3.5 1.2 4 2.5C10.5 6.2 12 5 14 5c3.5 0 5 3.5 3.5 7-2.5 4.65-9.5 9-9.5 9z" ${f ? 'fill="currentColor"' : ""}/>`),
-  search: () => svgIcon(`<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/>`),
-  menu: () => svgIcon(`<line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>`),
+  heart: (f) => svgIcon(`<path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" ${f ? 'fill="currentColor"' : ""}/>`),
+  search: () => svgIcon(`<path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>`),
+  menu: () => svgIcon(`<path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/>`),
   x: () => svgIcon(`<line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/>`),
   arrowLeft: () => svgIcon(`<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>`),
-  share: () => svgIcon(`<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><line x1="8.3" y1="10.7" x2="15.7" y2="6.3"/><line x1="8.3" y1="13.3" x2="15.7" y2="17.7"/>`),
+  share: () => svgIcon(`<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>`),
   plus: () => svgIcon(`<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>`),
-  trash: () => svgIcon(`<polyline points="4 7 20 7"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/>`),
-  pencil: () => svgIcon(`<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>`),
-  save: () => svgIcon(`<path d="M5 4h11l3 3v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M8 4v5h7V4"/><path d="M8 20v-6h8v6"/>`),
-  lock: () => svgIcon(`<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>`),
-  eye: () => svgIcon(`<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>`),
-  eyeOff: () => svgIcon(`<path d="M3 3l18 18"/><path d="M10.6 5.2A10.7 10.7 0 0 1 12 5c6 0 10 7 10 7a15.9 15.9 0 0 1-3.4 4.1"/><path d="M6.3 6.3C3.7 8 2 12 2 12s4 7 10 7a9.8 9.8 0 0 0 4.2-.9"/><path d="M9.5 9.5a3 3 0 0 0 4.2 4.2"/>`),
-  copy: () => svgIcon(`<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>`),
+  trash: () => svgIcon(`<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>`),
+  pencil: () => svgIcon(`<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>`),
+  save: () => svgIcon(`<path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/>`),
+  lock: () => svgIcon(`<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>`),
+  eye: () => svgIcon(`<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>`),
+  eyeOff: () => svgIcon(`<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>`),
+  copy: () => svgIcon(`<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>`),
   externalLink: () => svgIcon(`<path d="M14 4h6v6"/><line x1="20" y1="4" x2="11" y2="13"/><path d="M20 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/>`),
   check: () => svgIcon(`<polyline points="20 6 9 17 4 12"/>`),
   checkCircle: () => svgIcon(`<circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16 9"/>`),
-  clock: () => svgIcon(`<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/>`),
+  clock: () => svgIcon(`<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>`),
   alertCircle: () => svgIcon(`<circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16.5" x2="12" y2="16.5"/>`),
   sparkles: () => svgIcon(`<path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>`),
   megaphone: () => svgIcon(`<path d="M3 11v2a2 2 0 0 0 2 2h1l2 5h2l-1-5h4l6 4V7l-6 4H6a2 2 0 0 0-2 2z"/>`),
   chevronUp: () => svgIcon(`<polyline points="6 15 12 9 18 15"/>`),
-  shieldCheck: () => svgIcon(`<path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6z"/><polyline points="9 12 11 14 15 10"/>`),
-  userCog: () => svgIcon(`<circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6"/><circle cx="18" cy="17" r="3"/>`),
-  ban: () => svgIcon(`<circle cx="12" cy="12" r="9"/><line x1="5.5" y1="5.5" x2="18.5" y2="18.5"/>`),
+  shieldCheck: () => svgIcon(`<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>`),
+  userCog: () => svgIcon(`<path d="M16.051 12.616a1 1 0 0 1 1.909.024l.737 1.452a1 1 0 0 0 .737.535l1.634.256a1 1 0 0 1 .588 1.806l-1.172 1.168a1 1 0 0 0-.282.866l.259 1.613a1 1 0 0 1-1.541 1.134l-1.465-.75a1 1 0 0 0-.912 0l-1.465.75a1 1 0 0 1-1.539-1.133l.258-1.613a1 1 0 0 0-.282-.866l-1.156-1.153a1 1 0 0 1 .572-1.822l1.633-.256a1 1 0 0 0 .737-.535z"/><path d="M8 15H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/>`),
+  ban: () => svgIcon(`<path d="M2 21a8 8 0 0 1 11.873-7"/><circle cx="10" cy="8" r="5"/><path d="m17 17 5 5"/><path d="m22 17-5 5"/>`),
+  unban: () => svgIcon(`<path d="M2 21a8 8 0 0 1 13.292-6"/><circle cx="10" cy="8" r="5"/><path d="m16 19 2 2 4-4"/>`),
   key: () => svgIcon(`<circle cx="8" cy="15" r="4"/><path d="M10.5 12.5L20 3M17 6l2.5 2.5M14 9l2 2"/>`),
-  layoutDashboard: () => svgIcon(`<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/>`),
-  list: () => svgIcon(`<line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>`),
-  users: () => svgIcon(`<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6"/><circle cx="18" cy="9" r="3"/><path d="M15.5 14.5c2.8.4 5 2.4 5 5.5"/>`),
-  userCircle: () => svgIcon(`<circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6 19c1-3 3-4.5 6-4.5s5 1.5 6 4.5"/>`),
-  settings: () => svgIcon(`<circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.4-2-3.4-2.3.7a7.6 7.6 0 0 0-1.7-1L15 3h-4l-.4 2.9a7.6 7.6 0 0 0-1.7 1l-2.3-.7-2 3.4L6.6 11a7.6 7.6 0 0 0 0 2l-2 1.4 2 3.4 2.3-.7a7.6 7.6 0 0 0 1.7 1L11 21h4l.4-2.9a7.6 7.6 0 0 0 1.7-1l2.3.7 2-3.4z"/>`),
+  layoutDashboard: () => svgIcon(`<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>`),
+  list: () => svgIcon(`<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><path d="M14 4h7"/><path d="M14 9h7"/><path d="M14 15h7"/><path d="M14 20h7"/>`),
+  users: () => svgIcon(`<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/>`),
+  userCircle: () => svgIcon(`<path d="M17.925 20.056a6 6 0 0 0-11.851.001"/><circle cx="12" cy="11" r="4"/><circle cx="12" cy="12" r="10"/>`),
+  settings: () => svgIcon(`<path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/>`),
   upload: () => svgIcon(`<path d="M12 16V4"/><polyline points="7 9 12 4 17 9"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>`),
   image: () => svgIcon(`<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><polyline points="4 17 9 12 13 16 16 13 20 17"/>`),
   fileText: () => svgIcon(`<path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/>`),
   logOut: () => svgIcon(`<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>`),
   map: () => svgIcon(`<polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>`),
+
+  instagram: () => brandIcon(`<path d="M320.3 205C256.8 204.8 205.2 256.2 205 319.7C204.8 383.2 256.2 434.8 319.7 435C383.2 435.2 434.8 383.8 435 320.3C435.2 256.8 383.8 205.2 320.3 205zM319.7 245.4C360.9 245.2 394.4 278.5 394.6 319.7C394.8 360.9 361.5 394.4 320.3 394.6C279.1 394.8 245.6 361.5 245.4 320.3C245.2 279.1 278.5 245.6 319.7 245.4zM413.1 200.3C413.1 185.5 425.1 173.5 439.9 173.5C454.7 173.5 466.7 185.5 466.7 200.3C466.7 215.1 454.7 227.1 439.9 227.1C425.1 227.1 413.1 215.1 413.1 200.3zM542.8 227.5C541.1 191.6 532.9 159.8 506.6 133.6C480.4 107.4 448.6 99.2 412.7 97.4C375.7 95.3 264.8 95.3 227.8 97.4C192 99.1 160.2 107.3 133.9 133.5C107.6 159.7 99.5 191.5 97.7 227.4C95.6 264.4 95.6 375.3 97.7 412.3C99.4 448.2 107.6 480 133.9 506.2C160.2 532.4 191.9 540.6 227.8 542.4C264.8 544.5 375.7 544.5 412.7 542.4C448.6 540.7 480.4 532.5 506.6 506.2C532.8 480 541 448.2 542.8 412.3C544.9 375.3 544.9 264.5 542.8 227.5zM495 452C487.2 471.6 472.1 486.7 452.4 494.6C422.9 506.3 352.9 503.6 320.3 503.6C287.7 503.6 217.6 506.2 188.2 494.6C168.6 486.8 153.5 471.7 145.6 452C133.9 422.5 136.6 352.5 136.6 319.9C136.6 287.3 134 217.2 145.6 187.8C153.4 168.2 168.5 153.1 188.2 145.2C217.7 133.5 287.7 136.2 320.3 136.2C352.9 136.2 423 133.6 452.4 145.2C472 153 487.1 168.1 495 187.8C506.7 217.3 504 287.3 504 319.9C504 352.5 506.7 422.6 495 452z"/>`),
+  telegram: () => brandIcon(`<path d="M320 72C183 72 72 183 72 320C72 457 183 568 320 568C457 568 568 457 568 320C568 183 457 72 320 72zM435 240.7C431.3 279.9 415.1 375.1 406.9 419C403.4 437.6 396.6 443.8 390 444.4C375.6 445.7 364.7 434.9 350.7 425.7C328.9 411.4 316.5 402.5 295.4 388.5C270.9 372.4 286.8 363.5 300.7 349C304.4 345.2 367.8 287.5 369 282.3C369.2 281.6 369.3 279.2 367.8 277.9C366.3 276.6 364.2 277.1 362.7 277.4C360.5 277.9 325.6 300.9 258.1 346.5C248.2 353.3 239.2 356.6 231.2 356.4C222.3 356.2 205.3 351.4 192.6 347.3C177.1 342.3 164.7 339.6 165.8 331C166.4 326.5 172.5 322 184.2 317.3C256.5 285.8 304.7 265 328.8 255C397.7 226.4 412 221.4 421.3 221.2C423.4 221.2 427.9 221.7 430.9 224.1C432.9 225.8 434.1 228.2 434.4 230.8C434.9 234 435 237.3 434.8 240.6z"/>`),
+  discord: () => brandIcon(`<path d="M524.5 133.8C524.3 133.5 524.1 133.2 523.7 133.1C485.6 115.6 445.3 103.1 404 96C403.6 95.9 403.2 96 402.9 96.1C402.6 96.2 402.3 96.5 402.1 96.9C396.6 106.8 391.6 117.1 387.2 127.5C342.6 120.7 297.3 120.7 252.8 127.5C248.3 117 243.3 106.8 237.7 96.9C237.5 96.6 237.2 96.3 236.9 96.1C236.6 95.9 236.2 95.9 235.8 95.9C194.5 103 154.2 115.5 116.1 133C115.8 133.1 115.5 133.4 115.3 133.7C39.1 247.5 18.2 358.6 28.4 468.2C28.4 468.5 28.5 468.7 28.6 469C28.7 469.3 28.9 469.4 29.1 469.6C73.5 502.5 123.1 527.6 175.9 543.8C176.3 543.9 176.7 543.9 177 543.8C177.3 543.7 177.7 543.4 177.9 543.1C189.2 527.7 199.3 511.3 207.9 494.3C208 494.1 208.1 493.8 208.1 493.5C208.1 493.2 208.1 493 208 492.7C207.9 492.4 207.8 492.2 207.6 492.1C207.4 492 207.2 491.8 206.9 491.7C191.1 485.6 175.7 478.3 161 469.8C160.7 469.6 160.5 469.4 160.3 469.2C160.1 469 160 468.6 160 468.3C160 468 160 467.7 160.2 467.4C160.4 467.1 160.5 466.9 160.8 466.7C163.9 464.4 167 462 169.9 459.6C170.2 459.4 170.5 459.2 170.8 459.2C171.1 459.2 171.5 459.2 171.8 459.3C268 503.2 372.2 503.2 467.3 459.3C467.6 459.2 468 459.1 468.3 459.1C468.6 459.1 469 459.3 469.2 459.5C472.1 461.9 475.2 464.4 478.3 466.7C478.5 466.9 478.7 467.1 478.9 467.4C479.1 467.7 479.1 468 479.1 468.3C479.1 468.6 479 468.9 478.8 469.2C478.6 469.5 478.4 469.7 478.2 469.8C463.5 478.4 448.2 485.7 432.3 491.6C432.1 491.7 431.8 491.8 431.6 492C431.4 492.2 431.3 492.4 431.2 492.7C431.1 493 431.1 493.2 431.1 493.5C431.1 493.8 431.2 494 431.3 494.3C440.1 511.3 450.1 527.6 461.3 543.1C461.5 543.4 461.9 543.7 462.2 543.8C462.5 543.9 463 543.9 463.3 543.8C516.2 527.6 565.9 502.5 610.4 469.6C610.6 469.4 610.8 469.2 610.9 469C611 468.8 611.1 468.5 611.1 468.2C623.4 341.4 590.6 231.3 524.2 133.7zM222.5 401.5C193.5 401.5 169.7 374.9 169.7 342.3C169.7 309.7 193.1 283.1 222.5 283.1C252.2 283.1 275.8 309.9 275.3 342.3C275.3 375 251.9 401.5 222.5 401.5zM417.9 401.5C388.9 401.5 365.1 374.9 365.1 342.3C365.1 309.7 388.5 283.1 417.9 283.1C447.6 283.1 471.2 309.9 470.7 342.3C470.7 375 447.5 401.5 417.9 401.5z"/>`),
+  facebook: () => brandIcon(`<path d="M576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 440 146.7 540.8 258.2 568.5L258.2 398.2L205.4 398.2L205.4 320L258.2 320L258.2 286.3C258.2 199.2 297.6 158.8 383.2 158.8C399.4 158.8 427.4 162 438.9 165.2L438.9 236C432.9 235.4 422.4 235 409.3 235C367.3 235 351.1 250.9 351.1 292.2L351.1 320L434.7 320L420.3 398.2L351 398.2L351 574.1C477.8 558.8 576 450.9 576 320z"/>`),
+  tiktok: () => brandIcon(`<path d="M544.5 273.9C500.5 274 457.5 260.3 421.7 234.7L421.7 413.4C421.7 446.5 411.6 478.8 392.7 506C373.8 533.2 347.1 554 316.1 565.6C285.1 577.2 251.3 579.1 219.2 570.9C187.1 562.7 158.3 545 136.5 520.1C114.7 495.2 101.2 464.1 97.5 431.2C93.8 398.3 100.4 365.1 116.1 336C131.8 306.9 156.1 283.3 185.7 268.3C215.3 253.3 248.6 247.8 281.4 252.3L281.4 342.2C266.4 337.5 250.3 337.6 235.4 342.6C220.5 347.6 207.5 357.2 198.4 369.9C189.3 382.6 184.4 398 184.5 413.8C184.6 429.6 189.7 444.8 199 457.5C208.3 470.2 221.4 479.6 236.4 484.4C251.4 489.2 267.5 489.2 282.4 484.3C297.3 479.4 310.4 469.9 319.6 457.2C328.8 444.5 333.8 429.1 333.8 413.4L333.8 64L421.8 64C421.7 71.4 422.4 78.9 423.7 86.2C426.8 102.5 433.1 118.1 442.4 131.9C451.7 145.7 463.7 157.5 477.6 166.5C497.5 179.6 520.8 186.6 544.6 186.6L544.6 274z"/>`),
+  youtube: () => brandIcon(`<path d="M581.7 188.1C575.5 164.4 556.9 145.8 533.4 139.5C490.9 128 320.1 128 320.1 128C320.1 128 149.3 128 106.7 139.5C83.2 145.8 64.7 164.4 58.4 188.1C47 231 47 320.4 47 320.4C47 320.4 47 409.8 58.4 452.7C64.7 476.3 83.2 494.2 106.7 500.5C149.3 512 320.1 512 320.1 512C320.1 512 490.9 512 533.5 500.5C557 494.2 575.5 476.3 581.8 452.7C593.2 409.8 593.2 320.4 593.2 320.4C593.2 320.4 593.2 231 581.8 188.1zM264.2 401.6L264.2 239.2L406.9 320.4L264.2 401.6z"/>`),
+  twitter: () => brandIcon(`<path d="M523.4 215.7C523.7 220.2 523.7 224.8 523.7 229.3C523.7 368 418.1 527.9 225.1 527.9C165.6 527.9 110.4 510.7 64 480.8C72.4 481.8 80.6 482.1 89.3 482.1C138.4 482.1 183.5 465.5 219.6 437.3C173.5 436.3 134.8 406.1 121.5 364.5C128 365.5 134.5 366.1 141.3 366.1C150.7 366.1 160.1 364.8 168.9 362.5C120.8 352.8 84.8 310.5 84.8 259.5L84.8 258.2C98.8 266 115 270.9 132.2 271.5C103.9 252.7 85.4 220.5 85.4 184.1C85.4 164.6 90.6 146.7 99.7 131.1C151.4 194.8 229 236.4 316.1 240.9C314.5 233.1 313.5 225 313.5 216.9C313.5 159.1 360.3 112 418.4 112C448.6 112 475.9 124.7 495.1 145.1C518.8 140.6 541.6 131.8 561.7 119.8C553.9 144.2 537.3 164.6 515.6 177.6C536.7 175.3 557.2 169.5 576 161.4C561.7 182.2 543.8 200.7 523.4 215.7z"/>`),
 };
 
 /* ---------------------------------------------------------------- */
@@ -98,7 +109,15 @@ const DEFAULT_AD_SETTINGS = {
   bannerLink: "",
 };
 
-const LINK_ICON_KEYS = { telegram: "share", discord: "users", twitter: "sparkles", facebook: "userCircle", instagram: "image", other: "externalLink" };
+const DEFAULT_BRANDING = {
+  siteName: "CraftVerse",
+  logo: "",
+  footerTagline: "Craftland map codes, previews & tutorials from the community.",
+  categoryMode: "all", // 'all' | 'selected'
+  selectedCategories: [],
+};
+
+const LINK_ICON_KEYS = { telegram: "telegram", discord: "discord", twitter: "twitter", facebook: "facebook", instagram: "instagram", tiktok: "tiktok", youtube: "youtube", other: "externalLink" };
 
 const MAX_IMAGE_BYTES = 700 * 1024; // keep Firestore documents comfortably under the 1MiB limit
 
@@ -110,6 +129,7 @@ const state = {
   posts: [],
   siteContent: DEFAULT_SITE_CONTENT,
   adSettings: DEFAULT_AD_SETTINGS,
+  branding: DEFAULT_BRANDING,
   likedIds: JSON.parse(localStorage.getItem("cv_liked") || "[]"),
   session: null, // { uid, role, account }
   accountsLoaded: false,
@@ -178,6 +198,11 @@ onSnapshot(doc(db, "ad-settings", "main"), (d) => {
   render();
 }, () => {});
 
+onSnapshot(doc(db, "branding", "main"), (d) => {
+  if (d.exists()) state.branding = { ...DEFAULT_BRANDING, ...d.data() };
+  render();
+}, () => {});
+
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     try {
@@ -217,6 +242,10 @@ async function fsSaveSiteContent(data) {
 }
 async function fsSaveAdSettings(data) {
   try { await setDoc(doc(db, "ad-settings", "main"), data, { merge: true }); return true; }
+  catch (e) { console.error(e); return false; }
+}
+async function fsSaveBranding(data) {
+  try { await setDoc(doc(db, "branding", "main"), data, { merge: true }); return true; }
   catch (e) { console.error(e); return false; }
 }
 
@@ -324,11 +353,17 @@ function escAttr(str) {
 /* ---------------------------------------------------------------- */
 /*  HEADER / FOOTER / MENU / POST CARD                                */
 /* ---------------------------------------------------------------- */
+function siteLogoHtml(size = 36) {
+  const b = state.branding;
+  if (b.logo) return `<img src="${escAttr(b.logo)}" alt="${escAttr(b.siteName)}" class="rounded-xl object-cover flex-shrink-0" style="width:${size}px;height:${size}px;" />`;
+  const letter = b.siteName ? b.siteName.trim()[0].toUpperCase() : "C";
+  return `<div class="rounded-xl flex items-center justify-center font-sora font-extrabold text-white flex-shrink-0" style="width:${size}px;height:${size}px;background:linear-gradient(135deg,#3E8EFF,#7C5CFF);font-size:${size * 0.5}px;">${letter}</div>`;
+}
 function homeHeaderHtml() {
   return `<div class="sticky top-0 z-20 bg-bgdeep pb-1">
     <div class="flex items-center gap-2.5 px-4 pt-4 pb-2.5">
-      <div class="w-9 h-9 rounded-xl flex items-center justify-center font-sora font-extrabold text-white text-lg" style="background:linear-gradient(135deg,#3E8EFF,#7C5CFF);">C</div>
-      <div class="font-sora font-bold text-lg">CraftVerse</div>
+      ${siteLogoHtml(36)}
+      <div class="font-sora font-bold text-lg">${esc(state.branding.siteName)}</div>
       <div class="flex-1"></div>
       ${iconBtn({ action: "open-explore", icon: ICONS.search() })}
       ${iconBtn({ action: "open-menu", icon: ICONS.menu() })}
@@ -346,27 +381,30 @@ function menuSheetHtml() {
     ["Home", "home"], ["Favorites", "favorites"], ["About", "about"],
     ["Terms", "terms"], ["DMCA", "dmca"], ["Admin Panel", "adminGate"],
   ];
-  return `<div data-action="close-menu" class="fixed inset-0 z-50 flex items-start justify-end" style="background:rgba(0,0,0,0.5);">
-    <div data-action="noop" class="mt-[68px] mr-4 bg-panel border border-bd rounded-2xl overflow-hidden shadow-2xl min-w-[190px]">
-      ${items.map(([label, key], i) => `<button data-action="nav" data-id="${key}" class="w-full text-left px-4 py-3 font-inter text-sm ${i < items.length - 1 ? "border-b border-bd" : ""}">${label}</button>`).join("")}
+  return `<div data-action="close-menu" class="fixed inset-0 z-50" style="background:rgba(0,0,0,0.5);">
+    <div class="max-w-[480px] h-full mx-auto relative">
+      <div data-action="noop" class="absolute bg-panel border border-bd rounded-2xl overflow-hidden shadow-2xl min-w-[190px]" style="top:68px;right:16px;">
+        ${items.map(([label, key], i) => `<button data-action="nav" data-id="${key}" class="w-full text-left px-4 py-3 font-inter text-sm ${i < items.length - 1 ? "border-b border-bd" : ""}">${label}</button>`).join("")}
+      </div>
     </div>
   </div>`;
 }
 function footerHtml() {
   const owner = getOwner();
+  const b = state.branding;
   const socials = (owner && owner.links ? owner.links : []).slice(0, 5);
   return `<div class="mt-2 bg-panel border-t border-bd rounded-t-[20px] px-5 pt-6 pb-5 flex flex-col items-center gap-3.5">
     <div class="flex items-center gap-2">
-      <div class="w-7 h-7 rounded-lg flex items-center justify-center font-sora font-extrabold text-white text-sm" style="background:linear-gradient(135deg,#3E8EFF,#7C5CFF);">C</div>
-      <div class="font-sora font-bold text-[15px]">CraftVerse</div>
+      ${siteLogoHtml(28)}
+      <div class="font-sora font-bold text-[15px]">${esc(b.siteName)}</div>
     </div>
-    <div class="font-inter text-xs text-tmuted text-center">Craftland map codes, previews & tutorials from the community.</div>
+    <div class="font-inter text-xs text-tmuted text-center">${esc(b.footerTagline)}</div>
     ${socials.length ? `<div class="flex gap-2.5">${socials.map((l) => `<a href="${escAttr(l.url || "#")}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-panelalt border border-bd flex items-center justify-center">${ICONS[LINK_ICON_KEYS[l.icon] || "externalLink"]()}</a>`).join("")}</div>` : ""}
     <div class="flex gap-4">
       ${["about", "terms", "dmca"].map((k) => `<button data-action="nav" data-id="${k}" class="bg-transparent border-none font-inter text-xs text-tmuted capitalize">${k}</button>`).join("")}
     </div>
     <div class="w-full h-px bg-bd my-1"></div>
-    <div class="font-inter text-[11px] text-tfaint">© ${new Date().getFullYear()} CraftVerse. All rights reserved.</div>
+    <div class="font-inter text-[11px] text-tfaint">© ${new Date().getFullYear()} ${esc(b.siteName)}. All rights reserved.</div>
   </div>`;
 }
 
@@ -417,7 +455,10 @@ let exploreQuery = "";
 let exploreCategory = null;
 function exploreScreenHtml() {
   const visible = state.posts.filter((p) => p.status === "approved" && !p.hidden);
-  const categories = Array.from(new Set(visible.map((p) => p.category).filter(Boolean)));
+  let categories = Array.from(new Set(visible.map((p) => p.category).filter(Boolean)));
+  if (state.branding.categoryMode === "selected") {
+    categories = state.branding.selectedCategories.filter((c) => categories.includes(c));
+  }
   const showResults = exploreQuery.trim().length > 0 || !!exploreCategory;
   const q = exploreQuery.trim().toLowerCase();
   const results = visible.filter((p) => {
@@ -746,19 +787,21 @@ function adminPanelHtml() {
       html += primaryBtn({ action: "admin-new-post", label: "Add new map", icon: `<span class="mr-1">${ICONS.plus()}</span>`, extra: "w-full mb-4" });
     }
     if (myPosts.length === 0 && postEditorMode !== "admin") html += `<div class="text-center text-tfaint font-inter text-sm py-5">You haven't posted any maps yet.</div>`;
-    myPosts.forEach((post) => {
-      html += `<div class="bg-panel border border-bd rounded-2xl p-3 mb-2.5">
-        <div class="flex items-center gap-3">
-          <div class="flex-1 min-w-0">
-            <div class="font-sora font-semibold text-[13px] line-clamp-1">${esc(post.title)}</div>
-            <div class="mt-1 flex items-center gap-1.5">${statusBadge(post.status)}${post.hidden ? `<span class="text-tfaint font-mono text-[10px]">HIDDEN</span>` : ""}</div>
+    if (!(postEditorMode === "admin" && postEditorDraft)) {
+      myPosts.forEach((post) => {
+        html += `<div class="bg-panel border border-bd rounded-2xl p-3 mb-2.5">
+          <div class="flex items-center gap-3">
+            <div class="flex-1 min-w-0">
+              <div class="font-sora font-semibold text-[13px] line-clamp-1">${esc(post.title)}</div>
+              <div class="mt-1 flex items-center gap-1.5">${statusBadge(post.status)}${post.hidden ? `<span class="text-tfaint font-mono text-[10px]">HIDDEN</span>` : ""}</div>
+            </div>
+            ${iconBtn({ action: "admin-edit-post", id: post.id, size: 36, icon: ICONS.pencil() })}
+            ${iconBtn({ action: "admin-delete-post", id: post.id, size: 36, extra: "bg-coral/15", icon: ICONS.trash() })}
           </div>
-          ${iconBtn({ action: "admin-edit-post", id: post.id, size: 36, icon: ICONS.pencil() })}
-          ${iconBtn({ action: "admin-delete-post", id: post.id, size: 36, extra: "bg-coral/15", icon: ICONS.trash() })}
-        </div>
-        ${ghostBtn({ action: "admin-toggle-hide", id: post.id, label: post.hidden ? "Unhide this map" : "Hide this map", icon: `<span class="mr-1">${post.hidden ? ICONS.eye() : ICONS.eyeOff()}</span>`, extra: "w-full mt-2.5" })}
-      </div>`;
-    });
+          ${ghostBtn({ action: "admin-toggle-hide", id: post.id, label: post.hidden ? "Unhide this map" : "Hide this map", icon: `<span class="mr-1">${post.hidden ? ICONS.eye() : ICONS.eyeOff()}</span>`, extra: "w-full mt-2.5" })}
+        </div>`;
+      });
+    }
   } else {
     html += profileEditorHtml(profileEditorDraft || account, true);
   }
@@ -803,21 +846,23 @@ function ownerAllPostsHtml() {
   if (postEditorMode === "owner" && postEditorDraft) html += postEditorHtml(postEditorDraft);
   else html += primaryBtn({ action: "owner-new-post", label: "Add new map", icon: `<span class="mr-1">${ICONS.plus()}</span>`, extra: "w-full mb-4" });
 
-  state.posts.forEach((post) => {
-    const author = getAuthor(post.authorId);
-    html += `<div class="bg-panel border border-bd rounded-2xl p-3 mb-2.5">
-      <div class="flex items-center gap-3">
-        ${avatarHtml(author.name, author.avatar, 36)}
-        <div class="flex-1 min-w-0"><div class="font-sora font-semibold text-[13px] line-clamp-1">${esc(post.title)}</div><div class="font-inter text-xs text-tfaint">${esc(author.name)}</div></div>
-        ${iconBtn({ action: "owner-edit-post", id: post.id, size: 34, icon: ICONS.pencil() })}
-        ${iconBtn({ action: "owner-delete-post", id: post.id, size: 34, extra: "bg-coral/15", icon: ICONS.trash() })}
-      </div>
-      <div class="flex items-center gap-2.5 mt-2.5">
-        ${statusBadge(post.status)}
-        ${ghostBtn({ action: "owner-toggle-hide", id: post.id, label: post.hidden ? "Unhide" : "Hide", icon: `<span class="mr-1">${post.hidden ? ICONS.eye() : ICONS.eyeOff()}</span>`, extra: "ml-auto px-2.5 py-1.5" })}
-      </div>
-    </div>`;
-  });
+  if (!(postEditorMode === "owner" && postEditorDraft)) {
+    state.posts.forEach((post) => {
+      const author = getAuthor(post.authorId);
+      html += `<div class="bg-panel border border-bd rounded-2xl p-3 mb-2.5">
+        <div class="flex items-center gap-3">
+          ${avatarHtml(author.name, author.avatar, 36)}
+          <div class="flex-1 min-w-0"><div class="font-sora font-semibold text-[13px] line-clamp-1">${esc(post.title)}</div><div class="font-inter text-xs text-tfaint">${esc(author.name)}</div></div>
+          ${iconBtn({ action: "owner-edit-post", id: post.id, size: 34, icon: ICONS.pencil() })}
+          ${iconBtn({ action: "owner-delete-post", id: post.id, size: 34, extra: "bg-coral/15", icon: ICONS.trash() })}
+        </div>
+        <div class="flex items-center gap-2.5 mt-2.5">
+          ${statusBadge(post.status)}
+          ${ghostBtn({ action: "owner-toggle-hide", id: post.id, label: post.hidden ? "Unhide" : "Hide", icon: `<span class="mr-1">${post.hidden ? ICONS.eye() : ICONS.eyeOff()}</span>`, extra: "ml-auto px-2.5 py-1.5" })}
+        </div>
+      </div>`;
+    });
+  }
   return html;
 }
 
@@ -848,7 +893,7 @@ function ownerAdminsHtml() {
           ${iconBtn({ action: "owner-remove-admin", id: a.id, size: 34, extra: "bg-coral/15", icon: ICONS.trash() })}
         </div>
         <div class="flex gap-2 mt-2.5">
-          ${ghostBtn({ action: "owner-toggle-ban", id: a.id, label: a.banned ? "Unban" : "Ban", icon: `<span class="mr-1">${ICONS.ban()}</span>`, color: a.banned ? "#34D399" : "#FF5D6C", extra: "flex-1" })}
+          ${ghostBtn({ action: "owner-toggle-ban", id: a.id, label: a.banned ? "Unban" : "Ban", icon: `<span class="mr-1">${a.banned ? ICONS.unban() : ICONS.ban()}</span>`, color: a.banned ? "#34D399" : "#FF5D6C", extra: "flex-1" })}
           ${ghostBtn({ action: "owner-open-reset", id: a.id, label: "Reset password", icon: `<span class="mr-1">${ICONS.key()}</span>`, extra: "flex-1" })}
         </div>
         ${resettingAdminId === a.id ? `<div class="flex gap-2 mt-2.5"><input id="reset-pwd-input" type="password" class="${inputCls} flex-1" placeholder="New password" />${primaryBtn({ action: "owner-send-reset", id: a.id, label: "Send", extra: "px-4" })}</div><div class="text-tfaint font-inter text-[11px] mt-1.5">Sends a password reset link to their email (Firebase can't set a password directly from the browser).</div>` : ""}
@@ -863,11 +908,43 @@ function ownerAdminsHtml() {
 /* ---------------------------------------------------------------- */
 let adsDraft = null;
 let siteContentDraft = null;
+let brandingDraft = null;
 
 function ownerSiteHtml() {
   const ads = adsDraft || state.adSettings;
   const content = siteContentDraft || state.siteContent;
+  const brand = brandingDraft || state.branding;
+  const allCategories = Array.from(new Set(state.posts.map((p) => p.category).filter(Boolean)));
+
   return `<div class="flex flex-col gap-4">
+    <div class="bg-panel border border-bd rounded-2xl p-4">
+      <div class="flex items-center gap-2 mb-3.5">${ICONS.layoutDashboard()}<div class="font-sora font-bold text-sm">Branding &amp; Layout</div></div>
+      ${fieldWrap("Site name", `<input id="brand-name" class="${inputCls}" value="${escAttr(brand.siteName)}" />`)}
+      ${fieldWrap("Header / footer logo", `
+        <div class="flex gap-2 items-center">
+          ${siteLogoHtml(44)}
+          <input id="brand-logo" class="${inputCls} flex-1" value="${brand.logo && brand.logo.startsWith("data:") ? "(uploaded image)" : escAttr(brand.logo)}" ${brand.logo && brand.logo.startsWith("data:") ? "readonly" : ""} placeholder="https://... or upload from device" />
+          <button data-action="brand-upload-logo" class="rounded-lg border border-bd bg-panelalt flex items-center justify-center flex-shrink-0" style="width:44px;height:44px;">${ICONS.upload()}</button>
+          <input id="brand-logo-file" type="file" accept="image/*" class="hidden" />
+        </div>
+      `)}
+      ${fieldWrap("Footer tagline", `<textarea id="brand-tagline" class="${inputCls}" style="min-height:60px;">${esc(brand.footerTagline)}</textarea>`)}
+      ${fieldWrap("Explore categories", `
+        <div class="flex gap-2 mb-2.5">
+          <button data-action="set-category-mode" data-id="all" class="flex-1 py-2 rounded-lg border font-inter text-xs font-semibold" style="border-color:${brand.categoryMode === "all" ? "#3E8EFF" : "#232D48"};background:${brand.categoryMode === "all" ? "rgba(62,142,255,.14)" : "transparent"};color:${brand.categoryMode === "all" ? "#3E8EFF" : "#8A93AC"};">Show all categories</button>
+          <button data-action="set-category-mode" data-id="selected" class="flex-1 py-2 rounded-lg border font-inter text-xs font-semibold" style="border-color:${brand.categoryMode === "selected" ? "#3E8EFF" : "#232D48"};background:${brand.categoryMode === "selected" ? "rgba(62,142,255,.14)" : "transparent"};color:${brand.categoryMode === "selected" ? "#3E8EFF" : "#8A93AC"};">Hand-pick categories</button>
+        </div>
+        ${brand.categoryMode === "selected" ? (
+          allCategories.length === 0
+            ? `<div class="text-tfaint font-inter text-xs py-1">No categories exist yet — add one on a map first.</div>`
+            : `<div class="flex flex-wrap gap-2">${allCategories.map((c) => {
+                const on = brand.selectedCategories.includes(c);
+                return `<button data-action="toggle-selected-category" data-id="${escAttr(c)}" class="px-3 py-1.5 rounded-lg border font-inter text-xs" style="border-color:${on ? "#34D399" : "#232D48"};background:${on ? "rgba(52,211,153,.14)" : "#1C2540"};color:${on ? "#34D399" : "#8A93AC"};">${on ? "✓ " : ""}${esc(c)}</button>`;
+              }).join("")}</div>`
+        ) : `<div class="text-tfaint font-inter text-xs py-1">Every category found on your maps will show in Explore.</div>`}
+      `)}
+      ${primaryBtn({ action: "owner-save-branding", label: "Save branding", icon: `<span class="mr-1">${ICONS.save()}</span>`, extra: "w-full" })}
+    </div>
     <div class="bg-panel border border-bd rounded-2xl p-4">
       <div class="flex items-center gap-2 mb-3.5">${ICONS.megaphone()}<div class="font-sora font-bold text-sm">Ads &amp; Layout</div></div>
       ${fieldWrap("Ads enabled", toggleHtml("ads.adsEnabled", ads.adsEnabled, "Ads are showing", "All ads hidden"))}
@@ -892,6 +969,7 @@ function ownerSiteHtml() {
 function bindOwnerSiteInputs() {
   if (!adsDraft) adsDraft = { ...state.adSettings };
   if (!siteContentDraft) siteContentDraft = { ...state.siteContent };
+  if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
   const adsMap = { "ads-frequency": ["nativeFrequency", true], "ads-title": ["bannerTitle"], "ads-subtitle": ["bannerSubtitle"], "ads-link": ["bannerLink"] };
   Object.entries(adsMap).forEach(([id, [key, isNum]]) => {
     const el = document.getElementById(id);
@@ -902,6 +980,21 @@ function bindOwnerSiteInputs() {
     const el = document.getElementById(id);
     if (el) el.addEventListener("input", (e) => { siteContentDraft[key] = e.target.value; });
   });
+  const brandMap = { "brand-name": "siteName", "brand-logo": "logo", "brand-tagline": "footerTagline" };
+  Object.entries(brandMap).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("input", (e) => { brandingDraft[key] = e.target.value; });
+  });
+  const logoFile = document.getElementById("brand-logo-file");
+  if (logoFile) {
+    logoFile.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > MAX_IMAGE_BYTES) { showToast("Image too large — please pick something under ~700KB.", "error"); return; }
+      try { brandingDraft.logo = await fileToDataUrl(file); render(); }
+      catch (err) { showToast("Couldn't read that image.", "error"); }
+    });
+  }
 }
 
 /* ---------------------------------------------------------------- */
@@ -1241,6 +1334,11 @@ async function ownerSaveSiteContent() {
   showToast(ok ? "Page content saved." : "Couldn't save — try again.", ok ? "success" : "error");
   siteContentDraft = null;
 }
+async function ownerSaveBranding() {
+  const ok = await fsSaveBranding(brandingDraft || state.branding);
+  showToast(ok ? "Branding saved." : "Couldn't save — try again.", ok ? "success" : "error");
+  brandingDraft = null;
+}
 
 /* ---------------------------------------------------------------- */
 /*  AUTH: BOOTSTRAP OWNER / LOGIN / LOGOUT                             */
@@ -1323,7 +1421,7 @@ document.addEventListener("click", async (e) => {
   const id = el.dataset.id;
 
   switch (action) {
-    case "nav": navigate(id); break;
+    case "nav": state.ui.menuOpen = false; state.ui.exploreOpen = false; navigate(id); render(); break;
     case "open-menu": state.ui.menuOpen = true; render(); break;
     case "close-menu": state.ui.menuOpen = false; render(); break;
     case "open-explore": exploreQuery = ""; exploreCategory = null; state.ui.exploreOpen = true; render(); break;
@@ -1344,7 +1442,7 @@ document.addEventListener("click", async (e) => {
     case "admin-delete-post": deletePost(id); break;
     case "admin-toggle-hide": toggleHidePost(id); break;
 
-    case "set-owner-tab": state.ui.ownerTab = id; adsDraft = null; siteContentDraft = null; render(); break;
+    case "set-owner-tab": state.ui.ownerTab = id; adsDraft = null; siteContentDraft = null; brandingDraft = null; render(); break;
     case "owner-new-post": startNewPost("owner"); break;
     case "owner-edit-post": startEditPost(id, "owner"); break;
     case "owner-delete-post": deletePost(id); break;
@@ -1358,6 +1456,21 @@ document.addEventListener("click", async (e) => {
     case "owner-send-reset": ownerSendReset(id); break;
     case "owner-save-ads": ownerSaveAds(); break;
     case "owner-save-site-content": ownerSaveSiteContent(); break;
+    case "owner-save-branding": ownerSaveBranding(); break;
+    case "brand-upload-logo": document.getElementById("brand-logo-file")?.click(); break;
+    case "set-category-mode":
+      if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
+      brandingDraft.categoryMode = id;
+      render();
+      break;
+    case "toggle-selected-category": {
+      if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
+      const list = brandingDraft.selectedCategories;
+      const idx = list.indexOf(id);
+      if (idx >= 0) list.splice(idx, 1); else list.push(id);
+      render();
+      break;
+    }
 
     case "pe-pick-category": if (postEditorDraft) { postEditorDraft.category = id; render(); } break;
     case "pe-upload-thumb": document.getElementById("pe-thumbnail-file")?.click(); break;
