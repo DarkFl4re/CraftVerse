@@ -119,7 +119,8 @@ const DEFAULT_BRANDING = {
 
 const LINK_ICON_KEYS = { telegram: "telegram", discord: "discord", twitter: "twitter", facebook: "facebook", instagram: "instagram", tiktok: "tiktok", youtube: "youtube", other: "externalLink" };
 
-const MAX_IMAGE_BYTES = 700 * 1024; // keep Firestore documents comfortably under the 1MiB limit
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // max file the picker will accept — auto-compressed before storage
+const MAX_STORED_IMAGE_BYTES = 700 * 1024; // Firestore documents must stay under 1MiB; images are compressed to fit under this
 
 /* ---------------------------------------------------------------- */
 /*  STATE                                                            */
@@ -137,6 +138,7 @@ const state = {
   ui: {
     menuOpen: false,
     exploreOpen: false,
+    panelSidebarOpen: false,
     toast: null,
     confirm: null,
     postOrigin: "home",
@@ -253,6 +255,41 @@ function fileToDataUrl(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// Reads an image file, downsizes/re-compresses it on a canvas so the final
+// base64 stays under MAX_STORED_IMAGE_BYTES regardless of the original
+// file size (up to MAX_IMAGE_BYTES), then resolves to a data URL.
+function fileToCompressedDataUrl(file, targetMaxBytes = MAX_STORED_IMAGE_BYTES, maxDim = 1280) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width, height = img.height;
+        if (width > maxDim || height > maxDim) {
+          const scale = maxDim / Math.max(width, height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        let quality = 0.85;
+        let dataUrl = canvas.toDataURL("image/jpeg", quality);
+        while (dataUrl.length * 0.75 > targetMaxBytes && quality > 0.3) {
+          quality -= 0.1;
+          dataUrl = canvas.toDataURL("image/jpeg", quality);
+        }
+        resolve(dataUrl);
+      };
+      img.onerror = () => reject(new Error("Couldn't read that image."));
+      img.src = reader.result;
+    };
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
@@ -389,6 +426,25 @@ function menuSheetHtml() {
     </div>
   </div>`;
 }
+
+function panelHeaderHtml(title) {
+  return `<div class="flex items-center gap-2.5 mb-4">
+    ${iconBtn({ action: "toggle-panel-sidebar", icon: ICONS.menu() })}
+    <div class="flex-1 text-center font-sora font-bold text-base">${esc(title)}</div>
+    ${iconBtn({ action: "logout", icon: ICONS.logOut() })}
+  </div>`;
+}
+function panelSidebarDrawerHtml(items) {
+  if (!state.ui.panelSidebarOpen) return "";
+  return `<div data-action="close-panel-sidebar" class="fixed inset-0 z-50" style="background:rgba(0,0,0,0.5);">
+    <div class="max-w-[480px] h-full mx-auto relative">
+      <div data-action="noop" class="absolute bg-panel border border-bd rounded-2xl overflow-hidden shadow-2xl min-w-[210px]" style="top:68px;left:16px;">
+        <button data-action="nav" data-id="home" class="w-full text-left px-4 py-3 font-inter text-sm border-b border-bd flex items-center gap-2.5 text-tmuted">${ICONS.arrowLeft()} Back to Home</button>
+        ${items.map((item, i) => `<button data-action="${item.action}" data-id="${item.id}" class="w-full text-left px-4 py-3 font-inter text-sm flex items-center gap-2.5 ${i < items.length - 1 ? "border-b border-bd" : ""}" style="background:${item.active ? "#212B4A" : "transparent"};color:${item.active ? "#F3F5F9" : "#8A93AC"};">${item.icon}<span class="flex-1">${item.label}</span>${item.badge > 0 ? `<span class="rounded-full bg-coral text-white flex items-center justify-center font-inter" style="min-width:16px;height:16px;font-size:10px;padding:0 4px;">${item.badge}</span>` : ""}</button>`).join("")}
+      </div>
+    </div>
+  </div>`;
+}
 function footerHtml() {
   const owner = getOwner();
   const b = state.branding;
@@ -510,6 +566,17 @@ function staticPageHtml(title, content) {
 /* ---------------------------------------------------------------- */
 /*  SCREEN: POST VIEW (map code copy + external preview video)        */
 /* ---------------------------------------------------------------- */
+function getPostCodes(post) {
+  if (Array.isArray(post.codes) && post.codes.length) return post.codes;
+  if (post.mapCode) return [{ id: "legacy-code", title: "Craftland Map Code", code: post.mapCode }];
+  return [];
+}
+function getPostLinks(post) {
+  if (Array.isArray(post.links) && post.links.length) return post.links;
+  if (post.previewVideoUrl) return [{ id: "legacy-link", title: "Watch preview / tutorial video", url: post.previewVideoUrl }];
+  return [];
+}
+
 function postViewScreenHtml(post) {
   const author = getAuthor(post.authorId);
   const liked = state.likedIds.includes(post.id);
@@ -532,25 +599,31 @@ function postViewScreenHtml(post) {
   if (state.adSettings.adsEnabled && state.adSettings.postViewEnabled) html += `<div class="mt-5">${adSlot("native")}</div>`;
 
   html += `<div class="mt-1.5 flex flex-col gap-3">`;
-  // Map code block
-  html += `<div class="bg-panel border border-bd rounded-2xl p-4">
-    <div class="font-mono text-[11px] text-tfaint uppercase tracking-wide mb-2">Craftland map code</div>
-    <div class="flex items-center gap-2">
-      <div class="flex-1 bg-bgdeep border border-bd rounded-lg px-3 py-2.5 font-mono text-sm text-tprimary overflow-x-auto whitespace-nowrap">${post.mapCode ? esc(post.mapCode) : '<span class="text-tfaint">Not added yet</span>'}</div>
-      ${primaryBtn({ action: "copy-map-code", id: post.id, label: "Copy", icon: `<span class="mr-1">${ICONS.copy()}</span>`, extra: "px-4" })}
-    </div>
-  </div>`;
-  // Preview / tutorial video (external link)
-  if (post.previewVideoUrl) {
-    html += `<a href="${escAttr(post.previewVideoUrl)}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 bg-panel border border-bd rounded-2xl px-3.5 py-3 no-underline">
+  const codes = getPostCodes(post);
+  const links = getPostLinks(post);
+  if (codes.length === 0 && links.length === 0) {
+    html += `<div class="text-center text-tfaint font-inter text-sm py-4">No map code or links added yet.</div>`;
+  }
+  codes.forEach((c) => {
+    html += `<div class="bg-panel border border-bd rounded-2xl p-4">
+      <div class="font-mono text-[11px] text-tfaint uppercase tracking-wide mb-2">${esc(c.title || "Craftland Map Code")}</div>
+      <div class="flex items-center gap-2">
+        <div class="flex-1 bg-bgdeep border border-bd rounded-lg px-3 py-2.5 font-mono text-sm text-tprimary overflow-x-auto whitespace-nowrap">${c.code ? esc(c.code) : '<span class="text-tfaint">Not added yet</span>'}</div>
+        ${primaryBtn({ action: "copy-map-code", id: c.code || "", label: "Copy", icon: `<span class="mr-1">${ICONS.copy()}</span>`, extra: "px-4" })}
+      </div>
+    </div>`;
+  });
+  links.forEach((l) => {
+    html += `<a href="${escAttr(l.url || "#")}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 bg-panel border border-bd rounded-2xl px-3.5 py-3 no-underline">
       <div class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style="background:linear-gradient(135deg,#FF5D6C,#FF9B5D);">${ICONS.externalLink()}</div>
-      <div class="flex-1 font-sora font-semibold text-sm text-tprimary">Watch preview / tutorial video</div>
+      <div class="flex-1 font-sora font-semibold text-sm text-tprimary">${esc(l.title || "Watch link")}</div>
       ${ICONS.externalLink()}
     </a>`;
-  }
+  });
   html += `</div></div>`;
   return html;
 }
+
 
 /* ---------------------------------------------------------------- */
 /*  SCREEN: PUBLIC PROFILE                                            */
@@ -654,10 +727,29 @@ function adminLoginScreenHtml() {
 /*  map code, preview video link — no watch/embed providers)          */
 /* ---------------------------------------------------------------- */
 function emptyPostDraft(authorId, status) {
-  return { id: "p" + Date.now(), title: "", category: "", description: "", thumbnail: "", mapCode: "", previewVideoUrl: "", authorId, status, hidden: false };
+  return { id: "p" + Date.now(), title: "", category: "", description: "", thumbnail: "", codes: [{ id: "c" + Date.now(), title: "", code: "" }], links: [], authorId, status, hidden: false };
 }
 let postEditorDraft = null;
 let postEditorMode = null; // 'admin' | 'owner'
+
+function codeRowHtml(entry, idx) {
+  return `<div class="bg-bgdeep border border-bd rounded-lg p-3 mb-2.5" data-code-idx="${idx}">
+    <div class="flex gap-2 mb-2">
+      <input class="${inputCls} flex-1 pe-code-title" data-idx="${idx}" value="${escAttr(entry.title)}" placeholder="Name e.g. 13 vs 13 (India)" />
+      <button data-action="pe-remove-code" data-id="${idx}" class="rounded-lg border border-bd bg-coral/15 flex items-center justify-center" style="width:40px;">${ICONS.trash()}</button>
+    </div>
+    <input class="${inputCls} font-mono pe-code-value" data-idx="${idx}" value="${escAttr(entry.code)}" placeholder="e.g. 123-456-789" />
+  </div>`;
+}
+function linkRowHtmlForPost(entry, idx) {
+  return `<div class="bg-bgdeep border border-bd rounded-lg p-3 mb-2.5" data-link-idx="${idx}">
+    <div class="flex gap-2 mb-2">
+      <input class="${inputCls} flex-1 pe-link-title" data-idx="${idx}" value="${escAttr(entry.title)}" placeholder="Name e.g. Watch on YouTube" />
+      <button data-action="pe-remove-link" data-id="${idx}" class="rounded-lg border border-bd bg-coral/15 flex items-center justify-center" style="width:40px;">${ICONS.trash()}</button>
+    </div>
+    <input class="${inputCls} pe-link-url" data-idx="${idx}" value="${escAttr(entry.url)}" placeholder="https://..." />
+  </div>`;
+}
 
 function postEditorHtml(draft) {
   const existingCategories = Array.from(new Set(state.posts.map((p) => p.category).filter(Boolean)));
@@ -674,8 +766,15 @@ function postEditorHtml(draft) {
       </div>
       ${draft.thumbnail ? `<img src="${escAttr(draft.thumbnail)}" class="mt-2 w-full object-cover rounded-lg border border-bd" style="max-height:140px;" />` : ""}
     `)}
-    ${fieldWrap("Craftland map code", `<input id="pe-mapcode" class="${inputCls} font-mono" value="${escAttr(draft.mapCode)}" placeholder="e.g. 123-456-789" />`)}
-    ${fieldWrap("Preview / tutorial video link (optional)", `<input id="pe-previewurl" class="${inputCls}" value="${escAttr(draft.previewVideoUrl)}" placeholder="https://youtube.com/..." />`)}
+
+    <div class="font-mono text-[11px] text-tfaint uppercase mt-4 mb-2">Map codes</div>
+    <div id="pe-codes">${draft.codes.map((c, i) => codeRowHtml(c, i)).join("")}</div>
+    <button data-action="pe-add-code" class="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-lg border border-dashed border-bd text-tmuted font-inter text-sm mb-4">${ICONS.plus()} Add code</button>
+
+    <div class="font-mono text-[11px] text-tfaint uppercase mb-2">Links</div>
+    <div id="pe-links">${draft.links.map((l, i) => linkRowHtmlForPost(l, i)).join("")}</div>
+    <button data-action="pe-add-link" class="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-lg border border-dashed border-bd text-tmuted font-inter text-sm mb-4">${ICONS.plus()} Add link</button>
+
     <div class="flex gap-2.5 mt-1">
       ${primaryBtn({ action: "pe-save", label: "Save map", icon: `<span class="mr-1">${ICONS.save()}</span>`, extra: "flex-1" })}
       ${ghostBtn({ action: "pe-cancel", label: "Cancel", extra: "flex-1" })}
@@ -683,19 +782,23 @@ function postEditorHtml(draft) {
   </div>`;
 }
 function bindPostEditorInputs() {
-  const map = { "pe-title": "title", "pe-category": "category", "pe-description": "description", "pe-thumbnail": "thumbnail", "pe-mapcode": "mapCode", "pe-previewurl": "previewVideoUrl" };
+  const map = { "pe-title": "title", "pe-category": "category", "pe-description": "description", "pe-thumbnail": "thumbnail" };
   Object.entries(map).forEach(([id, key]) => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("input", (e) => { postEditorDraft[key] = e.target.value; });
   });
+  document.querySelectorAll(".pe-code-title").forEach((el) => el.addEventListener("input", (e) => { postEditorDraft.codes[+e.target.dataset.idx].title = e.target.value; }));
+  document.querySelectorAll(".pe-code-value").forEach((el) => el.addEventListener("input", (e) => { postEditorDraft.codes[+e.target.dataset.idx].code = e.target.value; }));
+  document.querySelectorAll(".pe-link-title").forEach((el) => el.addEventListener("input", (e) => { postEditorDraft.links[+e.target.dataset.idx].title = e.target.value; }));
+  document.querySelectorAll(".pe-link-url").forEach((el) => el.addEventListener("input", (e) => { postEditorDraft.links[+e.target.dataset.idx].url = e.target.value; }));
   const fileInput = document.getElementById("pe-thumbnail-file");
   if (fileInput) {
     fileInput.addEventListener("change", async (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      if (file.size > MAX_IMAGE_BYTES) { showToast("Image too large — please pick something under ~700KB.", "error"); return; }
+      if (file.size > MAX_IMAGE_BYTES) { showToast("Image too large — please pick something under 5MB.", "error"); return; }
       try {
-        const dataUrl = await fileToDataUrl(file);
+        const dataUrl = await fileToCompressedDataUrl(file);
         postEditorDraft.thumbnail = dataUrl;
         renderCurrentEditorPanel();
       } catch (err) { showToast("Couldn't read that image.", "error"); }
@@ -755,8 +858,8 @@ function bindProfileEditorInputs() {
     fileInput.addEventListener("change", async (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      if (file.size > MAX_IMAGE_BYTES) { showToast("Image too large — please pick something under ~700KB.", "error"); return; }
-      try { profileEditorDraft.avatar = await fileToDataUrl(file); renderCurrentEditorPanel(); }
+      if (file.size > MAX_IMAGE_BYTES) { showToast("Image too large — please pick something under 5MB.", "error"); return; }
+      try { profileEditorDraft.avatar = await fileToCompressedDataUrl(file); renderCurrentEditorPanel(); }
       catch (err) { showToast("Couldn't read that image.", "error"); }
     });
   }
@@ -768,15 +871,12 @@ function bindProfileEditorInputs() {
 function adminPanelHtml() {
   const account = state.session.account;
   const tab = state.ui.adminTab;
+  const tabLabels = { posts: "My Maps", profile: "My Profile" };
   let html = `<div class="px-4 pt-4 pb-10">
-    <div class="flex items-center gap-2.5 mb-4">
-      ${iconBtn({ action: "nav", id: "home", icon: ICONS.arrowLeft() })}
-      <div class="flex-1 text-center font-sora font-bold text-base">Admin Panel — ${esc(account.name)}</div>
-      ${iconBtn({ action: "logout", icon: ICONS.logOut() })}
-    </div>
-    <div class="flex gap-2 bg-panel border border-bd rounded-2xl p-1 mb-4.5">
-      <button data-action="set-admin-tab" data-id="posts" class="flex-1 py-2.5 rounded-xl font-sora font-semibold text-[13px] ${tab === "posts" ? "bg-panelhover text-tprimary" : "text-tmuted"}">My Maps</button>
-      <button data-action="set-admin-tab" data-id="profile" class="flex-1 py-2.5 rounded-xl font-sora font-semibold text-[13px] ${tab === "profile" ? "bg-panelhover text-tprimary" : "text-tmuted"}">My Profile</button>
+    ${panelHeaderHtml("Admin Panel")}
+    <div class="flex items-center gap-2 mb-4.5">
+      <div class="font-inter text-xs text-tfaint">${esc(account.name)} ·</div>
+      <div class="font-sora font-semibold text-sm text-tprimary">${tabLabels[tab]}</div>
     </div>`;
 
   if (tab === "posts") {
@@ -803,9 +903,14 @@ function adminPanelHtml() {
       });
     }
   } else {
+
     html += profileEditorHtml(profileEditorDraft || account, true);
   }
   html += `</div>`;
+  html += panelSidebarDrawerHtml([
+    { action: "set-admin-tab", id: "posts", label: "My Maps", icon: ICONS.list(), active: tab === "posts" },
+    { action: "set-admin-tab", id: "profile", label: "My Profile", icon: ICONS.userCircle(), active: tab === "profile" },
+  ]);
   return html;
 }
 
@@ -990,8 +1095,8 @@ function bindOwnerSiteInputs() {
     logoFile.addEventListener("change", async (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      if (file.size > MAX_IMAGE_BYTES) { showToast("Image too large — please pick something under ~700KB.", "error"); return; }
-      try { brandingDraft.logo = await fileToDataUrl(file); render(); }
+      if (file.size > MAX_IMAGE_BYTES) { showToast("Image too large — please pick something under 5MB.", "error"); return; }
+      try { brandingDraft.logo = await fileToCompressedDataUrl(file); render(); }
       catch (err) { showToast("Couldn't read that image.", "error"); }
     });
   }
@@ -1005,13 +1110,14 @@ function ownerScreenHtml() {
   const tab = state.ui.ownerTab;
   const pendingCount = state.posts.filter((p) => p.status === "pending").length;
   const rail = [
-    ["dashboard", "Home", ICONS.layoutDashboard()],
-    ["all", "Maps", ICONS.list()],
-    ["pending", "Pending", ICONS.clock(), pendingCount],
-    ["admins", "Admins", ICONS.users()],
-    ["profile", "Profile", ICONS.userCircle()],
-    ["site", "Site", ICONS.settings()],
+    { action: "set-owner-tab", id: "dashboard", label: "Home", icon: ICONS.layoutDashboard(), active: tab === "dashboard" },
+    { action: "set-owner-tab", id: "all", label: "Maps", icon: ICONS.list(), active: tab === "all" },
+    { action: "set-owner-tab", id: "pending", label: "Pending", icon: ICONS.clock(), active: tab === "pending", badge: pendingCount },
+    { action: "set-owner-tab", id: "admins", label: "Admins", icon: ICONS.users(), active: tab === "admins" },
+    { action: "set-owner-tab", id: "profile", label: "Profile", icon: ICONS.userCircle(), active: tab === "profile" },
+    { action: "set-owner-tab", id: "site", label: "Site", icon: ICONS.settings(), active: tab === "site" },
   ];
+  const tabLabels = { dashboard: "Dashboard", all: "Maps", pending: "Pending", admins: "Admins", profile: "Profile", site: "Site" };
   let body = "";
   if (tab === "dashboard") body = ownerDashboardHtml();
   else if (tab === "all") body = ownerAllPostsHtml();
@@ -1020,25 +1126,16 @@ function ownerScreenHtml() {
   else if (tab === "profile") body = profileEditorHtml(profileEditorDraft || owner, true);
   else if (tab === "site") body = ownerSiteHtml();
 
-  return `<div class="px-3 pt-4 pb-10">
-    <div class="flex items-center gap-2.5 mb-4 pl-1">
-      ${iconBtn({ action: "nav", id: "home", icon: ICONS.arrowLeft() })}
-      <div class="flex-1 text-center font-sora font-bold text-base">Owner Panel</div>
-      ${iconBtn({ action: "logout", icon: ICONS.logOut() })}
+  return `<div class="px-4 pt-4 pb-10">
+    ${panelHeaderHtml("Owner Panel")}
+    <div class="flex items-center gap-2 mb-4.5">
+      <div class="font-inter text-xs text-tfaint">${esc(owner.name)} ·</div>
+      <div class="font-sora font-semibold text-sm text-tprimary">${tabLabels[tab]}</div>
+      ${pendingCount > 0 && tab !== "pending" ? `<span class="rounded-full bg-coral text-white flex items-center justify-center font-inter" style="min-width:16px;height:16px;font-size:10px;padding:0 4px;">${pendingCount}</span>` : ""}
     </div>
-    <div class="flex items-start gap-2.5 pl-1">
-      <div class="flex-shrink-0 bg-panel border border-bd rounded-2xl flex flex-col gap-0.5 p-1 sticky" style="width:68px;top:76px;max-height:calc(100vh - 100px);overflow-y:auto;">
-        ${rail.map(([key, label, icon, badge]) => `
-          <button data-action="set-owner-tab" data-id="${key}" class="relative flex flex-col items-center gap-1 py-2.5 px-0.5 rounded-lg" style="background:${tab === key ? "#212B4A" : "transparent"};border-left:3px solid ${tab === key ? "#3E8EFF" : "transparent"};">
-            <span style="color:${tab === key ? "#3E8EFF" : "#8A93AC"}">${icon}</span>
-            <span class="font-inter" style="font-size:9px;color:${tab === key ? "#F3F5F9" : "#5C6580"};">${label}</span>
-            ${badge > 0 ? `<span class="absolute rounded-full bg-coral text-white flex items-center justify-center font-inter" style="top:4px;right:6px;min-width:14px;height:14px;font-size:9px;padding:0 3px;">${badge}</span>` : ""}
-          </button>
-        `).join("")}
-      </div>
-      <div class="flex-1 min-w-0">${body}</div>
-    </div>
-  </div>`;
+    <div>${body}</div>
+  </div>
+  ${panelSidebarDrawerHtml(rail)}`;
 }
 
 /* ---------------------------------------------------------------- */
@@ -1152,18 +1249,30 @@ function render() {
   if (document.getElementById("post-editor")) bindPostEditorInputs();
   if (document.getElementById("pf-name")) bindProfileEditorInputs();
   if (document.getElementById("ads-frequency") || document.getElementById("sc-about")) bindOwnerSiteInputs();
+  if (document.getElementById("explore-search")) bindExploreInputs();
   const scrollBtn = document.getElementById("scroll-top-btn");
   if (scrollBtn) scrollBtn.classList.toggle("hidden", window.scrollY <= 420);
 }
 window.addEventListener("hashchange", render);
 
+function bindExploreInputs() {
+  const el = document.getElementById("explore-search");
+  if (!el) return;
+  el.addEventListener("input", (e) => {
+    exploreQuery = e.target.value;
+    const pos = e.target.selectionStart;
+    render();
+    const el2 = document.getElementById("explore-search");
+    if (el2) { el2.focus(); el2.setSelectionRange(pos, pos); }
+  });
+}
+
 /* ---------------------------------------------------------------- */
 /*  ACTION HANDLERS                                                   */
 /* ---------------------------------------------------------------- */
-async function handleCopyMapCode(postId) {
-  const post = state.posts.find((p) => p.id === postId);
-  if (!post || !post.mapCode) { showToast("No map code added for this map yet.", "error"); return; }
-  const ok = await copyToClipboard(post.mapCode);
+async function handleCopyMapCode(code) {
+  if (!code) { showToast("No map code added yet.", "error"); return; }
+  const ok = await copyToClipboard(code);
   showToast(ok ? "Map code copied!" : "Couldn't copy — please copy it manually.", ok ? "success" : "error");
 }
 async function handleSharePost(postId) {
@@ -1185,6 +1294,11 @@ function startEditPost(id, mode) {
   const post = state.posts.find((p) => p.id === id);
   if (!post) return;
   postEditorDraft = { ...post };
+  postEditorDraft.codes = getPostCodes(post).map((c) => ({ ...c }));
+  if (postEditorDraft.codes.length === 0) postEditorDraft.codes.push({ id: "c" + Date.now(), title: "", code: "" });
+  postEditorDraft.links = getPostLinks(post).map((l) => ({ ...l }));
+  delete postEditorDraft.mapCode;
+  delete postEditorDraft.previewVideoUrl;
   postEditorMode = mode;
   render();
 }
@@ -1421,111 +1535,15 @@ document.addEventListener("click", async (e) => {
   const id = el.dataset.id;
 
   switch (action) {
-    case "nav": state.ui.menuOpen = false; state.ui.exploreOpen = false; navigate(id); render(); break;
+    case "nav": state.ui.menuOpen = false; state.ui.exploreOpen = false; state.ui.panelSidebarOpen = false; navigate(id); render(); break;
     case "open-menu": state.ui.menuOpen = true; render(); break;
     case "close-menu": state.ui.menuOpen = false; render(); break;
+    case "toggle-panel-sidebar": state.ui.panelSidebarOpen = !state.ui.panelSidebarOpen; render(); break;
+    case "close-panel-sidebar": state.ui.panelSidebarOpen = false; render(); break;
     case "open-explore": exploreQuery = ""; exploreCategory = null; state.ui.exploreOpen = true; render(); break;
     case "close-explore": state.ui.exploreOpen = false; render(); break;
     case "set-explore-category": exploreCategory = id; render(); break;
     case "clear-explore-category": exploreCategory = null; render(); break;
     case "toggle-like": toggleLike(id); break;
     case "share-post": handleSharePost(id); break;
-    case "open-post": state.ui.exploreOpen = false; state.ui.menuOpen = false; openPost(id); break;
-    case "open-profile": state.ui.exploreOpen = false; state.ui.menuOpen = false; openProfile(id); break;
-    case "set-profile-tab": profileTab = id; render(); break;
-    case "copy-map-code": handleCopyMapCode(id); break;
-    case "scroll-top": window.scrollTo({ top: 0, behavior: "smooth" }); break;
-
-    case "set-admin-tab": state.ui.adminTab = id; render(); break;
-    case "admin-new-post": startNewPost("admin"); break;
-    case "admin-edit-post": startEditPost(id, "admin"); break;
-    case "admin-delete-post": deletePost(id); break;
-    case "admin-toggle-hide": toggleHidePost(id); break;
-
-    case "set-owner-tab": state.ui.ownerTab = id; adsDraft = null; siteContentDraft = null; brandingDraft = null; render(); break;
-    case "owner-new-post": startNewPost("owner"); break;
-    case "owner-edit-post": startEditPost(id, "owner"); break;
-    case "owner-delete-post": deletePost(id); break;
-    case "owner-toggle-hide": toggleHidePost(id); break;
-    case "owner-approve-post": approvePost(id); break;
-    case "owner-reject-post": rejectPost(id); break;
-    case "owner-add-admin": ownerAddAdmin(); break;
-    case "owner-remove-admin": ownerRemoveAdmin(id); break;
-    case "owner-toggle-ban": ownerToggleBan(id); break;
-    case "owner-open-reset": ownerOpenReset(id); break;
-    case "owner-send-reset": ownerSendReset(id); break;
-    case "owner-save-ads": ownerSaveAds(); break;
-    case "owner-save-site-content": ownerSaveSiteContent(); break;
-    case "owner-save-branding": ownerSaveBranding(); break;
-    case "brand-upload-logo": document.getElementById("brand-logo-file")?.click(); break;
-    case "set-category-mode":
-      if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
-      brandingDraft.categoryMode = id;
-      render();
-      break;
-    case "toggle-selected-category": {
-      if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
-      const list = brandingDraft.selectedCategories;
-      const idx = list.indexOf(id);
-      if (idx >= 0) list.splice(idx, 1); else list.push(id);
-      render();
-      break;
-    }
-
-    case "pe-pick-category": if (postEditorDraft) { postEditorDraft.category = id; render(); } break;
-    case "pe-upload-thumb": document.getElementById("pe-thumbnail-file")?.click(); break;
-    case "pe-save": savePostEditor(); break;
-    case "pe-cancel": cancelPostEdit(); break;
-
-    case "pf-upload-avatar": document.getElementById("pf-avatar-file")?.click(); break;
-    case "pf-add-link": addLinkRow(); break;
-    case "pf-remove-link": removeLinkRow(+id); break;
-    case "pf-save": saveProfileEditor(); break;
-
-    case "toggle-field": {
-      const checked = el.dataset.checked === "1";
-      if (id.startsWith("ads.")) {
-        if (!adsDraft) adsDraft = { ...state.adSettings };
-        adsDraft[id.slice(4)] = !checked;
-      } else if (id === "profilePublic") {
-        if (profileEditorDraft) profileEditorDraft.profilePublic = !checked;
-      }
-      render();
-      break;
-    }
-
-    case "bootstrap-owner": bootstrapOwner(); break;
-    case "owner-login": ownerLogin(); break;
-    case "admin-login": adminLogin(); break;
-    case "forgot-password": forgotPassword(id); break;
-    case "logout": logout(); break;
-
-    case "confirm-cancel": closeConfirm(); break;
-    case "confirm-ok": {
-      const c = state.ui.confirm;
-      closeConfirm();
-      if (c && c.onConfirm) c.onConfirm();
-      break;
-    }
-  }
-});
-
-// Populate the profile/admin editors with a working draft whenever their
-// screen becomes active without an explicit "start edit" click (e.g. first
-// time opening My Profile / Owner Profile tabs).
-document.addEventListener("click", (e) => {
-  const el = e.target.closest('[data-action="set-admin-tab"], [data-action="set-owner-tab"]');
-  if (!el) return;
-  const goingToProfile = el.dataset.id === "profile";
-  if (goingToProfile) {
-    const account = state.session ? state.session.account : null;
-    if (account) profileEditorDraft = JSON.parse(JSON.stringify({ links: [], ...account }));
-  } else {
-    profileEditorDraft = null;
-  }
-});
-
-/* ---------------------------------------------------------------- */
-/*  BOOT                                                              */
-/* ---------------------------------------------------------------- */
-render();
+    case "open-post": state.ui.exploreOpen = fa
