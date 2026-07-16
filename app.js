@@ -392,7 +392,7 @@ function escAttr(str) {
 /* ---------------------------------------------------------------- */
 function siteLogoHtml(size = 36) {
   const b = state.branding;
-  if (b.logo) return `<img src="${escAttr(b.logo)}" alt="${escAttr(b.siteName)}" class="rounded-xl object-cover flex-shrink-0" style="width:${size}px;height:${size}px;" />`;
+  if (b.logo) return `<img src="${escAttr(b.logo)}" alt="${escAttr(b.siteName)}" class="rounded-lg object-cover flex-shrink-0" style="width:${size}px;height:${size}px;" />`;
   const letter = b.siteName ? b.siteName.trim()[0].toUpperCase() : "C";
   return `<div class="rounded-xl flex items-center justify-center font-sora font-extrabold text-white flex-shrink-0" style="width:${size}px;height:${size}px;background:linear-gradient(135deg,#3E8EFF,#7C5CFF);font-size:${size * 0.5}px;">${letter}</div>`;
 }
