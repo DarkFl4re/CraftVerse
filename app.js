@@ -1202,6 +1202,10 @@ function openProfile(id) {
 function renderCurrentEditorPanel() { render(); }
 
 function render() {
+  try { renderInner(); }
+  catch (err) { showFatalError(err); }
+}
+function renderInner() {
   const { screen, param } = parseHash();
   const app = document.getElementById("app");
 
@@ -1545,5 +1549,4 @@ document.addEventListener("click", async (e) => {
     case "set-explore-category": exploreCategory = id; render(); break;
     case "clear-explore-category": exploreCategory = null; render(); break;
     case "toggle-like": toggleLike(id); break;
-    case "share-post": handleSharePost(id); break;
-    case "open-post": state.ui.exploreOpen = fa
+    cas
