@@ -457,7 +457,7 @@ function escAttr(str) {
 /* ---------------------------------------------------------------- */
 function siteLogoHtml(size = 36) {
   const b = state.branding;
-  if (b.logo) return `<img src="${escAttr(b.logo)}" alt="${escAttr(b.siteName)}" class="rounded-xl object-cover flex-shrink-0" style="width:${size}px;height:${size}px;" />`;
+  if (b.logo) return `<img src="${escAttr(b.logo)}" alt="${escAttr(b.siteName)}" class="rounded-md object-cover flex-shrink-0" style="width:${size}px;height:${size}px;" />`;
   const letter = b.siteName ? b.siteName.trim()[0].toUpperCase() : "C";
   return `<div class="rounded-xl flex items-center justify-center font-sora font-extrabold text-white flex-shrink-0" style="width:${size}px;height:${size}px;background:linear-gradient(135deg,#3E8EFF,#7C5CFF);font-size:${size * 0.5}px;">${letter}</div>`;
 }
@@ -725,7 +725,7 @@ function profileScreenHtml(account) {
     <div class="mt-3.5 font-sora font-extrabold text-[22px]">${esc(account.name)}</div>
     <div class="mt-2 text-center text-tmuted font-inter text-sm leading-relaxed whitespace-pre-wrap">${esc(account.bio)}</div>
     <div class="flex gap-2 mt-5 bg-panel border border-bd rounded-2xl p-1 w-full">
-      ${["links", "posts"].map((k) => `<button data-action="set-profile-tab" data-id="${k}" class="flex-1 py-2.5 rounded-xl font-sora font-semibold text-sm capitalize ${profileTab === k ? "bg-panelhover text-tprimary" : "text-tmuted"}">${k}</button>`).join("")}
+      ${["links", "posts"].map((k) => `<button data-action="set-profile-tab" data-id="${k}" class="flex-1 py-2.5 rounded-xl font-sora font-semibold text-sm capitalize ${profileTab === k ? "bg-panelhover text-tprimary" : "text-tmuted"}">${k === "posts" ? "Maps" : "Links"}</button>`).join("")}
     </div>
   </div>
   <div class="px-4 pb-7">`;
