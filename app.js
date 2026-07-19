@@ -332,7 +332,7 @@ function avatarHtml(name, src, size = 40) {
   return `<div class="rounded-full flex items-center justify-center flex-shrink-0 font-sora font-bold text-white" style="width:${size}px;height:${size}px;background:linear-gradient(135deg, ${c1}, ${c2});font-size:${size * 0.4}px;">${letter}</div>`;
 }
 function thumbPlaceholder(radius = 16) {
-  return `<div class="w-full flex items-center justify-center" style="aspect-ratio:16/9;border-radius:${radius}px;background:linear-gradient(135deg, #2DD4BF, #0EA5E9);"><span class="opacity-60">${ICONS.image()}</span></div>`;
+  return `<div class="w-full flex items-center justify-center" style="aspect-ratio:820/312;border-radius:${radius}px;background:linear-gradient(135deg, #2DD4BF, #0EA5E9);"><span class="opacity-60">${ICONS.image()}</span></div>`;
 }
 function iconBtn({ action, id = "", active = false, extra = "", size = 40, icon }) {
   return `<button data-action="${action}" data-id="${escAttr(id)}" class="rounded-xl border border-bd flex items-center justify-center flex-shrink-0 text-tmuted ${active ? "bg-coral/15" : "bg-panelalt"} ${extra}" style="width:${size}px;height:${size}px;">${icon}</button>`;
