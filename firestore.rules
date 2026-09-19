@@ -22,8 +22,13 @@ service cloud.firestore {
     // role can write.
     match /accounts/{uid} {
       allow read: if true;
-      allow create: if isSignedIn() && request.auth.uid == uid;
-      allow update: if isSignedIn() && (request.auth.uid == uid || isOwner());
+      allow create: if isSignedIn() && (request.auth.uid == uid || isOwner());
+      allow update: if isSignedIn() && (
+        isOwner() ||
+        (request.auth.uid == uid &&
+          request.resource.data.role == resource.data.role &&
+          request.resource.data.banned == resource.data.banned)
+      );
       allow delete: if isOwner();
     }
 
