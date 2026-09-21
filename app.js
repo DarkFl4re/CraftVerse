@@ -44,6 +44,10 @@ const ICONS = {
   arrowLeft: () => svgIcon(`<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>`),
   share: () => svgIcon(`<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>`),
   plus: () => svgIcon(`<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>`),
+  homeOutline: () => svgIcon(`<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V19a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9.5"/><path d="M9 21v-6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v6"/>`),
+  searchOutline: () => svgIcon(`<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>`),
+  plusFilled: () => fillIcon("0 0 24 24", `<circle cx="12" cy="12" r="10"/><path d="M11 7h2v4h4v2h-4v4h-2v-4H7v-2h4V7Z" fill="#0A0E17"/>`),
+  userCircleFilled: () => fillIcon("0 0 24 24", `<circle cx="12" cy="12" r="10"/><circle cx="12" cy="9.5" r="3.6" fill="#0A0E17"/><path d="M5.2 19a7.3 7.3 0 0 1 13.6 0A10 10 0 0 1 5.2 19Z" fill="#0A0E17"/>`),
   google: () => `<svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.5 29.6 4.5 24 4.5 12.9 4.5 4 13.4 4 24.5s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.1 18.9 12.5 24 12.5c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.5 29.6 4.5 24 4.5c-7.6 0-14.2 4.3-17.7 10.2z"/><path fill="#4CAF50" d="M24 44.5c5.5 0 10.4-1.9 14.3-5.1l-6.6-5.4c-2 1.4-4.6 2.3-7.7 2.3-5.3 0-9.7-3.4-11.3-8.1l-6.6 5.1C9.7 40.1 16.3 44.5 24 44.5z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.6 5.4C41.5 36.4 44 30.9 44 24.5c0-1.3-.1-2.7-.4-4z"/></svg>`,
   trash: () => svgIcon(`<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>`),
   pencil: () => svgIcon(`<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>`),
@@ -90,6 +94,9 @@ const ICONS = {
   tiktok: (size = 20) => `<svg fill="currentColor" style="color:#fff" height="${size}" viewBox="0 0 16 16" width="${size}" xmlns="http://www.w3.org/2000/svg"><path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/></svg>`,
   youtube: (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 333333 333333" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M329930 100020s-3254-22976-13269-33065c-12691-13269-26901-13354-33397-14124-46609-3396-116614-3396-116614-3396h-122s-69973 0-116608 3396c-6522 793-20712 848-33397 14124C6501 77044 3316 100020 3316 100020S-1 126982-1 154001v25265c0 26962 3315 53979 3315 53979s3254 22976 13207 33082c12685 13269 29356 12838 36798 14254 26685 2547 113354 3315 113354 3315s70065-124 116675-3457c6522-770 20706-848 33397-14124 10021-10089 13269-33090 13269-33090s3319-26962 3319-53979v-25263c-67-26962-3384-53979-3384-53979l-18 18-2-2zM132123 209917v-93681l90046 46997-90046 46684z" fill="red"/></svg>`,
   twitter: (size = 20) => `<svg fill="#FFF" height="${size}" viewBox="0 0 24 24" width="${size}"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+  github: (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 640 640" fill="#FFF"><path d="M280.5 426.5C214.5 418.5 168 371 168 309.5C168 284.5 177 257.5 192 239.5C185.5 223 186.5 188 194 173.5C214 171 241 181.5 257 196C276 190 296 187 320.5 187C345 187 365 190 383 195.5C398.5 181.5 426 171 446 173.5C453 187 454 222 447.5 239C463.5 258 472 283.5 472 309.5C472 371 425.5 417.5 358.5 426C375.5 437 387 461 387 488.5L387 540.5C387 555.5 399.5 564 414.5 558C505 523.5 576 433 576 321C576 179.5 461 64 319.5 64C178 64 64 179.5 64 321C64 432 134.5 524 229.5 558.5C243 563.5 256 554.5 256 541L256 501C249 504 240 506 232 506C199 506 179.5 488 165.5 454.5C160 441 154 433 142.5 431.5C136.5 431 134.5 428.5 134.5 425.5C134.5 419.5 144.5 415 154.5 415C169 415 181.5 424 194.5 442.5C204.5 457 215 463.5 227.5 463.5C240 463.5 248 459 259.5 447.5C268 439 274.5 431.5 280.5 426.5Z"/></svg>`,
+  messenger: (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 640 640" fill="#0084FF"><path d="M320.6 72C180.6 72 72 174.3 72 312.6C72 384.9 101.7 447.4 150.1 490.5C158.4 498 156.7 502.4 158.1 548.7C158.2 551.9 159.1 555.1 160.7 557.9C162.3 560.7 164.6 563.1 167.4 564.8C170.2 566.5 173.3 567.6 176.5 567.8C179.7 568 183 567.5 186 566.2C238.9 543 239.6 541.2 248.6 543.6C401.8 585.8 568 487.7 568 312.6C568 174.3 460.6 72 320.6 72zM469.8 257.1L396.8 372.7C394 377 390.4 380.8 386.2 383.7C382 386.6 377.1 388.5 372.1 389.5C367.1 390.5 361.8 390.3 356.8 389.1C351.8 387.9 347.1 385.7 343 382.7L284.9 339.2C282.3 337.3 279.1 336.2 275.9 336.2C272.7 336.2 269.5 337.3 266.9 339.2L188.5 398.6C178 406.5 164.3 394 171.4 382.9L244.4 267.3C247.2 263 250.8 259.2 255 256.3C259.2 253.4 264.1 251.5 269.1 250.5C274.1 249.5 279.4 249.7 284.4 250.9C289.4 252.1 294.1 254.3 298.3 257.3L356.4 300.8C359 302.7 362.2 303.8 365.4 303.8C368.6 303.8 371.8 302.7 374.4 300.8L452.8 241.4C463.2 233.4 476.9 245.9 469.9 257Z"/></svg>`,
+  email: () => svgIcon(`<path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/>`),
 };
 
 /* ---------------------------------------------------------------- */
@@ -130,7 +137,12 @@ const DEFAULT_BRANDING = {
   bannerSlides: [], // home top image slider: [{id, image, link}]
 };
 
-const LINK_ICON_KEYS = { telegram: "telegram", discord: "discord", twitter: "twitter", facebook: "facebook", instagram: "instagram", tiktok: "tiktok", youtube: "youtube", whatsapp: "whatsapp", other: "externalLink" };
+const LINK_ICON_KEYS = { discord: "discord", github: "github", twitter: "twitter", youtube: "youtube", facebook: "facebook", telegram: "telegram", instagram: "instagram", whatsapp: "whatsapp", messenger: "messenger", tiktok: "tiktok", email: "email", other: "externalLink" };
+const LINK_PLATFORMS = [
+  ["discord", "Discord"], ["github", "GitHub"], ["twitter", "X / Twitter"], ["youtube", "YouTube"],
+  ["facebook", "Facebook"], ["telegram", "Telegram"], ["instagram", "Instagram"], ["whatsapp", "WhatsApp"],
+  ["messenger", "Messenger"], ["tiktok", "TikTok"], ["email", "Email"], ["other", "Others"],
+];
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // max file the picker will accept — auto-compressed before storage
 const MAX_STORED_IMAGE_BYTES = 700 * 1024; // Firestore documents must stay under 1MiB; images are compressed to fit under this
@@ -348,7 +360,7 @@ function avatarHtml(name, src, size = 40) {
   const letter = name ? name.trim()[0].toUpperCase() : "?";
   return `<div class="rounded-full flex items-center justify-center flex-shrink-0 font-sora font-bold text-white" style="width:${size}px;height:${size}px;background:linear-gradient(135deg, ${c1}, ${c2});font-size:${size * 0.4}px;">${letter}</div>`;
 }
-function thumbPlaceholder(radius = 16) {
+function thumbPlaceholder(radius = 8) {
   return `<div class="w-full flex items-center justify-center" style="aspect-ratio:16/9;border-radius:${radius}px;background:linear-gradient(135deg, #2DD4BF, #0EA5E9);"><span class="opacity-60">${ICONS.image()}</span></div>`;
 }
 function iconBtn({ action, id = "", active = false, extra = "", size = 40, radius = 12, icon }) {
@@ -388,7 +400,7 @@ function statusBadge(status) {
 }
 function categoryBadge(cat) {
   if (!cat) return "";
-  return `<div class="absolute top-2 left-2 px-2.5 py-1 rounded-lg font-mono text-[10px] uppercase tracking-wide text-tprimary" style="background:rgba(10,14,23,0.72);">${esc(cat)}</div>`;
+  return `<div class="absolute top-2 left-2 px-2.5 py-1 rounded-lg font-mono font-bold text-[10px] uppercase tracking-wide text-tprimary" style="background:rgba(10,14,23,0.72);">${esc(cat)}</div>`;
 }
 
 function adSlot(variant = "native") {
@@ -488,15 +500,15 @@ function escAttr(str) {
 /* ---------------------------------------------------------------- */
 function siteLogoHtml(size = 36) {
   const b = state.branding;
-  if (b.logo) return `<img src="${escAttr(b.logo)}" alt="${escAttr(b.siteName)}" class="rounded-md object-cover flex-shrink-0" style="width:${size}px;height:${size}px;" />`;
+  if (b.logo) return `<img src="${escAttr(b.logo)}" alt="${escAttr(b.siteName)}" class="rounded-lg object-cover flex-shrink-0" style="width:${size}px;height:${size}px;" />`;
   const letter = b.siteName ? b.siteName.trim()[0].toUpperCase() : "C";
-  return `<div class="rounded-md flex items-center justify-center font-sora font-extrabold text-white flex-shrink-0" style="width:${size}px;height:${size}px;background:linear-gradient(135deg,#3E8EFF,#7C5CFF);font-size:${size * 0.5}px;">${letter}</div>`;
+  return `<div class="rounded-lg flex items-center justify-center font-sora font-extrabold text-white flex-shrink-0" style="width:${size}px;height:${size}px;background:linear-gradient(135deg,#3E8EFF,#7C5CFF);font-size:${size * 0.5}px;">${letter}</div>`;
 }
 function headerLogoHtml(height = 40) {
   const b = state.branding;
-  if (b.logo) return `<img src="${escAttr(b.logo)}" alt="${escAttr(b.siteName)}" class="object-contain flex-shrink-0" style="height:${height}px;width:auto;max-width:200px;" />`;
+  if (b.logo) return `<img src="${escAttr(b.logo)}" alt="${escAttr(b.siteName)}" class="object-contain flex-shrink-0 rounded-lg" style="height:${height}px;width:auto;max-width:200px;" />`;
   const letter = b.siteName ? b.siteName.trim()[0].toUpperCase() : "C";
-  return `<div class="rounded-xl flex items-center justify-center font-sora font-extrabold text-white flex-shrink-0" style="width:${height}px;height:${height}px;background:linear-gradient(135deg,#3E8EFF,#7C5CFF);font-size:${height * 0.5}px;">${letter}</div>`;
+  return `<div class="rounded-lg flex items-center justify-center font-sora font-extrabold text-white flex-shrink-0" style="width:${height}px;height:${height}px;background:linear-gradient(135deg,#3E8EFF,#7C5CFF);font-size:${height * 0.5}px;">${letter}</div>`;
 }
 const HEADER_TAGLINE = "FreeFire Craftland Community";
 function homeHeaderHtml() {
@@ -544,7 +556,7 @@ function bottomRailHtml(items) {
       : `<div class="flex-1 flex items-center justify-center">
         <button data-action="${item.action}" data-id="${item.id}" class="flex items-center justify-center relative" style="width:44px;height:44px;">
           ${item.badge > 0 ? `<span class="absolute rounded-full bg-coral text-white flex items-center justify-center font-inter" style="top:0;right:6px;min-width:15px;height:15px;font-size:9px;padding:0 3px;">${item.badge}</span>` : ""}
-          <span class="flex items-center justify-center" style="width:44px;height:44px;border-radius:10px;color:${item.active ? "#3E8EFF" : "#8A93AC"};background:${item.active ? "rgba(62,142,255,.14)" : "transparent"};">${item.icon}</span>
+          <span class="flex items-center justify-center" style="width:44px;height:44px;color:${item.active ? "#3E8EFF" : "#8A93AC"};">${item.icon}</span>
         </button>
       </div>`
     ).join("")}
@@ -554,29 +566,34 @@ function publicBottomNavHtml(activeScreen) {
   const isLoggedInCreator = !!(state.session && state.session.role === "admin");
   const gate = (id) => (isLoggedInCreator ? id : "creatorAuth");
   const big = (svg) => resizeIcon(svg, 24);
+  const isHome = activeScreen === "home";
+  const isExplore = state.ui.exploreOpen;
+  const isSubmit = activeScreen === "submit";
+  const isFav = activeScreen === "favorites";
+  const isProfile = activeScreen === "account";
   return bottomRailHtml([
-    { action: "nav", id: "home", icon: big(ICONS.home()), active: activeScreen === "home" },
-    { action: "open-explore", id: "", icon: big(ICONS.search()), active: state.ui.exploreOpen },
-    { action: "nav", id: gate("submit"), icon: big(ICONS.plus()), active: activeScreen === "submit" },
-    { action: "nav", id: gate("favorites"), icon: big(ICONS.heart(activeScreen === "favorites")), active: activeScreen === "favorites" },
-    { action: "nav", id: gate("account"), icon: big(ICONS.userCircle()), active: activeScreen === "account" },
+    { action: "nav", id: "home", icon: big(isHome ? ICONS.home() : ICONS.homeOutline()), active: isHome },
+    { action: "open-explore", id: "", icon: big(isExplore ? ICONS.search() : ICONS.searchOutline()), active: isExplore },
+    { action: "nav", id: gate("submit"), icon: big(isSubmit ? ICONS.plusFilled() : ICONS.plus()), active: isSubmit },
+    { action: "nav", id: gate("favorites"), icon: big(ICONS.heart(isFav)), active: isFav },
+    { action: "nav", id: gate("account"), icon: big(isProfile ? ICONS.userCircleFilled() : ICONS.userCircle()), active: isProfile },
   ]);
 }
 function footerHtml() {
   const b = state.branding;
   const socials = b.socialEnabled ? (b.socialLinks || []).filter((l) => l.enabled && l.url) : [];
-  return `<div class="mt-2 bg-panel border-t border-bd rounded-t-[20px] flex flex-col items-center gap-3.5" style="padding:20px;padding-bottom:calc(80px + env(safe-area-inset-bottom, 0px));">
+  return `<div class="mt-2 bg-panel border-t border-bd rounded-t-[20px] flex flex-col items-center gap-3.5" style="padding:20px;padding-bottom:calc(70px + env(safe-area-inset-bottom, 0px));">
     <div class="flex items-center gap-2">
       ${siteLogoHtml(32)}
       <div class="font-sora font-bold text-[15px]">${esc(b.siteName)}</div>
     </div>
-    <div class="font-inter text-xs text-tmuted text-center">${esc(b.footerTagline)}</div>
+    <div class="font-inter font-bold text-xs text-tmuted text-center">${esc(b.footerTagline)}</div>
     ${socials.length ? `<div class="flex gap-2.5">${socials.map((l) => `<a href="${escAttr(l.url || "#")}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-panelalt border border-bd flex items-center justify-center">${ICONS[LINK_ICON_KEYS[l.icon] || "externalLink"]()}</a>`).join("")}</div>` : ""}
     <div class="flex gap-4">
-      ${["about", "terms", "dmca"].map((k) => `<button data-action="nav" data-id="${k}" class="bg-transparent border-none font-inter text-xs text-tmuted capitalize">${k}</button>`).join("")}
+      ${["about", "terms", "dmca"].map((k) => `<button data-action="nav" data-id="${k}" class="bg-transparent border-none font-inter font-bold text-xs text-tmuted capitalize">${k}</button>`).join("")}
     </div>
     <div class="w-full h-px bg-bd my-1"></div>
-    <div class="font-inter text-[11px] text-tfaint">© ${new Date().getFullYear()} ${esc(b.siteName)}. All rights reserved.</div>
+    <div class="font-inter font-bold text-[11px] text-tfaint">© ${new Date().getFullYear()} ${esc(b.siteName)}. All rights reserved.</div>
   </div>`;
 }
 
@@ -584,13 +601,13 @@ function postCardHtml(post, author) {
   const liked = state.likedIds.includes(post.id);
   return `<div class="bg-panel border border-bd rounded-2xl p-3.5 mb-4">
     <div data-action="open-post" data-id="${post.id}" class="cursor-pointer relative">
-      ${post.thumbnail ? `<img src="${escAttr(post.thumbnail)}" alt="${escAttr(post.title)}" class="w-full object-cover rounded-2xl" style="aspect-ratio:16/9;" />` : thumbPlaceholder(14)}
+      ${post.thumbnail ? `<img src="${escAttr(post.thumbnail)}" alt="${escAttr(post.title)}" class="w-full object-cover rounded-lg" style="aspect-ratio:16/9;" />` : thumbPlaceholder(8)}
       ${categoryBadge(post.category)}
     </div>
     <div class="flex items-center gap-2.5 mt-3">
-      <div data-action="open-profile" data-id="${author.id}" class="flex items-center gap-2.5 flex-1 cursor-pointer">
-        ${avatarHtml(author.name, author.avatar, 32)}
-        <div class="font-sora font-semibold text-sm">${esc(author.name)}</div>
+      <div data-action="open-profile" data-id="${author.id}" class="flex items-center gap-2 flex-1 cursor-pointer bg-panelalt border border-bd rounded-full pr-3 py-1" style="padding-left:4px;">
+        ${avatarHtml(author.name, author.avatar, 28)}
+        <div class="font-sora font-semibold text-sm truncate">${esc(author.name)}</div>
       </div>
       ${iconBtn({ action: "toggle-like", id: post.id, active: liked, size: 36, icon: `<span style="color:${liked ? "#FF5D6C" : "#8A93AC"}">${ICONS.heart(liked)}</span>` })}
       ${iconBtn({ action: "share-post", id: post.id, size: 36, icon: ICONS.share() })}
@@ -639,14 +656,13 @@ function exploreScreenHtml() {
     return matchesQuery && matchesCat;
   });
 
-  let html = `<div class="flex items-center px-4 pt-[18px] pb-3">
-    <div class="flex-1 font-sora font-bold text-lg">Explore</div>
-    ${iconBtn({ action: "close-explore", icon: ICONS.x() })}
-  </div>
-  <div class="px-4 pb-4">
-    <div class="relative">
-      <input id="explore-search" value="${escAttr(exploreQuery)}" placeholder="Search maps or creators..." class="${inputCls} pr-10" />
-      <span class="absolute right-3 top-2.5 text-tmuted pointer-events-none">${ICONS.search()}</span>
+  let html = `<div class="px-4 pt-[14px] pb-3" style="padding-top:calc(14px + env(safe-area-inset-top, 0px));">
+    <div class="flex items-center gap-2.5">
+      <div class="relative flex-1">
+        <span class="absolute left-3.5 top-1/2 text-tfaint pointer-events-none" style="transform:translateY(-50%);">${ICONS.search()}</span>
+        <input id="explore-search" value="${escAttr(exploreQuery)}" placeholder="Search maps or creators..." class="${inputCls}" style="padding-left:38px;" />
+      </div>
+      <button data-action="close-explore" class="flex-shrink-0 bg-transparent border-none font-inter font-semibold text-[14px] text-tprimary">Cancel</button>
     </div>
   </div>`;
 
@@ -721,7 +737,7 @@ function postViewScreenHtml(post) {
       ${iconBtn({ action: "share-post", id: post.id, size: 36, icon: ICONS.share() })}
     </div>
     <div class="mt-4.5 font-sora font-extrabold text-xl tracking-wide uppercase">${esc(post.title)}</div>
-    <div class="mt-3 pl-3 border-l-[3px] border-accent text-tmuted font-inter text-sm leading-relaxed whitespace-pre-wrap">${esc(post.description)}</div>`;
+    <div class="mt-3 pl-3 border-l-[3px] border-accent text-tmuted font-inter font-bold text-sm leading-relaxed whitespace-pre-wrap">${esc(post.description)}</div>`;
 
   if (state.adSettings.adsEnabled && state.adSettings.postViewEnabled) html += `<div class="mt-5">${adSlot("postview")}</div>`;
 
@@ -733,7 +749,7 @@ function postViewScreenHtml(post) {
   }
   codes.forEach((c) => {
     html += `<div class="bg-panel border border-bd rounded-2xl p-4">
-      <div class="font-mono text-[11px] text-tfaint uppercase tracking-wide mb-2">${esc(c.title || "Craftland Map Code")}</div>
+      <div class="font-mono font-bold text-[11px] text-tfaint uppercase tracking-wide mb-2">${esc(c.title || "Craftland Map Code")}</div>
       <div class="flex items-center gap-2">
         <div class="flex-1 bg-bgdeep border border-bd rounded-lg px-3 py-2.5 font-mono text-sm text-tprimary overflow-x-auto whitespace-nowrap">${c.code ? esc(c.code) : '<span class="text-tfaint">Not added yet</span>'}</div>
         ${primaryBtn({ action: "copy-map-code", id: c.code || "", label: "Copy", icon: `<span class="mr-1">${ICONS.copy()}</span>`, extra: "px-4" })}
@@ -776,13 +792,17 @@ function profileScreenHtml(account) {
     <button data-action="open-photo-view" data-id="${account.id}" class="rounded-full p-0 border-none bg-transparent">
       ${avatarHtml(account.name, account.avatar, 88)}
     </button>
-    <button data-action="${isOwn ? "open-switch-account" : "noop"}" class="flex items-center gap-1.5 mt-3 max-w-full bg-transparent border-none">
-      <span class="font-sora font-extrabold text-[19px] truncate">${esc(account.name)}</span>
-      ${isOwn ? ICONS.chevronDown() : ""}
-    </button>
-    ${account.username ? `<div class="font-inter text-[13px] text-tfaint mt-0.5">@${esc(account.username)}</div>` : ""}
+    <div class="flex items-center justify-center gap-1.5 mt-3 max-w-full">
+      <button data-action="${isOwn ? "open-switch-account" : "noop"}" class="flex items-center gap-1.5 bg-transparent border-none max-w-full">
+        <span class="font-sora font-extrabold text-[19px] truncate">${esc(account.name)}</span>
+        ${isOwn ? ICONS.chevronDown() : ""}
+      </button>
+    </div>
+    ${account.username || isOwn ? `<div class="flex items-center justify-center gap-2 mt-0.5">
+      ${account.username ? `<div class="font-inter text-[13px] text-tfaint">@${esc(account.username)}</div>` : ""}
+      ${isOwn ? `<button data-action="nav" data-id="editAccount" class="rounded-full font-sora font-semibold text-[12px] px-3 py-1" style="background:#232D48;color:#F3F5F9;">Edit</button>` : ""}
+    </div>` : ""}
     ${bioLines ? `<div class="mt-2.5 text-tmuted font-inter text-sm leading-relaxed whitespace-pre-wrap" style="max-width:300px;">${esc(bioLines)}</div>` : ""}
-    ${isOwn ? `<button data-action="nav" data-id="editAccount" class="mt-3.5 rounded-full font-sora font-semibold text-[13px] px-5 py-1.5" style="background:#232D48;color:#F3F5F9;">Edit</button>` : ""}
     <div class="flex gap-2 mt-4 bg-panel border border-bd rounded-2xl p-1 w-full">
       ${[["links", "Links"], ["posts", "Maps"]].map(([k, label]) => `<button data-action="set-profile-tab" data-id="${k}" class="flex-1 py-2.5 rounded-xl font-sora font-semibold text-sm ${profileTab === k ? "bg-panelhover text-tprimary" : "text-tmuted"}">${label}</button>`).join("")}
     </div>
@@ -1216,13 +1236,14 @@ function linkFormSheetHtml() {
   const idx = state.ui.linkSheetIndex;
   const isNew = idx < 0;
   const links = state.session.account.links || [];
-  const link = isNew ? { url: "", label: "" } : (links[idx] || { url: "", label: "" });
+  const link = isNew ? { url: "", label: "", icon: "other" } : (links[idx] || { url: "", label: "", icon: "other" });
   return `<div data-action="close-link-sheet" class="fixed inset-0 z-[200] flex items-end justify-center" style="background:rgba(0,0,0,0.6);">
     <div data-action="noop" class="w-full max-w-[480px] bg-panel rounded-t-[20px] p-[18px] pb-7 fade-in">
       <div class="flex items-center justify-between mb-4">
         <div class="font-sora font-extrabold text-[17px]">${isNew ? "Add link" : "Edit link"}</div>
         <button data-action="close-link-sheet" class="text-tmuted text-2xl leading-none px-1 bg-transparent border-none">&times;</button>
       </div>
+      ${fieldWrap("Platform", `<select id="el-platform" class="${inputCls}">${LINK_PLATFORMS.map(([k, label]) => `<option value="${k}" ${link.icon === k ? "selected" : ""}>${label}</option>`).join("")}</select>`)}
       <input id="el-title" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px] mb-3" placeholder="Title (e.g. Follow me on Instagram)" value="${escAttr(link.label)}" />
       <input id="el-url" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px]" placeholder="URL (https://...)" value="${escAttr(link.url)}" />
       <div id="el-error" class="text-coral text-xs mt-3 font-inter"></div>
@@ -1591,7 +1612,7 @@ function toastHtml() {
   const t = state.ui.toast;
   if (!t) return "";
   const isError = t.type === "error";
-  return `<div class="fixed left-1/2 z-[999] px-4 py-2.5 rounded-xl font-inter text-[13px] flex items-center gap-2 shadow-2xl fade-in" style="bottom:24px;transform:translateX(-50%);background:#1C2540;border:1px solid ${isError ? "#FF5D6C" : "#34D399"};color:#F3F5F9;max-width:88%;">
+  return `<div class="fixed left-1/2 z-[999] px-4 py-2 rounded-xl font-inter text-[13px] flex items-center gap-2 shadow-2xl fade-in" style="bottom:24px;transform:translateX(-50%);background:#1C2540;border:1px solid ${isError ? "#FF5D6C" : "#34D399"};color:#F3F5F9;width:max-content;max-width:92%;">
     <span style="color:${isError ? "#FF5D6C" : "#34D399"}">${isError ? ICONS.alertCircle() : ICONS.check()}</span> ${esc(t.msg)}
   </div>`;
 }
@@ -1882,15 +1903,21 @@ async function saveBio() {
 async function saveLink() {
   const a = state.session.account;
   const idx = state.ui.linkSheetIndex;
-  const url = document.getElementById("el-url").value.trim();
+  const platform = document.getElementById("el-platform").value;
+  let url = document.getElementById("el-url").value.trim();
   const title = document.getElementById("el-title").value.trim();
   const errEl = document.getElementById("el-error");
   errEl.textContent = "";
   if (!url || !title) { errEl.textContent = "Both title and URL are required."; return; }
-  if (!/^https?:\/\//i.test(url)) { errEl.textContent = "URL must start with http:// or https://"; return; }
+  if (platform === "email") {
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(url)) url = "mailto:" + url;
+    else if (!/^mailto:/i.test(url) && !/^https?:\/\//i.test(url)) { errEl.textContent = "Enter a valid email address."; return; }
+  } else if (!/^https?:\/\//i.test(url)) {
+    errEl.textContent = "URL must start with http:// or https://"; return;
+  }
   const links = [...(a.links || [])];
   if (idx < 0 && links.length >= 5) { errEl.textContent = "You can only add up to 5 links."; return; }
-  const entry = { id: (idx >= 0 && links[idx] && links[idx].id) || ("l" + Date.now()), url, label: title, icon: guessLinkIcon(url) };
+  const entry = { id: (idx >= 0 && links[idx] && links[idx].id) || ("l" + Date.now()), url, label: title, icon: platform };
   if (idx >= 0) links[idx] = entry; else links.push(entry);
   const ok = await fsSetAccount(a.id, { links });
   if (ok) { state.ui.linkSheetOpen = false; render(); showToast(idx >= 0 ? "Link updated." : "Link added."); } else showToast("Couldn't save — try again.", "error");
