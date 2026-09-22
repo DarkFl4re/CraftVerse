@@ -10,13 +10,15 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  signOut, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup
+  signOut, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup,
+  setPersistence, browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { firebaseConfig } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+setPersistence(auth, browserLocalPersistence).catch(() => {});
 
 /* ---------------------------------------------------------------- */
 /*  ICONS (small hand-drawn monoline SVGs, no external icon library) */
@@ -38,12 +40,17 @@ const ICONS = {
   termsPage: () => fillIcon("0 0 18 18", `<path d="M9.87011 2.27979L17.0701 5.15978V6.11978H16.1101C16.1101 6.24978 16.0589 6.36228 15.9564 6.45728C15.8539 6.55228 15.7326 6.59978 15.5926 6.59978H4.14761C4.0076 6.59978 3.88635 6.55228 3.78386 6.45728C3.68136 6.36228 3.63011 6.24978 3.63011 6.11978H2.6701V5.15978L9.87011 2.27979ZM4.5901 7.07978H6.51011V12.8398H7.4701V7.07978H9.39011V12.8398H10.3501V7.07978H12.2701V12.8398H13.2301V7.07978H15.1501V12.8398H15.5926C15.7326 12.8398 15.8539 12.8873 15.9564 12.9823C16.0589 13.0773 16.1101 13.1898 16.1101 13.3198V13.7998H3.63011V13.3198C3.63011 13.1898 3.68136 13.0773 3.78386 12.9823C3.88635 12.8873 4.0076 12.8398 4.14761 12.8398H4.5901V7.07978ZM16.5526 14.2798C16.6926 14.2798 16.8139 14.3273 16.9164 14.4223C17.0189 14.5173 17.0701 14.6298 17.0701 14.7598V15.7198H2.6701V14.7598C2.6701 14.6298 2.72135 14.5173 2.82385 14.4223C2.92636 14.3273 3.04761 14.2798 3.18761 14.2798H16.5526Z"/>`),
   dmcaPage: () => fillIcon("0 0 30 30", `<path clip-rule="evenodd" d="M19.4785 14.3025C18.9521 14.8289 18.4201 15.3666 17.9056 15.8863C17.3905 16.407 16.858 16.9451 16.3305 17.4727C16.0787 17.7237 15.7377 17.8647 15.3821 17.8647C15.0265 17.8647 14.6855 17.7237 14.4337 17.4727C14.1839 17.2235 13.9379 16.9458 13.6767 16.6519C13.4151 16.3566 13.1444 16.0513 12.8706 15.7778C12.6191 15.5262 12.4778 15.1851 12.4778 14.8293C12.4778 14.4736 12.6191 14.1324 12.8706 13.8809C13.1222 13.6293 13.4633 13.488 13.8191 13.488C14.1748 13.488 14.516 13.6293 14.7675 13.8809L15.4382 14.5515L17.5829 12.407C17.8342 12.1556 18.1751 12.0144 18.5306 12.0144C18.8861 12.0144 19.227 12.1556 19.4784 12.4069C19.7297 12.6582 19.871 12.9991 19.871 13.3546C19.871 13.7101 19.7298 14.0511 19.4785 14.3025ZM15.6186 25.2413C11.6812 23.2785 9.31133 21.0572 8.57365 18.6381C8.48593 18.1948 8.4771 17.4566 8.47083 16.9157C8.46983 16.8124 8.46827 16.7153 8.46671 16.6271C8.44509 15.4061 8.45532 14.1971 8.4776 12.758C8.49015 11.9476 8.51032 11.1212 8.53004 10.3218C8.54108 9.88824 8.55129 9.45477 8.56066 9.02136C11.4211 8.50227 13.7395 7.76615 15.6321 6.77725C17.8757 7.92463 20.278 8.73073 22.7595 9.1689C22.7709 9.58576 22.7839 10.0042 22.7963 10.4117C22.8198 11.1795 22.8441 11.9732 22.8586 12.7498C22.8801 13.8741 22.8955 15.0816 22.8698 16.2901L22.866 16.4687C22.8536 17.0766 22.8384 17.833 22.7289 18.3791C22.2361 20.8407 19.8439 23.1487 15.6186 25.2413ZM23.5223 10.3893C23.5461 11.1592 23.5702 11.955 23.5851 12.7363C23.6063 13.8685 23.622 15.0842 23.5957 16.3062L23.5917 16.4832C23.5793 17.1197 23.5634 17.9119 23.4412 18.5218C22.8953 21.2483 20.3169 23.755 15.7772 25.973C15.7274 25.9973 15.6727 26.01 15.6172 26.0099C15.5618 26.0098 15.5072 25.997 15.4574 25.9725C11.227 23.8929 8.67517 21.4904 7.8726 18.8321L7.86432 18.7999C7.75994 18.2906 7.75081 17.5005 7.74389 16.9238C7.74283 16.8221 7.74198 16.7265 7.74027 16.6399C7.71794 15.4085 7.72843 14.1932 7.75066 12.7465C7.76366 11.933 7.78403 11.1045 7.8036 10.304C7.81655 9.77189 7.82885 9.23995 7.84049 8.70822C7.84222 8.62395 7.87321 8.54291 7.92814 8.47899C7.98308 8.41506 8.05853 8.37224 8.14158 8.35785C11.1468 7.8346 13.5401 7.0782 15.4582 6.04675C15.5103 6.01882 15.5685 6.00402 15.6277 6.00366C15.6868 6.00329 15.7452 6.01736 15.7977 6.04464C18.1106 7.24964 20.6004 8.07934 23.1738 8.50267C23.2572 8.51624 23.3333 8.55854 23.3888 8.62224C23.4444 8.68594 23.4759 8.76705 23.478 8.85154C23.491 9.36391 23.5068 9.8855 23.5223 10.3893ZM6.05204 9.41338C6.07447 8.41149 6.09409 7.52587 6.10137 6.88479C10.2907 6.3236 13.4796 5.32487 15.5884 3.91284C18.5289 5.63778 21.8165 6.68666 25.2126 6.9834C25.2201 7.64631 25.2448 8.55321 25.2729 9.57783C25.3628 12.8368 25.4862 17.2997 25.1722 18.8685C24.4734 22.3561 21.258 25.428 15.6157 28.0002C10.3438 25.5911 7.16558 22.6638 6.16921 19.2979C5.85487 18.2342 5.9735 12.9256 6.05204 9.41338Z" fill-rule="evenodd"/>`),
   notif: () => fillIcon("0 0 18 18", `<path d="M10.6266 14.9134C10.7029 15.0802 10.6571 15.2765 10.5144 15.3941C9.62395 16.0755 8.37728 16.0755 7.4868 15.3941C7.34511 15.277 7.29935 15.0817 7.37462 14.9154C7.4499 14.7491 7.62799 14.6517 7.81101 14.6773C8.59965 14.7826 9.39862 14.7826 10.1873 14.6773C10.3713 14.6502 10.5508 14.7467 10.6271 14.9134H10.6266ZM9.09999 2.06348C11.5658 2.06298 13.6646 3.82919 14.0473 6.22709L15.0647 11.7968C15.1803 12.4053 14.7912 12.9967 14.1797 13.1413C10.7752 13.9826 7.21227 13.9826 3.80778 13.1413H3.81467C3.20462 12.9952 2.81842 12.4039 2.93649 11.7968L3.95046 6.22709C4.33469 3.82869 6.43495 2.06249 8.90123 2.06348H9.09999Z"/>`),
+  globe: () => svgIcon(`<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"/>`),
   chevronRight: () => svgIcon(`<polyline points="9 18 15 12 9 6"/>`),
   menu: () => svgIcon(`<path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/>`),
   x: () => svgIcon(`<line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/>`),
-  arrowLeft: () => svgIcon(`<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>`),
+  arrowLeft: () => svgIcon(`<path d="m15 18-6-6 6-6"/>`),
   share: () => svgIcon(`<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>`),
+  navHome: (size = 18) => fillIcon("0 0 256 256", `<path d="M224,120v96a8,8,0,0,1-8,8H160a8,8,0,0,1-8-8V164a4,4,0,0,0-4-4H108a4,4,0,0,0-4,4v52a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V120a16,16,0,0,1,4.69-11.31l80-80a16,16,0,0,1,22.62,0l80,80A16,16,0,0,1,224,120Z"/>`, size),
   plus: () => svgIcon(`<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>`),
+  navExplore: (size = 18) => fillIcon("0 0 640 640", `<path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM370.7 389.1L226.4 444.6C207 452.1 187.9 433 195.4 413.6L250.9 269.3C254.2 260.8 260.8 254.2 269.3 250.9L413.6 195.4C433 187.9 452.1 207 444.6 226.4L389.1 370.7C385.9 379.2 379.2 385.8 370.7 389.1zM352 320C352 302.3 337.7 288 320 288C302.3 288 288 302.3 288 320C288 337.7 302.3 352 320 352C337.7 352 352 337.7 352 320z"/>`, size),
+  navFavorite: (size = 18) => fillIcon("0 0 640 640", `<path d="M305 151.1L320 171.8L335 151.1C360 116.5 400.2 96 442.9 96C516.4 96 576 155.6 576 229.1L576 231.7C576 343.9 436.1 474.2 363.1 529.9C350.7 539.3 335.5 544 320 544C304.5 544 289.2 539.4 276.9 529.9C203.9 474.2 64 343.9 64 231.7L64 229.1C64 155.6 123.6 96 197.1 96C239.8 96 280 116.5 305 151.1z"/>`, size),
+  navProfile: (size = 18) => fillIcon("0 0 32 32", `<path d="M26.1137 20.6693C26.6674 23.8341 24.4618 26.132 21.3885 26.6484C18.4196 27.1469 13.5818 27.1469 10.6138 26.6484C7.5397 26.132 5.3341 23.8349 5.88853 20.6702C6.35798 17.9846 8.63481 16.3107 11.4143 16.4548C13.4451 16.56 14.6923 16.8239 16.1371 16.8239C17.5981 16.8239 18.5718 16.5592 20.588 16.4548C23.3674 16.3091 25.6443 17.9838 26.1137 20.6693ZM16.1007 4.66211C19.021 4.66211 21.3885 7.02959 21.3885 9.9499C21.3885 12.8702 19.021 15.2377 16.1007 15.2377C13.1804 15.2377 10.8121 12.8694 10.8121 9.9499C10.8121 7.0304 13.1796 4.66211 16.1007 4.66211Z"/>`, size),
   homeOutline: () => svgIcon(`<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V19a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9.5"/><path d="M9 21v-6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v6"/>`),
   searchOutline: () => svgIcon(`<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>`),
   plusFilled: () => fillIcon("0 0 24 24", `<circle cx="12" cy="12" r="10"/><path d="M11 7h2v4h4v2h-4v4h-2v-4H7v-2h4V7Z" fill="#0A0E17"/>`),
@@ -66,7 +73,7 @@ const ICONS = {
   sparkles: () => svgIcon(`<path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>`),
   megaphone: () => svgIcon(`<path d="M3 11v2a2 2 0 0 0 2 2h1l2 5h2l-1-5h4l6 4V7l-6 4H6a2 2 0 0 0-2 2z"/>`),
   chevronUp: () => svgIcon(`<polyline points="6 15 12 9 18 15"/>`),
-  chevronDown: () => svgIcon(`<polyline points="6 9 12 15 18 9"/>`),
+  chevronDown: () => svgIcon(`<path d="m6 9 6 6 6-6"/>`),
   shieldCheck: (f, size = 18) => svgIcon(`<path d="M13 2C10.2386 2 8 4.23858 8 7C8 7.55228 8.44772 8 9 8C9.55228 8 10 7.55228 10 7C10 5.34315 11.3431 4 13 4H17C18.6569 4 20 5.34315 20 7V17C20 18.6569 18.6569 20 17 20H13C11.3431 20 10 18.6569 10 17C10 16.4477 9.55228 16 9 16C8.44772 16 8 16.4477 8 17C8 19.7614 10.2386 22 13 22H17C19.7614 22 22 19.7614 22 17V7C22 4.23858 19.7614 2 17 2H13Z"/><path d="M3 11C2.44772 11 2 11.4477 2 12C2 12.5523 2.44772 13 3 13H11.2821C11.1931 13.1098 11.1078 13.2163 11.0271 13.318C10.7816 13.6277 10.5738 13.8996 10.427 14.0945C10.3536 14.1921 10.2952 14.2705 10.255 14.3251L10.2084 14.3884L10.1959 14.4055L10.1915 14.4115C9.86687 14.8583 9.96541 15.4844 10.4122 15.809C10.859 16.1336 11.4843 16.0346 11.809 15.5879L11.8118 15.584L11.822 15.57L11.8638 15.5132C11.9007 15.4632 11.9553 15.3897 12.0247 15.2975C12.1637 15.113 12.3612 14.8546 12.5942 14.5606C13.0655 13.9663 13.6623 13.2519 14.2071 12.7071L14.9142 12L14.2071 11.2929C13.6623 10.7481 13.0655 10.0337 12.5942 9.43937C12.3612 9.14542 12.1637 8.88702 12.0247 8.7025C11.9553 8.61033 11.9007 8.53682 11.8638 8.48679L11.822 8.43002L11.8118 8.41602L11.8095 8.41281C11.4848 7.96606 10.859 7.86637 10.4122 8.19098C9.96541 8.51561 9.86636 9.14098 10.191 9.58778L10.1925 9.58985L10.1959 9.59454L10.2084 9.61162L10.255 9.67492C10.2952 9.72946 10.3536 9.80795 10.427 9.90549C10.5738 10.1004 10.7816 10.3723 11.0271 10.682C11.1078 10.7837 11.1931 10.8902 11.2821 11H3Z"/>`, size),
   userCog: (size = 18) => svgIcon(`<path d="M16.051 12.616a1 1 0 0 1 1.909.024l.737 1.452a1 1 0 0 0 .737.535l1.634.256a1 1 0 0 1 .588 1.806l-1.172 1.168a1 1 0 0 0-.282.866l.259 1.613a1 1 0 0 1-1.541 1.134l-1.465-.75a1 1 0 0 0-.912 0l-1.465.75a1 1 0 0 1-1.539-1.133l.258-1.613a1 1 0 0 0-.282-.866l-1.156-1.153a1 1 0 0 1 .572-1.822l1.633-.256a1 1 0 0 0 .737-.535z"/><path d="M8 15H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/>`, size),
   ban: () => svgIcon(`<path d="M2 21a8 8 0 0 1 11.873-7"/><circle cx="10" cy="8" r="5"/><path d="m17 17 5 5"/><path d="m22 17-5 5"/>`),
@@ -128,7 +135,8 @@ const DEFAULT_AD_SETTINGS = {
 
 const DEFAULT_BRANDING = {
   siteName: "CraftVerse",
-  logo: "",
+  logo: "https://i.postimg.cc/8PBXwcSh/file-000000006544720bad38bb78a9528ad6.png",
+  footerLogo: "https://i.postimg.cc/NMqRW863/file-000000001f307207805497354cbb729f.png",
   footerTagline: "Craftland map codes, previews & tutorials from the community.",
   categoryMode: "all", // 'all' | 'selected'
   selectedCategories: [],
@@ -168,6 +176,7 @@ const state = {
     prefillIdentifier: "",
     linkSheetOpen: false,
     linkSheetIndex: -1,
+    platformSheetOpen: false,
     toast: null,
     confirm: null,
     postOrigin: "home",
@@ -176,6 +185,7 @@ const state = {
 };
 
 function toggleLike(postId) {
+  if (!(state.session && state.session.role === "admin")) { navigate("creatorAuth"); return; }
   const idx = state.likedIds.indexOf(postId);
   if (idx >= 0) state.likedIds.splice(idx, 1);
   else state.likedIds.push(postId);
@@ -513,6 +523,10 @@ function headerLogoHtml(height = 40) {
 const HEADER_TAGLINE = "FreeFire Craftland Community";
 function homeHeaderHtml() {
   const b = state.branding;
+  const isLoggedInCreator = !!(state.session && state.session.role === "admin");
+  const rightHtml = isLoggedInCreator
+    ? `${iconBtn({ action: "open-language", icon: resizeIcon(ICONS.globe(), 19), size: 34, radius: 8 })}${iconBtn({ action: "open-notifications", icon: resizeIcon(ICONS.notif(), 19), size: 34, radius: 8 })}`
+    : `<button data-action="nav" data-id="creatorAuth" class="rounded-full font-sora font-semibold text-[12.5px] text-white px-4 py-2" style="background:linear-gradient(135deg,#3E8EFF,#7C5CFF);">Sign In</button>`;
   return `<div id="site-header" class="sticky top-0 z-20" style="background:#0A0E17;transition:background-color .2s ease, backdrop-filter .2s ease;">
     <div class="flex items-center gap-2" style="height:52px;padding:12px;">
       ${headerLogoHtml(28)}
@@ -521,6 +535,7 @@ function homeHeaderHtml() {
         <div class="font-inter text-[10px] text-tmuted truncate">${esc(HEADER_TAGLINE)}</div>
       </div>
       <div class="flex-1"></div>
+      <div class="flex items-center gap-2 flex-shrink-0">${rightHtml}</div>
     </div>
   </div>`;
 }
@@ -572,21 +587,18 @@ function publicBottomNavHtml(activeScreen) {
   const isFav = activeScreen === "favorites";
   const isProfile = activeScreen === "account";
   return bottomRailHtml([
-    { action: "nav", id: "home", icon: big(isHome ? ICONS.home() : ICONS.homeOutline()), active: isHome },
-    { action: "open-explore", id: "", icon: big(isExplore ? ICONS.search() : ICONS.searchOutline()), active: isExplore },
+    { action: "nav", id: "home", icon: big(ICONS.navHome()), active: isHome },
+    { action: "open-explore", id: "", icon: big(ICONS.navExplore()), active: isExplore },
     { action: "nav", id: gate("submit"), icon: big(isSubmit ? ICONS.plusFilled() : ICONS.plus()), active: isSubmit },
-    { action: "nav", id: gate("favorites"), icon: big(ICONS.heart(isFav)), active: isFav },
-    { action: "nav", id: gate("account"), icon: big(isProfile ? ICONS.userCircleFilled() : ICONS.userCircle()), active: isProfile },
+    { action: "nav", id: gate("favorites"), icon: big(ICONS.navFavorite()), active: isFav },
+    { action: "nav", id: gate("account"), icon: big(ICONS.navProfile()), active: isProfile },
   ]);
 }
 function footerHtml() {
   const b = state.branding;
   const socials = b.socialEnabled ? (b.socialLinks || []).filter((l) => l.enabled && l.url) : [];
   return `<div class="mt-2 bg-panel border-t border-bd rounded-t-[20px] flex flex-col items-center gap-3.5" style="padding:20px;padding-bottom:calc(70px + env(safe-area-inset-bottom, 0px));">
-    <div class="flex items-center gap-2">
-      ${siteLogoHtml(32)}
-      <div class="font-sora font-bold text-[15px]">${esc(b.siteName)}</div>
-    </div>
+    <img src="${escAttr(b.footerLogo || b.logo)}" alt="${escAttr(b.siteName)}" class="object-contain" style="max-width:160px;max-height:64px;width:auto;height:auto;" />
     <div class="font-inter font-bold text-xs text-tmuted text-center">${esc(b.footerTagline)}</div>
     ${socials.length ? `<div class="flex gap-2.5">${socials.map((l) => `<a href="${escAttr(l.url || "#")}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-panelalt border border-bd flex items-center justify-center">${ICONS[LINK_ICON_KEYS[l.icon] || "externalLink"]()}</a>`).join("")}</div>` : ""}
     <div class="flex gap-4">
@@ -605,9 +617,9 @@ function postCardHtml(post, author) {
       ${categoryBadge(post.category)}
     </div>
     <div class="flex items-center gap-2.5 mt-3">
-      <div data-action="open-profile" data-id="${author.id}" class="flex items-center gap-2 flex-1 cursor-pointer bg-panelalt border border-bd rounded-full pr-3 py-1" style="padding-left:4px;">
-        ${avatarHtml(author.name, author.avatar, 28)}
-        <div class="font-sora font-semibold text-sm truncate">${esc(author.name)}</div>
+      <div data-action="open-profile" data-id="${author.id}" class="flex items-center gap-2 flex-1 cursor-pointer min-w-0">
+        ${avatarHtml(author.name, author.avatar, 30)}
+        <div class="font-sora font-semibold text-[14px] truncate">${esc(author.name)}</div>
       </div>
       ${iconBtn({ action: "toggle-like", id: post.id, active: liked, size: 36, icon: `<span style="color:${liked ? "#FF5D6C" : "#8A93AC"}">${ICONS.heart(liked)}</span>` })}
       ${iconBtn({ action: "share-post", id: post.id, size: 36, icon: ICONS.share() })}
@@ -619,6 +631,16 @@ function postCardHtml(post, author) {
 /* ---------------------------------------------------------------- */
 /*  SCREEN: HOME / FAVORITES                                          */
 /* ---------------------------------------------------------------- */
+function skeletonCardHtml() {
+  return `<div class="bg-panel border border-bd rounded-2xl p-3.5 mb-4 animate-pulse">
+    <div class="w-full rounded-lg" style="aspect-ratio:16/9;background:#1C2540;"></div>
+    <div class="flex items-center gap-2 mt-3">
+      <div class="rounded-full" style="width:30px;height:30px;background:#1C2540;"></div>
+      <div class="rounded-md" style="width:90px;height:12px;background:#1C2540;"></div>
+    </div>
+    <div class="rounded-md mt-3" style="width:70%;height:14px;background:#1C2540;"></div>
+  </div>`;
+}
 function feedScreen(mode) {
   let visible = state.posts.filter((p) => p.status === "approved" && !p.hidden);
   if (mode === "favorites") visible = visible.filter((p) => state.likedIds.includes(p.id));
@@ -628,8 +650,10 @@ function feedScreen(mode) {
   let html = mode === "home" ? homeHeaderHtml() : backHeaderHtml("Favorites");
   html += `<div class="px-4 pt-1.5 pb-1">`;
   if (mode === "home" && visible.length > 0 && adsOn && state.adSettings.bannerEnabled) html += bannerSliderHtml();
-  if (visible.length === 0) {
-    html += `<div class="text-center py-16 px-5 text-tfaint font-inter text-sm">${mode === "favorites" ? "You haven't favorited any maps yet." : (state.postsLoaded ? "No maps yet — check back soon." : "Loading maps...")}</div>`;
+  if (!state.postsLoaded && visible.length === 0) {
+    html += Array.from({ length: 4 }).map(() => skeletonCardHtml()).join("");
+  } else if (visible.length === 0) {
+    html += `<div class="text-center py-16 px-5 text-tfaint font-inter text-sm">${mode === "favorites" ? "You haven't favorited any maps yet." : "No maps yet — check back soon."}</div>`;
   } else {
     html += rows.map((row) => (row.kind === "ad" ? adSlot("native") : postCardHtml(row.post, getAuthor(row.post.authorId)))).join("");
   }
@@ -662,7 +686,7 @@ function exploreScreenHtml() {
         <span class="absolute left-3.5 top-1/2 text-tfaint pointer-events-none" style="transform:translateY(-50%);">${ICONS.search()}</span>
         <input id="explore-search" value="${escAttr(exploreQuery)}" placeholder="Search maps or creators..." class="${inputCls}" style="padding-left:38px;" />
       </div>
-      <button data-action="close-explore" class="flex-shrink-0 bg-transparent border-none font-inter font-semibold text-[14px] text-tprimary">Cancel</button>
+      <button data-action="close-explore" class="flex-shrink-0 bg-transparent border-none font-inter font-semibold text-[13.5px] text-coral">Cancel</button>
     </div>
   </div>`;
 
@@ -780,12 +804,11 @@ function profileScreenHtml(account) {
 
   let html = "";
   if (isOwn) {
-    html += `<div class="flex items-center justify-end gap-2" style="height:52px;padding:12px;">
-      ${iconBtn({ action: "share-profile", id: account.id, icon: resizeIcon(ICONS.share(), 21), size: 36, radius: 8 })}
-      ${iconBtn({ action: "confirm-logout", icon: resizeIcon(ICONS.logOut(), 21), size: 36, radius: 8 })}
+    html += `<div class="flex items-center justify-end" style="height:52px;padding:12px;">
+      <button data-action="confirm-logout" class="flex items-center gap-1.5 rounded-full border border-bd font-inter font-semibold text-[12.5px] text-tmuted" style="padding:7px 13px;">${resizeIcon(ICONS.logOut(), 16)}Logout</button>
     </div>`;
   } else {
-    html += backHeaderHtml("", "nav", "home", iconBtn({ action: "share-profile", id: account.id, icon: resizeIcon(ICONS.share(), 21), size: 36, radius: 8 }));
+    html += backHeaderHtml("", "nav", "home");
   }
 
   html += `<div class="px-5 pb-5 flex flex-col items-center text-center" style="margin-top:-6px;">
@@ -803,8 +826,8 @@ function profileScreenHtml(account) {
       ${isOwn ? `<button data-action="nav" data-id="editAccount" class="rounded-full font-sora font-semibold text-[12px] px-3 py-1" style="background:#232D48;color:#F3F5F9;">Edit</button>` : ""}
     </div>` : ""}
     ${bioLines ? `<div class="mt-2.5 text-tmuted font-inter text-sm leading-relaxed whitespace-pre-wrap" style="max-width:300px;">${esc(bioLines)}</div>` : ""}
-    <div class="flex gap-2 mt-4 bg-panel border border-bd rounded-2xl p-1 w-full">
-      ${[["links", "Links"], ["posts", "Maps"]].map(([k, label]) => `<button data-action="set-profile-tab" data-id="${k}" class="flex-1 py-2.5 rounded-xl font-sora font-semibold text-sm ${profileTab === k ? "bg-panelhover text-tprimary" : "text-tmuted"}">${label}</button>`).join("")}
+    <div class="flex gap-1 mt-4 bg-panel border border-bd rounded-full p-1 mx-auto" style="width:fit-content;">
+      ${[["links", "Links"], ["posts", "Maps"]].map(([k, label]) => `<button data-action="set-profile-tab" data-id="${k}" class="rounded-full font-sora font-semibold text-[12.5px] ${profileTab === k ? "bg-panelhover text-tprimary" : "text-tmuted"}" style="padding:6px 18px;">${label}</button>`).join("")}
     </div>
   </div>
   <div class="px-4 pb-7">`;
@@ -850,6 +873,8 @@ function ownerLoginScreenHtml() {
       <div id="ol-error" class="text-coral text-xs mb-2 font-inter"></div>
       ${roleBtn("owner-login", "Login", "owner")}
       <button data-action="forgot-password" data-id="owner" class="w-full text-center mt-3.5 bg-transparent border-none text-tmuted font-inter text-xs">Forgot password?</button>
+      <div class="flex items-center gap-2.5 my-4"><div class="flex-1 h-px bg-bd"></div><div class="font-inter text-[11px] text-tfaint">OR</div><div class="flex-1 h-px bg-bd"></div></div>
+      <button data-action="owner-google-auth" class="w-full flex items-center justify-center gap-2 rounded-xl border border-bd py-3 font-sora font-semibold text-sm">${ICONS.google()}<span>Continue with Google</span></button>
     </div>
   </div>`;
 }
@@ -1110,7 +1135,7 @@ function photoLightboxHtml() {
 }
 function editAccountScreenHtml() {
   const a = state.session.account;
-  const profileUrl = `website.com/@${a.username || a.id}`;
+  const profileUrl = `craftverse.com/@${a.username || a.id}`;
   return `${backHeaderHtml("Edit profile", "nav", "account")}
   <div class="px-5 pt-2 pb-10">
     <div class="flex flex-col items-center mb-2">
@@ -1133,21 +1158,56 @@ function editAccountScreenHtml() {
     </div>
     <div class="font-mono text-[11px] text-tfaint uppercase mb-2">Basic info</div>
     <div class="bg-panel border border-bd rounded-2xl mb-4 overflow-hidden">
-      <button data-action="nav" data-id="editBio" class="w-full flex items-center justify-between px-4 py-3.5 gap-3 text-left">
+      <button data-action="nav" data-id="editBio" class="w-full flex items-center justify-between px-4 py-3.5 gap-3 text-left border-b border-bd">
         <span class="font-inter text-sm text-tmuted flex-shrink-0">Bio</span>
         <span class="flex items-center gap-1.5 font-inter text-[13px] text-right flex-1 justify-end line-clamp-2">${a.bio ? esc(a.bio) : "Add a bio"}${ICONS.chevronRight()}</span>
       </button>
-    </div>
-    <div class="font-mono text-[11px] text-tfaint uppercase mb-2">Others</div>
-    <div class="bg-panel border border-bd rounded-2xl mb-4 overflow-hidden">
-      <button data-action="nav" data-id="editLinks" class="w-full flex items-center justify-between px-4 py-3.5">
-        <span class="font-inter text-sm text-tmuted">Links</span>
-        <span class="flex items-center gap-1.5 font-sora font-semibold text-sm">${(a.links || []).length}${ICONS.chevronRight()}</span>
+      <button data-action="nav" data-id="editGender" class="w-full flex items-center justify-between px-4 py-3.5 border-b border-bd">
+        <span class="font-inter text-sm text-tmuted">Gender</span>
+        <span class="flex items-center gap-1.5 font-sora font-semibold text-sm">${a.gender ? esc(a.gender) : "Add gender"}${ICONS.chevronRight()}</span>
+      </button>
+      <button data-action="nav" data-id="editDob" class="w-full flex items-center justify-between px-4 py-3.5">
+        <span class="font-inter text-sm text-tmuted">Date of birth</span>
+        <span class="flex items-center gap-1.5 font-sora font-semibold text-sm">${a.dob ? esc(a.dob) : "Add date of birth"}${ICONS.chevronRight()}</span>
       </button>
     </div>
-    <button data-action="confirm-logout" class="w-full text-center mt-2 font-inter text-xs text-tmuted border border-bd rounded-full py-2.5">Log out</button>
+    <div class="font-mono text-[11px] text-tfaint uppercase mb-2">Links</div>
+    <div class="mb-4">
+      ${(a.links || []).length < 5 ? `<button data-action="open-link-sheet" data-id="new" class="w-full flex items-center gap-3 bg-panel border border-bd rounded-2xl px-4 py-3.5 mb-2.5 text-left">${resizeIcon(ICONS.plus(), 18)}<span class="font-sora font-semibold text-sm">Add Link</span></button>` : `<div class="text-tfaint font-inter text-[12px] mb-2.5">Maximum of 5 links reached.</div>`}
+      ${(a.links || []).map((l, idx) => `<button data-action="open-link-sheet" data-id="${idx}" class="w-full flex items-center gap-3 bg-panel border border-bd rounded-2xl px-4 py-3.5 mb-2.5 text-left">
+        <span class="flex-shrink-0">${ICONS[LINK_ICON_KEYS[l.icon] || "externalLink"]()}</span>
+        <div class="flex-1 min-w-0"><div class="font-sora font-semibold text-sm truncate">${esc(l.label)}</div><div class="font-inter text-[11.5px] text-tfaint truncate">${esc(l.url)}</div></div>
+        ${ICONS.chevronRight()}
+      </button>`).join("")}
+    </div>
   </div>
-  ${photoSheetHtml()}${photoLightboxHtml()}`;
+  ${photoSheetHtml()}${photoLightboxHtml()}${linkFormSheetHtml()}`;
+}
+function editGenderScreenHtml() {
+  const a = state.session.account;
+  const options = ["Male", "Female", "Other", "Prefer not to say"];
+  return `<div class="flex items-center justify-between px-4 pt-4 pb-2.5">
+    <button data-action="nav" data-id="editAccount" class="font-inter text-[15px] bg-transparent border-none">Cancel</button>
+    <div class="font-sora font-bold text-[15px]">Gender</div>
+    <div style="width:52px;"></div>
+  </div>
+  <div class="px-5 pt-2 pb-10">
+    ${options.map((o) => `<button data-action="save-gender" data-id="${escAttr(o)}" class="w-full flex items-center justify-between bg-panel border border-bd rounded-xl px-4 py-3.5 mb-2.5 text-left">
+      <span class="font-inter text-[15px]">${o}</span>
+      <span class="rounded-full flex-shrink-0" style="width:20px;height:20px;border:2px solid ${a.gender === o ? "#3E8EFF" : "#3A445E"};display:flex;align-items:center;justify-content:center;">${a.gender === o ? `<span class="rounded-full" style="width:10px;height:10px;background:#3E8EFF;"></span>` : ""}</span>
+    </button>`).join("")}
+  </div>`;
+}
+function editDobScreenHtml() {
+  const a = state.session.account;
+  return `<div class="flex items-center justify-between px-4 pt-4 pb-2.5">
+    <button data-action="nav" data-id="editAccount" class="font-inter text-[15px] bg-transparent border-none">Cancel</button>
+    <button data-action="save-dob" class="font-sora font-bold text-[15px] bg-transparent border-none" style="color:#FF5D6C;">Save</button>
+  </div>
+  <div class="px-5 pt-3">
+    <div class="font-sora font-extrabold text-2xl mb-4">Date of birth</div>
+    <input id="ed-dob" type="date" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px]" value="${escAttr(a.dob || "")}" />
+  </div>`;
 }
 function editNameScreenHtml() {
   const a = state.session.account;
@@ -1177,7 +1237,7 @@ function editUsernameScreenHtml() {
     <div class="font-inter text-sm text-tmuted mb-5">You can change your username once every 30 days. Changing your username will also change your profile link. Usernames can contain only letters, numbers, underscores, and periods.</div>
     <input id="eu-username" maxlength="24" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px]" placeholder="Username" value="${escAttr(a.username || "")}" />
     <div class="flex items-center justify-between mt-1.5">
-      <div class="font-inter text-xs text-tfaint">website.com/<span id="eu-preview">@${escAttr(a.username || "username")}</span></div>
+      <div class="font-inter text-xs text-tfaint">craftverse.com/<span id="eu-preview">@${escAttr(a.username || "username")}</span></div>
       <div class="font-inter text-xs text-tfaint" id="eu-count">${(a.username || "").length}/24</div>
     </div>
     ${remain > 0 ? `<div class="text-coral text-xs mt-2 font-inter">You can change your username again in ${Math.ceil(remain / 86400000)} day(s).</div>` : ""}
@@ -1231,26 +1291,50 @@ function editLinksScreenHtml() {
   </div>
   ${linkFormSheetHtml()}`;
 }
+let linkDraft = { title: "", url: "", platform: "" };
 function linkFormSheetHtml() {
   if (!state.ui.linkSheetOpen) return "";
   const idx = state.ui.linkSheetIndex;
   const isNew = idx < 0;
-  const links = state.session.account.links || [];
-  const link = isNew ? { url: "", label: "", icon: "other" } : (links[idx] || { url: "", label: "", icon: "other" });
+  const platformLabel = (LINK_PLATFORMS.find(([k]) => k === linkDraft.platform) || [])[1];
   return `<div data-action="close-link-sheet" class="fixed inset-0 z-[200] flex items-end justify-center" style="background:rgba(0,0,0,0.6);">
     <div data-action="noop" class="w-full max-w-[480px] bg-panel rounded-t-[20px] p-[18px] pb-7 fade-in">
       <div class="flex items-center justify-between mb-4">
         <div class="font-sora font-extrabold text-[17px]">${isNew ? "Add link" : "Edit link"}</div>
         <button data-action="close-link-sheet" class="text-tmuted text-2xl leading-none px-1 bg-transparent border-none">&times;</button>
       </div>
-      ${fieldWrap("Platform", `<select id="el-platform" class="${inputCls}">${LINK_PLATFORMS.map(([k, label]) => `<option value="${k}" ${link.icon === k ? "selected" : ""}>${label}</option>`).join("")}</select>`)}
-      <input id="el-title" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px] mb-3" placeholder="Title (e.g. Follow me on Instagram)" value="${escAttr(link.label)}" />
-      <input id="el-url" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px]" placeholder="URL (https://...)" value="${escAttr(link.url)}" />
+      <div class="font-mono text-[11px] text-tfaint uppercase tracking-wide mb-1.5">Platform</div>
+      <button data-action="open-platform-sheet" class="w-full flex items-center gap-2.5 bg-panelalt border border-bd rounded-xl px-4 py-3.5 mb-3 text-left">
+        ${resizeIcon(ICONS.chevronDown(), 16)}
+        <span class="flex-1 font-inter text-[15px] ${platformLabel ? "" : "text-tfaint"}">${platformLabel ? esc(platformLabel) : "Select platform"}</span>
+        ${platformLabel ? `<span class="flex-shrink-0">${ICONS[LINK_ICON_KEYS[linkDraft.platform] || "externalLink"]()}</span>` : ""}
+      </button>
+      <input id="el-title" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px] mb-3" placeholder="Title (e.g. Follow me on Instagram)" value="${escAttr(linkDraft.title)}" />
+      <input id="el-url" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px]" placeholder="URL (https://...)" value="${escAttr(linkDraft.url)}" />
       <div id="el-error" class="text-coral text-xs mt-3 font-inter"></div>
       ${roleBtn("save-link", isNew ? "Add link" : "Save changes", "owner", "w-full mt-4")}
       ${!isNew ? `<button data-action="delete-link" class="w-full text-center mt-3 font-inter text-sm bg-transparent border-none" style="color:#FF5D6C;">Remove link</button>` : ""}
     </div>
+  </div>
+  ${platformSheetHtml()}`;
+}
+function platformSheetHtml() {
+  if (!state.ui.platformSheetOpen) return "";
+  return `<div data-action="close-platform-sheet" class="fixed inset-0 z-[220] flex items-end justify-center" style="background:rgba(0,0,0,0.7);">
+    <div data-action="noop" class="w-full max-w-[480px] bg-panel rounded-t-[20px] pt-[18px] pb-7 fade-in" style="max-height:75vh;overflow-y:auto;">
+      <div class="font-sora font-extrabold text-[17px] px-[18px] mb-2">Select platform</div>
+      ${LINK_PLATFORMS.map(([k, label]) => `<button data-action="pick-platform" data-id="${k}" class="w-full flex items-center justify-between px-[18px] py-3.5 border-t border-bd bg-transparent border-l-0 border-r-0 border-b-0 text-left">
+        <span class="font-inter text-[15px]">${label}</span>
+        <span class="rounded-full flex-shrink-0" style="width:20px;height:20px;border:2px solid ${linkDraft.platform === k ? "#3E8EFF" : "#3A445E"};display:flex;align-items:center;justify-content:center;">${linkDraft.platform === k ? `<span class="rounded-full" style="width:10px;height:10px;background:#3E8EFF;"></span>` : ""}</span>
+      </button>`).join("")}
+    </div>
   </div>`;
+}
+function bindLinkFormInputs() {
+  const titleEl = document.getElementById("el-title");
+  const urlEl = document.getElementById("el-url");
+  if (titleEl) titleEl.addEventListener("input", () => { linkDraft.title = titleEl.value; });
+  if (urlEl) urlEl.addEventListener("input", () => { linkDraft.url = urlEl.value; });
 }
 function bindCharCounter(inputId, counterId, max) {
   const el = document.getElementById(inputId);
@@ -1416,7 +1500,7 @@ function ownerSiteHtml() {
     <div class="bg-panel border border-bd rounded-2xl p-4">
       <div class="flex items-center gap-2 mb-3.5">${ICONS.layoutDashboard()}<div class="font-sora font-bold text-sm">Branding &amp; Layout</div></div>
       ${fieldWrap("Site name", `<input id="brand-name" class="${inputCls}" value="${escAttr(brand.siteName)}" />`)}
-      ${fieldWrap("Header / footer logo", `
+      ${fieldWrap("Header logo", `
         <div class="flex gap-2 items-center">
           ${siteLogoHtml(44)}
           <input id="brand-logo" class="${inputCls} flex-1" value="${brand.logo && brand.logo.startsWith("data:") ? "(uploaded image)" : escAttr(brand.logo)}" ${brand.logo && brand.logo.startsWith("data:") ? "readonly" : ""} placeholder="https://... or upload from device" />
@@ -1424,6 +1508,7 @@ function ownerSiteHtml() {
           <input id="brand-logo-file" type="file" accept="image/*" class="hidden" />
         </div>
       `)}
+      ${fieldWrap("Footer logo", `<input id="brand-footer-logo" class="${inputCls}" value="${escAttr(brand.footerLogo || "")}" placeholder="https://..." />`)}
       ${fieldWrap("Footer tagline", `<textarea id="brand-tagline" class="${inputCls}" style="min-height:60px;">${esc(brand.footerTagline)}</textarea>`)}
       ${fieldWrap("Explore categories", `
         <div class="flex gap-2 mb-2.5">
@@ -1522,7 +1607,7 @@ function bindOwnerSiteInputs() {
     const el = document.getElementById(id);
     if (el) el.addEventListener("input", (e) => { siteContentDraft[key] = e.target.value; });
   });
-  const brandMap = { "brand-name": "siteName", "brand-logo": "logo", "brand-tagline": "footerTagline" };
+  const brandMap = { "brand-name": "siteName", "brand-logo": "logo", "brand-footer-logo": "footerLogo", "brand-tagline": "footerTagline" };
   Object.entries(brandMap).forEach(([id, key]) => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("input", (e) => { brandingDraft[key] = e.target.value; });
@@ -1580,7 +1665,7 @@ function ownerScreenHtml() {
   else if (tab === "site") body = ownerSiteHtml();
 
   return `<div class="px-4 pt-4 pb-24">
-    ${panelTopBarHtml(owner.name, owner.avatar, "Full access")}
+    ${panelTopBarHtml((auth.currentUser && auth.currentUser.displayName) || owner.name, (auth.currentUser && auth.currentUser.photoURL) || owner.avatar, "Full access")}
     ${tab !== "dashboard" ? `<div class="font-sora font-extrabold text-lg mb-3.5">${tabLabels[tab]}</div>` : ""}
     ${body}
   </div>
@@ -1688,8 +1773,10 @@ function renderInner() {
       html = isLoggedInCreator ? editUsernameScreenHtml() : creatorAuthScreenHtml(); break;
     case "editBio":
       html = isLoggedInCreator ? editBioScreenHtml() : creatorAuthScreenHtml(); break;
-    case "editLinks":
-      html = isLoggedInCreator ? editLinksScreenHtml() : creatorAuthScreenHtml(); break;
+    case "editGender":
+      html = isLoggedInCreator ? editGenderScreenHtml() : creatorAuthScreenHtml(); break;
+    case "editDob":
+      html = isLoggedInCreator ? editDobScreenHtml() : creatorAuthScreenHtml(); break;
     case "creatorAuth": html = creatorAuthScreenHtml(); break;
     case "about": html = staticPageHtml("About", state.siteContent.about); break;
     case "terms": html = staticPageHtml("Terms", state.siteContent.terms); break;
@@ -1721,6 +1808,7 @@ function renderInner() {
   if (document.getElementById("eu-username")) bindCharCounter("eu-username", "eu-count", 24);
   if (document.getElementById("eb-bio")) bindCharCounter("eb-bio", "eb-count", 160);
   if (document.getElementById("photo-file-take") || document.getElementById("photo-file-upload")) bindPhotoSheetInputs();
+  if (document.getElementById("el-title")) bindLinkFormInputs();
   if (document.getElementById("ads-frequency") || document.getElementById("sc-about")) bindOwnerSiteInputs();
   if (document.getElementById("explore-search")) bindExploreInputs();
   const adSlotEl = document.getElementById("postview-ad-slot");
@@ -1861,6 +1949,22 @@ function guessLinkIcon(url) {
   if (u.includes("whatsapp") || u.includes("wa.me")) return "whatsapp";
   return "other";
 }
+function reloadWithToast(msg) {
+  try { sessionStorage.setItem("cv_pending_toast", JSON.stringify({ msg, type: "success" })); } catch (e) {}
+  location.hash = "/editAccount";
+  location.reload();
+}
+async function saveGender(value) {
+  const a = state.session.account;
+  const ok = await fsSetAccount(a.id, { gender: value });
+  if (ok) reloadWithToast("Gender updated."); else showToast("Couldn't save — try again.", "error");
+}
+async function saveDob() {
+  const a = state.session.account;
+  const val = document.getElementById("ed-dob").value;
+  const ok = await fsSetAccount(a.id, { dob: val });
+  if (ok) reloadWithToast("Date of birth updated."); else showToast("Couldn't save — try again.", "error");
+}
 async function saveName() {
   const a = state.session.account;
   const val = document.getElementById("en-name").value.trim();
@@ -1870,7 +1974,7 @@ async function saveName() {
   if (remain > 0) { errEl.textContent = `You can change your name again in ${Math.ceil(remain / 86400000)} day(s).`; return; }
   if (!val) { errEl.textContent = "Name can't be empty."; return; }
   const ok = await fsSetAccount(a.id, { name: val, nameChangedAt: Date.now() });
-  if (ok) { navigate("editAccount"); showToast("Name updated."); } else { errEl.textContent = "Couldn't save — try again."; }
+  if (ok) reloadWithToast("Name updated."); else { errEl.textContent = "Couldn't save — try again."; }
 }
 async function saveUsername() {
   const a = state.session.account;
@@ -1887,7 +1991,7 @@ async function saveUsername() {
     if (existing.exists()) { errEl.textContent = "That username is already taken."; return; }
     await setDoc(doc(db, "usernames", lower), { uid: a.id });
     const ok = await fsSetAccount(a.id, { username: lower, usernameChangedAt: Date.now() });
-    if (ok) { navigate("editAccount"); showToast("Username updated."); } else { errEl.textContent = "Couldn't save — try again."; }
+    if (ok) reloadWithToast("Username updated."); else { errEl.textContent = "Couldn't save — try again."; }
   } catch (e) { errEl.textContent = "Couldn't save — try again."; }
 }
 async function saveBio() {
@@ -1898,16 +2002,17 @@ async function saveBio() {
   if (raw.length > 160) { errEl.textContent = "Bio can't exceed 160 characters."; return; }
   if (raw.split("\n").length > 5) { errEl.textContent = "Bio can't exceed 5 lines."; showToast("Bio can't exceed 5 lines.", "error"); return; }
   const ok = await fsSetAccount(a.id, { bio: raw });
-  if (ok) { navigate("editAccount"); showToast("Bio updated."); } else showToast("Couldn't save — try again.", "error");
+  if (ok) reloadWithToast("Bio updated."); else showToast("Couldn't save — try again.", "error");
 }
 async function saveLink() {
   const a = state.session.account;
   const idx = state.ui.linkSheetIndex;
-  const platform = document.getElementById("el-platform").value;
+  const platform = linkDraft.platform;
   let url = document.getElementById("el-url").value.trim();
   const title = document.getElementById("el-title").value.trim();
   const errEl = document.getElementById("el-error");
   errEl.textContent = "";
+  if (!platform) { errEl.textContent = "Please select a platform."; showToast("Please select a platform.", "error"); return; }
   if (!url || !title) { errEl.textContent = "Both title and URL are required."; return; }
   if (platform === "email") {
     if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(url)) url = "mailto:" + url;
@@ -1920,7 +2025,7 @@ async function saveLink() {
   const entry = { id: (idx >= 0 && links[idx] && links[idx].id) || ("l" + Date.now()), url, label: title, icon: platform };
   if (idx >= 0) links[idx] = entry; else links.push(entry);
   const ok = await fsSetAccount(a.id, { links });
-  if (ok) { state.ui.linkSheetOpen = false; render(); showToast(idx >= 0 ? "Link updated." : "Link added."); } else showToast("Couldn't save — try again.", "error");
+  if (ok) reloadWithToast(idx >= 0 ? "Link updated." : "Link added."); else showToast("Couldn't save — try again.", "error");
 }
 function deleteLink() {
   const a = state.session.account;
@@ -1929,7 +2034,7 @@ function deleteLink() {
     const links = [...(a.links || [])];
     links.splice(idx, 1);
     const ok = await fsSetAccount(a.id, { links });
-    if (ok) { state.ui.linkSheetOpen = false; render(); showToast("Link removed."); } else showToast("Couldn't remove — try again.", "error");
+    if (ok) reloadWithToast("Link removed."); else showToast("Couldn't remove — try again.", "error");
   });
 }
 async function moveLink(idx, dir) {
@@ -1954,9 +2059,7 @@ async function handleAvatarFile(file) {
   try {
     const dataUrl = await fileToCompressedDataUrl(file);
     const ok = await fsSetAccount(state.session.account.id, { avatar: dataUrl });
-    state.ui.photoSheetOpen = false;
-    render();
-    showToast(ok ? "Photo updated." : "Couldn't save — try again.", ok ? "success" : "error");
+    if (ok) reloadWithToast("Photo updated."); else showToast("Couldn't save — try again.", "error");
   } catch (e) { showToast("Couldn't read that image.", "error"); }
 }
 function bindPhotoSheetInputs() {
@@ -2041,6 +2144,23 @@ async function ownerLogin() {
     showToast(`Welcome back! — ${acc ? acc.name : "Owner"} is now signed in.`);
   } catch (e) {
     errEl.textContent = "Wrong email or password.";
+  }
+}
+async function ownerGoogleAuth() {
+  const errEl = document.getElementById("ol-error");
+  try {
+    const cred = await signInWithPopup(auth, new GoogleAuthProvider());
+    const snap = await getDoc(doc(db, "accounts", cred.user.uid));
+    if (!snap.exists() || snap.data().role !== "owner") {
+      await signOut(auth);
+      if (errEl) errEl.textContent = "This Google account isn't registered as Owner.";
+      return;
+    }
+    state.ui.ownerTab = "dashboard";
+    navigate("ownerPanel");
+    showToast(`Welcome back! — ${cred.user.displayName || "Owner"} is now signed in.`);
+  } catch (e) {
+    if (errEl) errEl.textContent = e.message || "Google sign-in failed.";
   }
 }
 function usernameToEmail(username) {
@@ -2143,6 +2263,8 @@ document.addEventListener("click", async (e) => {
 
   switch (action) {
     case "nav": state.ui.exploreOpen = false; navigate(id); render(); break;
+    case "open-language": showToast("Language settings coming soon."); break;
+    case "open-notifications": showToast("No new notifications yet."); break;
     case "open-explore": exploreQuery = ""; exploreCategory = null; state.ui.exploreOpen = true; render(); break;
     case "close-explore": state.ui.exploreOpen = false; render(); break;
     case "set-explore-category": exploreCategory = id; render(); break;
@@ -2238,8 +2360,21 @@ document.addEventListener("click", async (e) => {
     case "save-name": saveName(); break;
     case "save-username": saveUsername(); break;
     case "save-bio": saveBio(); break;
-    case "open-link-sheet": state.ui.linkSheetOpen = true; state.ui.linkSheetIndex = id === "new" ? -1 : parseInt(id, 10); render(); break;
+    case "save-gender": saveGender(id); break;
+    case "save-dob": saveDob(); break;
+    case "open-link-sheet": {
+      state.ui.linkSheetOpen = true;
+      const i = id === "new" ? -1 : parseInt(id, 10);
+      state.ui.linkSheetIndex = i;
+      const existing = i >= 0 ? (state.session.account.links || [])[i] : null;
+      linkDraft = existing ? { title: existing.label || "", url: existing.url || "", platform: existing.icon || "" } : { title: "", url: "", platform: "" };
+      render();
+      break;
+    }
     case "close-link-sheet": state.ui.linkSheetOpen = false; render(); break;
+    case "open-platform-sheet": state.ui.platformSheetOpen = true; render(); break;
+    case "close-platform-sheet": state.ui.platformSheetOpen = false; render(); break;
+    case "pick-platform": linkDraft.platform = id; state.ui.platformSheetOpen = false; render(); break;
     case "save-link": saveLink(); break;
     case "delete-link": deleteLink(); break;
     case "move-link-up": moveLink(parseInt(id, 10), -1); break;
@@ -2265,6 +2400,7 @@ document.addEventListener("click", async (e) => {
     }
 
     case "owner-login": ownerLogin(); break;
+    case "owner-google-auth": ownerGoogleAuth(); break;
     case "creator-login-submit": creatorLoginSubmit(); break;
     case "creator-signup-submit": creatorSignup(); break;
     case "creator-google-auth": creatorGoogleAuth(); break;
@@ -2338,6 +2474,17 @@ window.addEventListener("unhandledrejection", (e) => showFatalError(e.reason));
     history.replaceState(null, "", location.origin + "/" + location.search);
     location.hash = "/ownerLogin";
   }
+})();
+
+(function restorePendingToast() {
+  try {
+    const raw = sessionStorage.getItem("cv_pending_toast");
+    if (raw) {
+      sessionStorage.removeItem("cv_pending_toast");
+      const t = JSON.parse(raw);
+      setTimeout(() => showToast(t.msg, t.type), 50);
+    }
+  } catch (e) {}
 })();
 
 try {
