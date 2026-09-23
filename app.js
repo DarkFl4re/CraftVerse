@@ -94,15 +94,15 @@ const ICONS = {
   ownerBadge: () => svgIcon(`<path d="M12 2 4 5v6c0 5 3.4 8.7 8 11 4.6-2.3 8-6 8-11V5l-8-3Z"/><path d="M9 12l2 2 4-4"/>`),
   creatorPerson: () => svgIcon(`<circle cx="10" cy="8" r="4"/><path d="M2 21c0-4 3.5-6 8-6s8 2 8 6"/><path d="M17 8h4M19 6v4"/>`),
 
-  instagram: (size = 20) => `<svg width="${size}" height="${size}" fill="currentColor" style="color:#E1306C" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg>`,
-  telegram: (size = 20) => `<svg fill="#FFF" height="${size}" width="${size}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.384,22.779c0.322,0.228 0.737,0.285 1.107,0.145c0.37,-0.141 0.642,-0.457 0.724,-0.84c0.869,-4.084 2.977,-14.421 3.768,-18.136c0.06,-0.28 -0.04,-0.571 -0.26,-0.758c-0.22,-0.187 -0.525,-0.241 -0.797,-0.14c-4.193,1.552 -17.106,6.397 -22.384,8.35c-0.335,0.124 -0.553,0.446 -0.542,0.799c0.012,0.354 0.25,0.661 0.593,0.764c2.367,0.708 5.474,1.693 5.474,1.693c0,0 1.452,4.385 2.209,6.615c0.095,0.28 0.314,0.5 0.603,0.576c0.288,0.075 0.596,-0.004 0.811,-0.207c1.216,-1.148 3.096,-2.923 3.096,-2.923c0,0 3.572,2.619 5.598,4.062Zm-11.01,-8.677l1.679,5.538l0.373,-3.507c0,0 6.487,-5.851 10.185,-9.186c0.108,-0.098 0.123,-0.262 0.033,-0.377c-0.089,-0.115 -0.253,-0.142 -0.376,-0.064c-4.286,2.737 -11.894,7.596 -11.894,7.596Z"/></svg>`,
-  discord: (size = 20) => `<svg width="${size}" height="${size}" fill="#5865F2" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg"><path d="M524.5 133.8C524.3 133.5 524.1 133.2 523.7 133.1C485.6 115.6 445.3 103.1 404 96C403.6 95.9 403.2 96 402.9 96.1C402.6 96.2 402.3 96.5 402.1 96.9C396.6 106.8 391.6 117.1 387.2 127.5C342.6 120.7 297.3 120.7 252.8 127.5C248.3 117 243.3 106.8 237.7 96.9C237.5 96.6 237.2 96.3 236.9 96.1C236.6 95.9 236.2 95.9 235.8 95.9C194.5 103 154.2 115.5 116.1 133C115.8 133.1 115.5 133.4 115.3 133.7C39.1 247.5 18.2 358.6 28.4 468.2C28.4 468.5 28.5 468.7 28.6 469C28.7 469.3 28.9 469.4 29.1 469.6C73.5 502.5 123.1 527.6 175.9 543.8C176.3 543.9 176.7 543.9 177 543.8C177.3 543.7 177.7 543.4 177.9 543.1C189.2 527.7 199.3 511.3 207.9 494.3C208 494.1 208.1 493.8 208.1 493.5C208.1 493.2 208.1 493 208 492.7C207.9 492.4 207.8 492.2 207.6 492.1C207.4 492 207.2 491.8 206.9 491.7C191.1 485.6 175.7 478.3 161 469.8C160.7 469.6 160.5 469.4 160.3 469.2C160.1 469 160 468.6 160 468.3C160 468 160 467.7 160.2 467.4C160.4 467.1 160.5 466.9 160.8 466.7C163.9 464.4 167 462 169.9 459.6C170.2 459.4 170.5 459.2 170.8 459.2C171.1 459.2 171.5 459.2 171.8 459.3C268 503.2 372.2 503.2 467.3 459.3C467.6 459.2 468 459.1 468.3 459.1C468.6 459.1 469 459.3 469.2 459.5C472.1 461.9 475.2 464.4 478.3 466.7C478.5 466.9 478.7 467.1 478.9 467.4C479.1 467.7 479.1 468 479.1 468.3C479.1 468.6 479 468.9 478.8 469.2C478.6 469.5 478.4 469.7 478.2 469.8C463.5 478.4 448.2 485.7 432.3 491.6C432.1 491.7 431.8 491.8 431.6 492C431.4 492.2 431.3 492.4 431.2 492.7C431.1 493 431.1 493.2 431.1 493.5C431.1 493.8 431.2 494 431.3 494.3C440.1 511.3 450.1 527.6 461.3 543.1C461.5 543.4 461.9 543.7 462.2 543.8C462.5 543.9 463 543.9 463.3 543.8C516.2 527.6 565.9 502.5 610.4 469.6C610.6 469.4 610.8 469.2 610.9 469C611 468.8 611.1 468.5 611.1 468.2C623.4 341.4 590.6 231.3 524.2 133.7zM222.5 401.5C193.5 401.5 169.7 374.9 169.7 342.3C169.7 309.7 193.1 283.1 222.5 283.1C252.2 283.1 275.8 309.9 275.3 342.3C275.3 375 251.9 401.5 222.5 401.5zM417.9 401.5C388.9 401.5 365.1 374.9 365.1 342.3C365.1 309.7 388.5 283.1 417.9 283.1C447.6 283.1 471.2 309.9 470.7 342.3C470.7 375 447.5 401.5 417.9 401.5z"/></svg>`,
-  facebook: (size = 20) => `<svg fill="#0866ff" height="${size}" viewBox="0 0 36 36" width="${size}" xmlns="http://www.w3.org/2000/svg"><path d="M20.181 35.87C29.094 34.791 36 27.202 36 18c0-9.941-8.059-18-18-18S0 8.059 0 18c0 8.442 5.811 15.526 13.652 17.471L14 34h5.5l.681 1.87Z"/><path d="M13.651 35.471v-11.97H9.936V18h3.715v-2.37c0-6.127 2.772-8.964 8.784-8.964 1.138 0 3.103.223 3.91.446v4.983c-.425-.043-1.167-.065-2.081-.065-2.952 0-4.09 1.116-4.09 4.025V18h5.883l-1.008 5.5h-4.867v12.37a18.183 18.183 0 0 1-6.53-.399Z" fill="#ffffff"/></svg>`,
-  tiktok: (size = 20) => `<svg fill="currentColor" style="color:#fff" height="${size}" viewBox="0 0 16 16" width="${size}" xmlns="http://www.w3.org/2000/svg"><path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/></svg>`,
-  youtube: (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 333333 333333" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M329930 100020s-3254-22976-13269-33065c-12691-13269-26901-13354-33397-14124-46609-3396-116614-3396-116614-3396h-122s-69973 0-116608 3396c-6522 793-20712 848-33397 14124C6501 77044 3316 100020 3316 100020S-1 126982-1 154001v25265c0 26962 3315 53979 3315 53979s3254 22976 13207 33082c12685 13269 29356 12838 36798 14254 26685 2547 113354 3315 113354 3315s70065-124 116675-3457c6522-770 20706-848 33397-14124 10021-10089 13269-33090 13269-33090s3319-26962 3319-53979v-25263c-67-26962-3384-53979-3384-53979l-18 18-2-2zM132123 209917v-93681l90046 46997-90046 46684z" fill="red"/></svg>`,
-  twitter: (size = 20) => `<svg fill="#FFF" height="${size}" viewBox="0 0 24 24" width="${size}"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
-  github: (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 640 640" fill="#FFF"><path d="M280.5 426.5C214.5 418.5 168 371 168 309.5C168 284.5 177 257.5 192 239.5C185.5 223 186.5 188 194 173.5C214 171 241 181.5 257 196C276 190 296 187 320.5 187C345 187 365 190 383 195.5C398.5 181.5 426 171 446 173.5C453 187 454 222 447.5 239C463.5 258 472 283.5 472 309.5C472 371 425.5 417.5 358.5 426C375.5 437 387 461 387 488.5L387 540.5C387 555.5 399.5 564 414.5 558C505 523.5 576 433 576 321C576 179.5 461 64 319.5 64C178 64 64 179.5 64 321C64 432 134.5 524 229.5 558.5C243 563.5 256 554.5 256 541L256 501C249 504 240 506 232 506C199 506 179.5 488 165.5 454.5C160 441 154 433 142.5 431.5C136.5 431 134.5 428.5 134.5 425.5C134.5 419.5 144.5 415 154.5 415C169 415 181.5 424 194.5 442.5C204.5 457 215 463.5 227.5 463.5C240 463.5 248 459 259.5 447.5C268 439 274.5 431.5 280.5 426.5Z"/></svg>`,
-  messenger: (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 640 640" fill="#0084FF"><path d="M320.6 72C180.6 72 72 174.3 72 312.6C72 384.9 101.7 447.4 150.1 490.5C158.4 498 156.7 502.4 158.1 548.7C158.2 551.9 159.1 555.1 160.7 557.9C162.3 560.7 164.6 563.1 167.4 564.8C170.2 566.5 173.3 567.6 176.5 567.8C179.7 568 183 567.5 186 566.2C238.9 543 239.6 541.2 248.6 543.6C401.8 585.8 568 487.7 568 312.6C568 174.3 460.6 72 320.6 72zM469.8 257.1L396.8 372.7C394 377 390.4 380.8 386.2 383.7C382 386.6 377.1 388.5 372.1 389.5C367.1 390.5 361.8 390.3 356.8 389.1C351.8 387.9 347.1 385.7 343 382.7L284.9 339.2C282.3 337.3 279.1 336.2 275.9 336.2C272.7 336.2 269.5 337.3 266.9 339.2L188.5 398.6C178 406.5 164.3 394 171.4 382.9L244.4 267.3C247.2 263 250.8 259.2 255 256.3C259.2 253.4 264.1 251.5 269.1 250.5C274.1 249.5 279.4 249.7 284.4 250.9C289.4 252.1 294.1 254.3 298.3 257.3L356.4 300.8C359 302.7 362.2 303.8 365.4 303.8C368.6 303.8 371.8 302.7 374.4 300.8L452.8 241.4C463.2 233.4 476.9 245.9 469.9 257Z"/></svg>`,
+  instagram: (size = 20) => `<svg width="${size}" height="${size}" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/></svg>`,
+  telegram: (size = 20) => `<svg fill="currentColor" height="${size}" width="${size}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.384,22.779c0.322,0.228 0.737,0.285 1.107,0.145c0.37,-0.141 0.642,-0.457 0.724,-0.84c0.869,-4.084 2.977,-14.421 3.768,-18.136c0.06,-0.28 -0.04,-0.571 -0.26,-0.758c-0.22,-0.187 -0.525,-0.241 -0.797,-0.14c-4.193,1.552 -17.106,6.397 -22.384,8.35c-0.335,0.124 -0.553,0.446 -0.542,0.799c0.012,0.354 0.25,0.661 0.593,0.764c2.367,0.708 5.474,1.693 5.474,1.693c0,0 1.452,4.385 2.209,6.615c0.095,0.28 0.314,0.5 0.603,0.576c0.288,0.075 0.596,-0.004 0.811,-0.207c1.216,-1.148 3.096,-2.923 3.096,-2.923c0,0 3.572,2.619 5.598,4.062Zm-11.01,-8.677l1.679,5.538l0.373,-3.507c0,0 6.487,-5.851 10.185,-9.186c0.108,-0.098 0.123,-0.262 0.033,-0.377c-0.089,-0.115 -0.253,-0.142 -0.376,-0.064c-4.286,2.737 -11.894,7.596 -11.894,7.596Z"/></svg>`,
+  discord: (size = 20) => `<svg width="${size}" height="${size}" fill="currentColor" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg"><path d="M524.5 133.8C524.3 133.5 524.1 133.2 523.7 133.1C485.6 115.6 445.3 103.1 404 96C403.6 95.9 403.2 96 402.9 96.1C402.6 96.2 402.3 96.5 402.1 96.9C396.6 106.8 391.6 117.1 387.2 127.5C342.6 120.7 297.3 120.7 252.8 127.5C248.3 117 243.3 106.8 237.7 96.9C237.5 96.6 237.2 96.3 236.9 96.1C236.6 95.9 236.2 95.9 235.8 95.9C194.5 103 154.2 115.5 116.1 133C115.8 133.1 115.5 133.4 115.3 133.7C39.1 247.5 18.2 358.6 28.4 468.2C28.4 468.5 28.5 468.7 28.6 469C28.7 469.3 28.9 469.4 29.1 469.6C73.5 502.5 123.1 527.6 175.9 543.8C176.3 543.9 176.7 543.9 177 543.8C177.3 543.7 177.7 543.4 177.9 543.1C189.2 527.7 199.3 511.3 207.9 494.3C208 494.1 208.1 493.8 208.1 493.5C208.1 493.2 208.1 493 208 492.7C207.9 492.4 207.8 492.2 207.6 492.1C207.4 492 207.2 491.8 206.9 491.7C191.1 485.6 175.7 478.3 161 469.8C160.7 469.6 160.5 469.4 160.3 469.2C160.1 469 160 468.6 160 468.3C160 468 160 467.7 160.2 467.4C160.4 467.1 160.5 466.9 160.8 466.7C163.9 464.4 167 462 169.9 459.6C170.2 459.4 170.5 459.2 170.8 459.2C171.1 459.2 171.5 459.2 171.8 459.3C268 503.2 372.2 503.2 467.3 459.3C467.6 459.2 468 459.1 468.3 459.1C468.6 459.1 469 459.3 469.2 459.5C472.1 461.9 475.2 464.4 478.3 466.7C478.5 466.9 478.7 467.1 478.9 467.4C479.1 467.7 479.1 468 479.1 468.3C479.1 468.6 479 468.9 478.8 469.2C478.6 469.5 478.4 469.7 478.2 469.8C463.5 478.4 448.2 485.7 432.3 491.6C432.1 491.7 431.8 491.8 431.6 492C431.4 492.2 431.3 492.4 431.2 492.7C431.1 493 431.1 493.2 431.1 493.5C431.1 493.8 431.2 494 431.3 494.3C440.1 511.3 450.1 527.6 461.3 543.1C461.5 543.4 461.9 543.7 462.2 543.8C462.5 543.9 463 543.9 463.3 543.8C516.2 527.6 565.9 502.5 610.4 469.6C610.6 469.4 610.8 469.2 610.9 469C611 468.8 611.1 468.5 611.1 468.2C623.4 341.4 590.6 231.3 524.2 133.7zM222.5 401.5C193.5 401.5 169.7 374.9 169.7 342.3C169.7 309.7 193.1 283.1 222.5 283.1C252.2 283.1 275.8 309.9 275.3 342.3C275.3 375 251.9 401.5 222.5 401.5zM417.9 401.5C388.9 401.5 365.1 374.9 365.1 342.3C365.1 309.7 388.5 283.1 417.9 283.1C447.6 283.1 471.2 309.9 470.7 342.3C470.7 375 447.5 401.5 417.9 401.5z"/></svg>`,
+  facebook: (size = 20) => `<svg fill="currentColor" height="${size}" viewBox="0 0 24 24" width="${size}" xmlns="http://www.w3.org/2000/svg"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14C17.17 2.1 15.95 2 14.66 2 11.97 2 10 3.66 10 6.7v2.8H7v4h3V22h4v-8.5Z"/></svg>`,
+  tiktok: (size = 20) => `<svg fill="currentColor" height="${size}" viewBox="0 0 16 16" width="${size}" xmlns="http://www.w3.org/2000/svg"><path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3z"/></svg>`,
+  youtube: (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 333333 333333" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"><path d="M329930 100020s-3254-22976-13269-33065c-12691-13269-26901-13354-33397-14124-46609-3396-116614-3396-116614-3396h-122s-69973 0-116608 3396c-6522 793-20712 848-33397 14124C6501 77044 3316 100020 3316 100020S-1 126982-1 154001v25265c0 26962 3315 53979 3315 53979s3254 22976 13207 33082c12685 13269 29356 12838 36798 14254 26685 2547 113354 3315 113354 3315s70065-124 116675-3457c6522-770 20706-848 33397-14124 10021-10089 13269-33090 13269-33090s3319-26962 3319-53979v-25263c-67-26962-3384-53979-3384-53979l-18 18-2-2zM132123 209917v-93681l90046 46997-90046 46684z"/></svg>`,
+  twitter: (size = 20) => `<svg fill="currentColor" height="${size}" viewBox="0 0 24 24" width="${size}"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+  github: (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 640 640" fill="currentColor"><path d="M280.5 426.5C214.5 418.5 168 371 168 309.5C168 284.5 177 257.5 192 239.5C185.5 223 186.5 188 194 173.5C214 171 241 181.5 257 196C276 190 296 187 320.5 187C345 187 365 190 383 195.5C398.5 181.5 426 171 446 173.5C453 187 454 222 447.5 239C463.5 258 472 283.5 472 309.5C472 371 425.5 417.5 358.5 426C375.5 437 387 461 387 488.5L387 540.5C387 555.5 399.5 564 414.5 558C505 523.5 576 433 576 321C576 179.5 461 64 319.5 64C178 64 64 179.5 64 321C64 432 134.5 524 229.5 558.5C243 563.5 256 554.5 256 541L256 501C249 504 240 506 232 506C199 506 179.5 488 165.5 454.5C160 441 154 433 142.5 431.5C136.5 431 134.5 428.5 134.5 425.5C134.5 419.5 144.5 415 154.5 415C169 415 181.5 424 194.5 442.5C204.5 457 215 463.5 227.5 463.5C240 463.5 248 459 259.5 447.5C268 439 274.5 431.5 280.5 426.5Z"/></svg>`,
+  messenger: (size = 20) => `<svg width="${size}" height="${size}" viewBox="0 0 640 640" fill="currentColor"><path d="M320.6 72C180.6 72 72 174.3 72 312.6C72 384.9 101.7 447.4 150.1 490.5C158.4 498 156.7 502.4 158.1 548.7C158.2 551.9 159.1 555.1 160.7 557.9C162.3 560.7 164.6 563.1 167.4 564.8C170.2 566.5 173.3 567.6 176.5 567.8C179.7 568 183 567.5 186 566.2C238.9 543 239.6 541.2 248.6 543.6C401.8 585.8 568 487.7 568 312.6C568 174.3 460.6 72 320.6 72zM469.8 257.1L396.8 372.7C394 377 390.4 380.8 386.2 383.7C382 386.6 377.1 388.5 372.1 389.5C367.1 390.5 361.8 390.3 356.8 389.1C351.8 387.9 347.1 385.7 343 382.7L284.9 339.2C282.3 337.3 279.1 336.2 275.9 336.2C272.7 336.2 269.5 337.3 266.9 339.2L188.5 398.6C178 406.5 164.3 394 171.4 382.9L244.4 267.3C247.2 263 250.8 259.2 255 256.3C259.2 253.4 264.1 251.5 269.1 250.5C274.1 249.5 279.4 249.7 284.4 250.9C289.4 252.1 294.1 254.3 298.3 257.3L356.4 300.8C359 302.7 362.2 303.8 365.4 303.8C368.6 303.8 371.8 302.7 374.4 300.8L452.8 241.4C463.2 233.4 476.9 245.9 469.9 257Z"/></svg>`,
   email: () => svgIcon(`<path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/>`),
 };
 
@@ -168,6 +168,7 @@ const state = {
   session: null, // { uid, role, account }
   accountsLoaded: false,
   postsLoaded: false,
+  brandingLoaded: false,
   ui: {
     exploreOpen: false,
     photoSheetOpen: false,
@@ -240,8 +241,9 @@ onSnapshot(doc(db, "ad-settings", "main"), (d) => {
 
 onSnapshot(doc(db, "branding", "main"), (d) => {
   if (d.exists()) state.branding = { ...DEFAULT_BRANDING, ...d.data() };
+  state.brandingLoaded = true;
   render();
-}, () => {});
+}, () => { state.brandingLoaded = true; });
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
@@ -523,6 +525,19 @@ function headerLogoHtml(height = 40) {
 const HEADER_TAGLINE = "FreeFire Craftland Community";
 function homeHeaderHtml() {
   const b = state.branding;
+  if (!state.brandingLoaded) {
+    return `<div id="site-header" class="sticky top-0 z-20" style="background:#0A0E17;">
+      <div class="flex items-center gap-2 animate-pulse" style="height:52px;padding:12px;">
+        <div class="rounded-lg flex-shrink-0" style="width:28px;height:28px;background:#1C2540;"></div>
+        <div class="flex flex-col gap-1.5">
+          <div class="rounded-md" style="width:96px;height:11px;background:#1C2540;"></div>
+          <div class="rounded-md" style="width:130px;height:8px;background:#1C2540;"></div>
+        </div>
+        <div class="flex-1"></div>
+        <div class="rounded-lg flex-shrink-0" style="width:34px;height:34px;background:#1C2540;"></div>
+      </div>
+    </div>`;
+  }
   const isLoggedInCreator = !!(state.session && state.session.role === "admin");
   const rightHtml = isLoggedInCreator
     ? `${iconBtn({ action: "open-language", icon: resizeIcon(ICONS.globe(), 19), size: 34, radius: 8 })}${iconBtn({ action: "open-notifications", icon: resizeIcon(ICONS.notif(), 19), size: 34, radius: 8 })}`
@@ -596,11 +611,21 @@ function publicBottomNavHtml(activeScreen) {
 }
 function footerHtml() {
   const b = state.branding;
+  if (!state.brandingLoaded) {
+    return `<div class="mt-2 bg-panel border-t border-bd rounded-t-[20px] flex flex-col items-center gap-3.5 animate-pulse" style="padding:20px;padding-bottom:calc(70px + env(safe-area-inset-bottom, 0px));">
+      <div class="rounded-lg" style="width:56px;height:56px;background:#1C2540;"></div>
+      <div class="rounded-md" style="width:200px;height:11px;background:#1C2540;"></div>
+      <div class="flex gap-2">${Array.from({ length: 4 }).map(() => `<div class="rounded-lg" style="width:32px;height:32px;background:#1C2540;"></div>`).join("")}</div>
+      <div class="rounded-md" style="width:140px;height:10px;background:#1C2540;"></div>
+      <div class="w-full h-px bg-bd my-1"></div>
+      <div class="rounded-md" style="width:170px;height:9px;background:#1C2540;"></div>
+    </div>`;
+  }
   const socials = b.socialEnabled ? (b.socialLinks || []).filter((l) => l.enabled && l.url) : [];
   return `<div class="mt-2 bg-panel border-t border-bd rounded-t-[20px] flex flex-col items-center gap-3.5" style="padding:20px;padding-bottom:calc(70px + env(safe-area-inset-bottom, 0px));">
     <img src="${escAttr(b.footerLogo || b.logo)}" alt="${escAttr(b.siteName)}" class="object-contain" style="max-width:160px;max-height:64px;width:auto;height:auto;" />
     <div class="font-inter font-bold text-xs text-tmuted text-center">${esc(b.footerTagline)}</div>
-    ${socials.length ? `<div class="flex gap-2.5">${socials.map((l) => `<a href="${escAttr(l.url || "#")}" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-panelalt border border-bd flex items-center justify-center">${ICONS[LINK_ICON_KEYS[l.icon] || "externalLink"]()}</a>`).join("")}</div>` : ""}
+    ${socials.length ? `<div class="flex flex-wrap justify-center gap-2">${socials.map((l) => `<a href="${escAttr(l.url || "#")}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center rounded-lg bg-panelalt border border-bd" style="width:32px;height:32px;color:#3E8EFF;">${ICONS[LINK_ICON_KEYS[l.icon] || "externalLink"]()}</a>`).join("")}</div>` : ""}
     <div class="flex gap-4">
       ${["about", "terms", "dmca"].map((k) => `<button data-action="nav" data-id="${k}" class="bg-transparent border-none font-inter font-bold text-xs text-tmuted capitalize">${k}</button>`).join("")}
     </div>
@@ -617,10 +642,11 @@ function postCardHtml(post, author) {
       ${categoryBadge(post.category)}
     </div>
     <div class="flex items-center gap-2.5 mt-3">
-      <div data-action="open-profile" data-id="${author.id}" class="flex items-center gap-2 flex-1 cursor-pointer min-w-0">
-        ${avatarHtml(author.name, author.avatar, 30)}
-        <div class="font-sora font-semibold text-[14px] truncate">${esc(author.name)}</div>
+      <div data-action="open-profile" data-id="${author.id}" class="flex items-center gap-2 cursor-pointer bg-panelalt border border-bd rounded-full pr-3 py-1 min-w-0" style="width:max-content;max-width:65%;padding-left:4px;">
+        ${avatarHtml(author.name, author.avatar, 26)}
+        <div class="font-sora font-semibold text-[13.5px] truncate">${esc(author.name)}</div>
       </div>
+      <div class="flex-1"></div>
       ${iconBtn({ action: "toggle-like", id: post.id, active: liked, size: 36, icon: `<span style="color:${liked ? "#FF5D6C" : "#8A93AC"}">${ICONS.heart(liked)}</span>` })}
       ${iconBtn({ action: "share-post", id: post.id, size: 36, icon: ICONS.share() })}
     </div>
@@ -639,6 +665,16 @@ function skeletonCardHtml() {
       <div class="rounded-md" style="width:90px;height:12px;background:#1C2540;"></div>
     </div>
     <div class="rounded-md mt-3" style="width:70%;height:14px;background:#1C2540;"></div>
+  </div>`;
+}
+function profileSkeletonHtml() {
+  return `<div style="height:52px;"></div>
+  <div class="px-5 pb-5 flex flex-col items-center animate-pulse">
+    <div class="rounded-full" style="width:88px;height:88px;background:#1C2540;"></div>
+    <div class="rounded-md mt-3" style="width:140px;height:16px;background:#1C2540;"></div>
+    <div class="rounded-md mt-2" style="width:90px;height:11px;background:#1C2540;"></div>
+    <div class="rounded-md mt-2.5" style="width:200px;height:11px;background:#1C2540;"></div>
+    <div class="rounded-full mt-4" style="width:160px;height:34px;background:#1C2540;"></div>
   </div>`;
 }
 function feedScreen(mode) {
@@ -704,9 +740,11 @@ function exploreScreenHtml() {
         <button data-action="clear-explore-category" class="bg-transparent border-none text-tfaint font-inter text-xs">Clear</button>
       </div>`;
     }
-    html += results.length === 0
-      ? `<div class="text-center text-tfaint font-inter text-sm py-10">No matches found.</div>`
-      : results.map((post) => postCardHtml(post, getAuthor(post.authorId))).join("");
+    html += !state.postsLoaded
+      ? Array.from({ length: 3 }).map(() => skeletonCardHtml()).join("")
+      : results.length === 0
+        ? `<div class="text-center text-tfaint font-inter text-sm py-10">No matches found.</div>`
+        : results.map((post) => postCardHtml(post, getAuthor(post.authorId))).join("");
     html += `</div>`;
   }
   return `<div class="fixed inset-0 bg-bgdeep z-[60] overflow-y-auto"><div class="max-w-[480px] mx-auto">${html}</div></div>`;
@@ -833,7 +871,7 @@ function profileScreenHtml(account) {
   <div class="px-4 pb-7">`;
   if (profileTab === "links") {
     html += account.links && account.links.length
-      ? `<div class="flex flex-col gap-2.5">${account.links.map((l) => `<a href="${escAttr(l.url || "#")}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3.5 bg-panel border border-bd rounded-2xl px-4 py-3.5 no-underline"><span class="flex-shrink-0">${ICONS[LINK_ICON_KEYS[l.icon] || "externalLink"]()}</span><div class="font-sora font-semibold text-[15px] text-tprimary">${esc(l.label)}</div></a>`).join("")}</div>`
+      ? `<div class="flex flex-col gap-2.5">${account.links.map((l) => `<a href="${escAttr(l.url || "#")}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3.5 bg-panel border border-bd rounded-2xl px-4 py-3.5 no-underline"><span class="flex items-center justify-center rounded-lg flex-shrink-0" style="width:34px;height:34px;background:#1C2540;color:#3E8EFF;">${ICONS[LINK_ICON_KEYS[l.icon] || "externalLink"]()}</span><div class="font-sora font-semibold text-[15px] text-tprimary">${esc(l.label)}</div></a>`).join("")}</div>`
       : `<div class="text-center text-tfaint font-inter text-sm py-5">No links added yet.</div>`;
   } else {
     html += theirPosts.length
@@ -1173,9 +1211,9 @@ function editAccountScreenHtml() {
     </div>
     <div class="font-mono text-[11px] text-tfaint uppercase mb-2">Links</div>
     <div class="mb-4">
-      ${(a.links || []).length < 5 ? `<button data-action="open-link-sheet" data-id="new" class="w-full flex items-center gap-3 bg-panel border border-bd rounded-2xl px-4 py-3.5 mb-2.5 text-left">${resizeIcon(ICONS.plus(), 18)}<span class="font-sora font-semibold text-sm">Add Link</span></button>` : `<div class="text-tfaint font-inter text-[12px] mb-2.5">Maximum of 5 links reached.</div>`}
+      ${(a.links || []).length < 5 ? `<button data-action="open-link-sheet" data-id="new" class="w-full flex items-center gap-3 bg-panel border border-bd rounded-2xl px-4 py-3.5 mb-2.5 text-left"><span class="flex items-center justify-center rounded-lg" style="width:34px;height:34px;background:#1C2540;color:#3E8EFF;">${resizeIcon(ICONS.plus(), 18)}</span><span class="font-sora font-semibold text-sm">Add Link</span></button>` : `<div class="text-tfaint font-inter text-[12px] mb-2.5">Maximum of 5 links reached.</div>`}
       ${(a.links || []).map((l, idx) => `<button data-action="open-link-sheet" data-id="${idx}" class="w-full flex items-center gap-3 bg-panel border border-bd rounded-2xl px-4 py-3.5 mb-2.5 text-left">
-        <span class="flex-shrink-0">${ICONS[LINK_ICON_KEYS[l.icon] || "externalLink"]()}</span>
+        <span class="flex items-center justify-center rounded-lg flex-shrink-0" style="width:34px;height:34px;background:#1C2540;color:#3E8EFF;">${ICONS[LINK_ICON_KEYS[l.icon] || "externalLink"]()}</span>
         <div class="flex-1 min-w-0"><div class="font-sora font-semibold text-sm truncate">${esc(l.label)}</div><div class="font-inter text-[11.5px] text-tfaint truncate">${esc(l.url)}</div></div>
         ${ICONS.chevronRight()}
       </button>`).join("")}
@@ -1305,9 +1343,9 @@ function linkFormSheetHtml() {
       </div>
       <div class="font-mono text-[11px] text-tfaint uppercase tracking-wide mb-1.5">Platform</div>
       <button data-action="open-platform-sheet" class="w-full flex items-center gap-2.5 bg-panelalt border border-bd rounded-xl px-4 py-3.5 mb-3 text-left">
-        ${resizeIcon(ICONS.chevronDown(), 16)}
-        <span class="flex-1 font-inter text-[15px] ${platformLabel ? "" : "text-tfaint"}">${platformLabel ? esc(platformLabel) : "Select platform"}</span>
-        ${platformLabel ? `<span class="flex-shrink-0">${ICONS[LINK_ICON_KEYS[linkDraft.platform] || "externalLink"]()}</span>` : ""}
+        <span class="flex items-center justify-center rounded-lg flex-shrink-0" style="width:30px;height:30px;background:#1C2540;color:#3E8EFF;">${ICONS[LINK_ICON_KEYS[linkDraft.platform] || "externalLink"]()}</span>
+        <span class="flex-1 font-inter text-[15px] ${platformLabel ? "" : "text-tfaint"}">${platformLabel ? esc(platformLabel) : "Empty"}</span>
+        <span class="flex-shrink-0 text-tfaint">${resizeIcon(ICONS.chevronDown(), 16)}</span>
       </button>
       <input id="el-title" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px] mb-3" placeholder="Title (e.g. Follow me on Instagram)" value="${escAttr(linkDraft.title)}" />
       <input id="el-url" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px]" placeholder="URL (https://...)" value="${escAttr(linkDraft.url)}" />
@@ -1788,7 +1826,7 @@ function renderInner() {
     }
     case "profile": {
       const account = state.accounts.find((a) => a.id === (param || selectedProfileId));
-      html = account ? profileScreenHtml(account) : feedScreen("home");
+      html = account ? profileScreenHtml(account) : (state.accountsLoaded ? feedScreen("home") : profileSkeletonHtml());
       break;
     }
     case "ownerLogin": html = ownerLoginScreenHtml(); break;
