@@ -6,7 +6,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc,
-  onSnapshot, serverTimestamp
+  onSnapshot, serverTimestamp, query, where, orderBy, limit
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword,
@@ -225,6 +225,7 @@ const MAX_STORED_IMAGE_BYTES = 700 * 1024; // Firestore documents must stay unde
 const state = {
   accounts: [],
   posts: [],
+  notifications: [],
   siteContent: DEFAULT_SITE_CONTENT,
   adSettings: DEFAULT_AD_SETTINGS,
   branding: DEFAULT_BRANDING,
@@ -310,21 +311,34 @@ onSnapshot(doc(db, "branding", "main"), (d) => {
   render();
 }, () => { state.brandingLoaded = true; });
 
+let unsubNotifications = null;
 onAuthStateChanged(auth, async (user) => {
+  if (unsubNotifications) { unsubNotifications(); unsubNotifications = null; }
   if (user) {
     try {
       const snap = await getDoc(doc(db, "accounts", user.uid));
       state.session = snap.exists() ? { uid: user.uid, role: snap.data().role, account: { id: user.uid, ...snap.data() } } : { uid: user.uid, role: null, account: null };
       if (state.session.role === "admin" && state.session.account) saveKnownAccount(state.session.account);
+      const nq = query(collection(db, "notifications"), where("uid", "==", user.uid), orderBy("createdAt", "desc"), limit(30));
+      unsubNotifications = onSnapshot(nq, (nsnap) => {
+        state.notifications = nsnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        render();
+      }, () => {});
     } catch (e) {
       state.session = null;
     }
   } else {
     state.session = null;
+    state.notifications = [];
   }
   state.authResolved = true;
   render();
 });
+async function addNotification(uid, type, title, message) {
+  try {
+    await setDoc(doc(collection(db, "notifications")), { uid, type, title, message, read: false, createdAt: serverTimestamp() });
+  } catch (e) { /* non-critical */ }
+}
 function getKnownAccounts() {
   try { return JSON.parse(localStorage.getItem("cv_known_accounts") || "[]"); }
   catch (e) { return []; }
@@ -616,7 +630,7 @@ function homeHeaderHtml() {
   }
   const isLoggedInCreator = !!(state.session && state.session.role === "admin");
   const rightHtml = isLoggedInCreator
-    ? `${iconBtn({ action: "open-language", icon: resizeIcon(ICONS.globe(), 19), size: 34, radius: 8 })}${iconBtn({ action: "open-notifications", icon: resizeIcon(ICONS.notif(), 19), size: 34, radius: 8 })}`
+    ? `${iconBtn({ action: "open-language", icon: resizeIcon(ICONS.globe(), 19), size: 34, radius: 8 })}<button data-action="nav" data-id="notifications" class="relative border border-bd flex items-center justify-center flex-shrink-0 text-tmuted bg-panelalt" style="width:34px;height:34px;border-radius:8px;">${state.notifications.filter((n) => !n.read).length > 0 ? `<span class="absolute rounded-full bg-coral" style="top:5px;right:6px;width:7px;height:7px;"></span>` : ""}${resizeIcon(ICONS.notif(), 19)}</button>`
     : `<button data-action="nav" data-id="creatorAuth" class="rounded-full font-sora font-semibold text-[12.5px] text-white px-4 py-2" style="background:linear-gradient(135deg,#3E8EFF,#7C5CFF);">Sign In</button>`;
   return `<div id="site-header" class="sticky top-0 z-20" style="background:#0A0E17;transition:background-color .2s ease, backdrop-filter .2s ease;">
     <div class="flex items-center gap-2" style="height:52px;padding:12px;">
@@ -643,7 +657,7 @@ function panelTopBarHtml(name, avatar, roleLabel) {
       ${avatarHtml(name, avatar, 36)}
       <div class="min-w-0"><div class="font-sora font-bold text-sm truncate">${esc(name)}</div><div class="font-inter text-[11px] text-tfaint">${esc(roleLabel)}</div></div>
     </div>
-    <button data-action="confirm-logout" class="flex items-center gap-1.5 text-tmuted font-inter text-xs border border-bd rounded-full px-3 py-1.5 flex-shrink-0">${ICONS.logOut()} Log out</button>
+    <button data-action="confirm-logout" class="flex items-center gap-1.5 font-inter text-xs rounded-full px-3 py-1.5 flex-shrink-0" style="background:rgba(255,93,108,.14);border:1px solid rgba(255,93,108,.35);color:#FF5D6C;">${ICONS.logOut()} Log out</button>
   </div>`;
 }
 function sectionHeadHtml(title, seeAllTabId, seeAllAction = "set-owner-tab") {
@@ -741,6 +755,46 @@ function skeletonCardHtml() {
       <div class="rounded-md" style="width:90px;height:12px;background:#1C2540;"></div>
     </div>
     <div class="rounded-md mt-3" style="width:70%;height:14px;background:#1C2540;"></div>
+  </div>`;
+}
+const NOTIF_META = {
+  login_success: { icon: "check", color: "#34D399" },
+  post_created: { icon: "plus", color: "#3E8EFF" },
+  post_approved: { icon: "check", color: "#34D399" },
+  post_rejected: { icon: "trash", color: "#FF5D6C" },
+  post_resubmitted: { icon: "clock", color: "#F6C453" },
+  post_hidden: { icon: "eyeOff", color: "#8A93AC" },
+  post_deleted: { icon: "trash", color: "#FF5D6C" },
+  account_banned: { icon: "ban", color: "#FF5D6C" },
+  account_unbanned: { icon: "unban", color: "#34D399" },
+};
+function timeAgo(ts) {
+  if (!ts || !ts.toDate) return "";
+  const diff = Date.now() - ts.toDate().getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+function notificationsScreenHtml() {
+  const list = state.notifications;
+  const hasUnread = list.some((n) => !n.read);
+  return `${backHeaderHtml("Notifications", "nav", "home", hasUnread ? `<button data-action="mark-all-read" class="font-inter text-[12.5px] text-tprimary bg-transparent border-none">Mark all read</button>` : "")}
+  <div class="px-4 pt-1 pb-24">
+    ${list.length === 0 ? `<div class="text-center text-tfaint font-inter text-sm py-16">No notifications yet.</div>` : list.map((n) => {
+      const meta = NOTIF_META[n.type] || { icon: "notif", color: "#3E8EFF" };
+      return `<div data-action="read-notification" data-id="${n.id}" class="flex items-start gap-3 bg-panel border border-bd rounded-2xl p-3.5 mb-2.5" style="${n.read ? "" : "border-color:rgba(62,142,255,.4);"}">
+        <span class="flex items-center justify-center rounded-lg flex-shrink-0" style="width:34px;height:34px;background:${meta.color}22;color:${meta.color};">${ICONS[meta.icon] ? ICONS[meta.icon]() : ICONS.notif()}</span>
+        <div class="flex-1 min-w-0">
+          <div class="font-sora font-semibold text-[13.5px]">${esc(n.title)}</div>
+          <div class="font-inter text-[12px] text-tmuted mt-0.5">${esc(n.message)}</div>
+          <div class="font-inter text-[10.5px] text-tfaint mt-1">${timeAgo(n.createdAt)}</div>
+        </div>
+        ${!n.read ? `<span class="rounded-full flex-shrink-0" style="width:8px;height:8px;background:#3E8EFF;margin-top:5px;"></span>` : ""}
+      </div>`;
+    }).join("")}
   </div>`;
 }
 function profileSkeletonHtml() {
@@ -915,7 +969,7 @@ function profileScreenHtml(account) {
   let html = "";
   if (isOwn) {
     html += `<div class="flex items-center justify-end" style="height:52px;padding:12px;">
-      <button data-action="confirm-logout" class="flex items-center gap-1.5 rounded-full border border-bd font-inter font-semibold text-[12.5px] text-tmuted" style="padding:7px 13px;">${resizeIcon(ICONS.logOut(), 16)}Logout</button>
+      <button data-action="confirm-logout" class="flex items-center gap-1.5 rounded-full font-inter font-semibold text-[12.5px]" style="padding:7px 13px;background:rgba(255,93,108,.14);border:1px solid rgba(255,93,108,.35);color:#FF5D6C;">${resizeIcon(ICONS.logOut(), 16)}Logout</button>
     </div>`;
   } else {
     html += backHeaderHtml("", "nav", "home");
@@ -959,7 +1013,8 @@ function profileScreenHtml(account) {
 /*  SCREEN: FIRST-RUN OWNER SETUP                                     */
 /* ---------------------------------------------------------------- */
 /* ---------------------------------------------------------------- */
-/*  SCREEN: OWNER LOGIN ("/admin" — Owner/Admin only, no public gate) */
+/*  Owner now signs in through the same login form as Creators        */
+/*  (see creatorAuthScreenHtml / creatorLoginSubmit / creatorGoogleAuth)*/
 /* ---------------------------------------------------------------- */
 const ROLE_COLORS = {
   owner: { c1: "#3E8EFF", c2: "#7C5CFF", soft: "rgba(62,142,255,.14)" },
@@ -972,21 +1027,6 @@ function roleBtn(action, label, role, extra = "w-full") {
 function roleFormIconHtml(role, icon) {
   const c = ROLE_COLORS[role];
   return `<div class="rounded-2xl flex items-center justify-center mx-auto mb-5" style="width:56px;height:56px;background:${c.soft};color:${c.c1};">${icon}</div>`;
-}
-function ownerLoginScreenHtml() {
-  return `${backHeaderHtml("Owner login", "nav", "home")}
-  <div class="px-5 pt-1.5 pb-8">
-    ${roleFormIconHtml("owner", ICONS.lock())}
-    <div class="w-full">
-      ${fieldWrap("Email", `<input id="ol-email" type="email" class="${inputCls}" placeholder="you@example.com" />`)}
-      ${fieldWrap("Password", passwordFieldHtml("ol-password", "••••••••"))}
-      <div id="ol-error" class="text-coral text-xs mb-2 font-inter"></div>
-      ${roleBtn("owner-login", "Login", "owner")}
-      <button data-action="forgot-password" data-id="owner" class="w-full text-center mt-3.5 bg-transparent border-none text-tmuted font-inter text-xs">Forgot password?</button>
-      <div class="flex items-center gap-2.5 my-4"><div class="flex-1 h-px bg-bd"></div><div class="font-inter text-[11px] text-tfaint">OR</div><div class="flex-1 h-px bg-bd"></div></div>
-      <button data-action="owner-google-auth" class="w-full flex items-center justify-center gap-2 rounded-xl border border-bd py-3 font-sora font-semibold text-sm">${ICONS.google()}<span>Continue with Google</span></button>
-    </div>
-  </div>`;
 }
 
 /* ---------------------------------------------------------------- */
@@ -1068,14 +1108,21 @@ function postEditorHtml(draft) {
     <button data-action="pe-add-code" class="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-lg border border-dashed border-bd text-tmuted font-inter text-sm mb-4">${ICONS.plus()} Add code</button>
 
     <div class="font-mono text-[11px] text-tfaint uppercase mb-2">Links</div>
-    <div id="pe-links">${draft.links.map((l, i) => linkRowHtmlForPost(l, i)).join("")}</div>
-    <button data-action="pe-add-link" class="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-lg border border-dashed border-bd text-tmuted font-inter text-sm mb-4">${ICONS.plus()} Add link</button>
+    <div id="pe-links">
+      ${draft.links.length < 5 ? `<button data-action="open-post-link-sheet" data-id="new" class="w-full flex items-center gap-3 bg-bgdeep border border-bd rounded-2xl px-4 py-3.5 mb-2.5 text-left">${modernIconBadgeHtml("other", 34)}<span class="font-sora font-semibold text-sm">Add Link</span></button>` : `<div class="text-tfaint font-inter text-[12px] mb-2.5">Maximum of 5 links reached.</div>`}
+      ${draft.links.map((l, i) => `<button data-action="open-post-link-sheet" data-id="${i}" class="w-full flex items-center gap-3 bg-bgdeep border border-bd rounded-2xl px-4 py-3.5 mb-2.5 text-left">
+        ${modernIconBadgeHtml(l.icon || detectPlatformKey(l.url), 34)}
+        <div class="flex-1 min-w-0"><div class="font-sora font-semibold text-sm truncate">${esc(l.title || "Untitled link")}</div><div class="font-inter text-[11.5px] text-tfaint truncate">${esc(l.url)}</div></div>
+        ${ICONS.chevronRight()}
+      </button>`).join("")}
+    </div>
 
     <div class="flex gap-2.5 mt-1">
       ${primaryBtn({ action: "pe-save", label: "Save map", icon: `<span class="mr-1">${ICONS.save()}</span>`, extra: "flex-1" })}
       ${ghostBtn({ action: "pe-cancel", label: "Cancel", extra: "flex-1" })}
     </div>
-  </div>`;
+  </div>
+  ${linkFormSheetHtml()}`;
 }
 function bindPostEditorInputs() {
   const map = { "pe-title": "title", "pe-category": "category", "pe-description": "description", "pe-thumbnail": "thumbnail" };
@@ -1195,9 +1242,10 @@ function submitScreenHtml() {
   }
   return `${backHeaderHtml("Submit a map", "nav", "home")}
   <div class="px-4 pt-2 pb-24">
+    ${account.banned ? `<div class="flex items-center gap-2.5 bg-panel border rounded-2xl px-4 py-3 mb-3.5" style="border-color:rgba(255,93,108,.35);"><span style="color:#FF5D6C;">${ICONS.ban()}</span><div class="font-inter text-[12.5px] text-tmuted">Your account is banned from submitting new maps. Check Notifications for details.</div></div>` : ""}
     <div class="flex items-center justify-between mb-3.5">
       <div class="font-sora font-extrabold text-lg">My maps</div>
-      ${!isEditing ? `<button data-action="admin-new-post" class="flex items-center gap-1.5 rounded-full font-sora font-semibold text-[13px] text-white px-4 py-2" style="background:linear-gradient(135deg,#3E8EFF,#7C5CFF);">${resizeIcon(ICONS.plus(), 15)}Add</button>` : ""}
+      ${!isEditing ? `<button data-action="admin-new-post" class="flex items-center gap-1.5 rounded-full font-sora font-semibold text-[13px] text-white px-4 py-2" style="background:linear-gradient(135deg,#3E8EFF,#7C5CFF);opacity:${account.banned ? "0.5" : "1"};">${resizeIcon(ICONS.plus(), 15)}Add</button>` : ""}
     </div>
     ${body}
   </div>`;
@@ -1408,6 +1456,7 @@ function editLinksScreenHtml() {
   ${linkFormSheetHtml()}`;
 }
 let linkDraft = { title: "", url: "", platform: "" };
+let linkSheetContext = "profile"; // "profile" | "post"
 function linkFormSheetHtml() {
   if (!state.ui.linkSheetOpen) return "";
   const idx = state.ui.linkSheetIndex;
@@ -1885,6 +1934,8 @@ function renderInner() {
       if (!state.authResolved) { html = profileSkeletonHtml(); showBottomNav = true; break; }
       if (!isLoggedInCreator) { html = creatorAuthScreenHtml(); break; }
       html = profileScreenHtml(state.session.account); showBottomNav = true; break;
+    case "notifications":
+      html = isLoggedInCreator || (state.session && state.session.role === "owner") ? notificationsScreenHtml() : creatorAuthScreenHtml(); break;
     case "editAccount":
       html = isLoggedInCreator ? editAccountScreenHtml() : creatorAuthScreenHtml(); break;
     case "editName":
@@ -1911,9 +1962,9 @@ function renderInner() {
       html = account ? profileScreenHtml(account) : (state.accountsLoaded ? feedScreen("home") : profileSkeletonHtml());
       break;
     }
-    case "ownerLogin": html = ownerLoginScreenHtml(); break;
+    case "ownerLogin": html = creatorAuthScreenHtml(); break;
     case "ownerPanel":
-      html = state.session && state.session.role === "owner" ? ownerScreenHtml() : ownerLoginScreenHtml();
+      html = state.session && state.session.role === "owner" ? ownerScreenHtml() : creatorAuthScreenHtml();
       break;
     default: html = feedScreen("home"); showFooter = true; showBottomNav = true;
   }
@@ -2013,10 +2064,16 @@ function cancelPostEdit() { postEditorDraft = null; postEditorMode = null; rende
 async function savePostEditor() {
   if (!postEditorDraft.title.trim()) { showToast("Map title is required.", "error"); return; }
   const isNew = !state.posts.some((p) => p.id === postEditorDraft.id);
+  const wasApproved = !isNew && (state.posts.find((p) => p.id === postEditorDraft.id) || {}).status === "approved";
   const doSave = async () => {
     const draft = { ...postEditorDraft };
-    if (postEditorMode === "admin" && !isNew && draft.status === "approved") draft.status = "pending"; // edits go back for review
+    const resubmitted = postEditorMode === "admin" && !isNew && draft.status === "approved";
+    if (resubmitted) draft.status = "pending"; // edits go back for review
     const ok = await fsSetPost(draft.id, draft);
+    if (ok && postEditorMode === "admin") {
+      if (isNew) addNotification(draft.authorId, "post_created", "Map submitted", `"${draft.title}" was submitted and is pending owner review.`);
+      else if (resubmitted && wasApproved) addNotification(draft.authorId, "post_resubmitted", "Map resubmitted", `Your edit to "${draft.title}" needs owner re-approval.`);
+    }
     showToast(ok ? "Map saved." + (postEditorMode === "admin" ? " Pending owner approval." : "") : "Couldn't save — try again.", ok ? "success" : "error");
     postEditorDraft = null; postEditorMode = null;
     render();
@@ -2026,8 +2083,10 @@ async function savePostEditor() {
 }
 
 function deletePost(id) {
+  const post = state.posts.find((p) => p.id === id);
   askConfirm({ title: "Delete map?", message: "This will permanently remove the map. This can't be undone.", confirmLabel: "Delete", danger: true }, async () => {
     const ok = await fsDeletePost(id);
+    if (ok && post) addNotification(post.authorId, "post_deleted", "Map deleted", `Your map "${post.title}" was deleted by the owner.`);
     showToast(ok ? "Map deleted." : "Couldn't delete — try again.", ok ? "success" : "error");
   });
 }
@@ -2036,18 +2095,23 @@ function toggleHidePost(id) {
   if (!post) return;
   askConfirm({ message: post.hidden ? "Unhide this map so it shows on Home again?" : "Hide this map from Home? You can unhide it anytime.", confirmLabel: post.hidden ? "Unhide" : "Hide" }, async () => {
     const ok = await fsSetPost(id, { hidden: !post.hidden });
+    if (ok && !post.hidden) addNotification(post.authorId, "post_hidden", "Map hidden", `Your map "${post.title}" was hidden from Home by the owner.`);
     showToast(ok ? "Updated." : "Couldn't update — try again.", ok ? "success" : "error");
   });
 }
 function approvePost(id) {
+  const post = state.posts.find((p) => p.id === id);
   askConfirm({ message: "Approve this map? It will become visible to everyone on Home.", confirmLabel: "Approve" }, async () => {
     const ok = await fsSetPost(id, { status: "approved" });
+    if (ok && post) addNotification(post.authorId, "post_approved", "Map approved", `Your map "${post.title}" was approved and is now live.`);
     showToast(ok ? "Map approved." : "Couldn't update — try again.", ok ? "success" : "error");
   });
 }
 function rejectPost(id) {
+  const post = state.posts.find((p) => p.id === id);
   askConfirm({ title: "Reject map?", message: "This will permanently delete the submitted map.", confirmLabel: "Reject", danger: true }, async () => {
     const ok = await fsDeletePost(id);
+    if (ok && post) addNotification(post.authorId, "post_rejected", "Map rejected", `Your map "${post.title}" was rejected by the owner.`);
     showToast(ok ? "Map rejected and removed." : "Couldn't update — try again.", ok ? "success" : "error");
   });
 }
@@ -2142,6 +2206,14 @@ async function saveLink() {
   } else if (!/^https?:\/\//i.test(url)) {
     errEl.textContent = "URL must start with http:// or https://"; return;
   }
+  if (linkSheetContext === "post") {
+    if (idx < 0 && postEditorDraft.links.length >= 5) { errEl.textContent = "You can only add up to 5 links."; return; }
+    const entry = { id: (idx >= 0 && postEditorDraft.links[idx] && postEditorDraft.links[idx].id) || ("l" + Date.now()), url, title, icon: platform };
+    if (idx >= 0) postEditorDraft.links[idx] = entry; else postEditorDraft.links.push(entry);
+    state.ui.linkSheetOpen = false;
+    render();
+    return;
+  }
   const links = [...(a.links || [])];
   if (idx < 0 && links.length >= 5) { errEl.textContent = "You can only add up to 5 links."; return; }
   const entry = { id: (idx >= 0 && links[idx] && links[idx].id) || ("l" + Date.now()), url, label: title, icon: platform };
@@ -2150,8 +2222,14 @@ async function saveLink() {
   if (ok) reloadWithToast(idx >= 0 ? "Link updated." : "Link added."); else showToast("Couldn't save — try again.", "error");
 }
 function deleteLink() {
-  const a = state.session.account;
   const idx = state.ui.linkSheetIndex;
+  if (linkSheetContext === "post") {
+    postEditorDraft.links.splice(idx, 1);
+    state.ui.linkSheetOpen = false;
+    render();
+    return;
+  }
+  const a = state.session.account;
   askConfirm({ title: "Remove link?", message: "This link will be removed from your profile.", confirmLabel: "Remove", danger: true }, async () => {
     const links = [...(a.links || [])];
     links.splice(idx, 1);
@@ -2225,8 +2303,12 @@ function removeLinkRow(idx) {
 function ownerToggleBan(id) {
   const acc = state.accounts.find((a) => a.id === id);
   if (!acc) return;
-  askConfirm({ title: acc.banned ? "Unban creator?" : "Ban creator?", message: acc.banned ? `${acc.name} will be able to log in again.` : `${acc.name} will no longer be able to log in.`, confirmLabel: acc.banned ? "Unban" : "Ban", danger: !acc.banned }, async () => {
+  askConfirm({ title: acc.banned ? "Unban creator?" : "Ban creator?", message: acc.banned ? `${acc.name} will be able to submit new maps again.` : `${acc.name} will no longer be able to submit new maps.`, confirmLabel: acc.banned ? "Unban" : "Ban", danger: !acc.banned }, async () => {
     const ok = await fsSetAccount(id, { banned: !acc.banned });
+    if (ok) {
+      addNotification(id, acc.banned ? "account_unbanned" : "account_banned", acc.banned ? "Account unbanned" : "Account banned",
+        acc.banned ? "You've been unbanned and can submit maps again." : "Your account has been banned. You can't submit new maps right now.");
+    }
     showToast(ok ? "Updated." : "Couldn't update — try again.", ok ? "success" : "error");
   });
 }
@@ -2253,37 +2335,14 @@ async function ownerSaveBranding() {
 /* ---------------------------------------------------------------- */
 /*  AUTH: OWNER LOGIN / CREATOR SIGNUP+LOGIN / LOGOUT                  */
 /* ---------------------------------------------------------------- */
-async function ownerLogin() {
-  const email = document.getElementById("ol-email").value.trim();
-  const password = document.getElementById("ol-password").value;
-  const errEl = document.getElementById("ol-error");
-  errEl.textContent = "";
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    const acc = state.accounts.find((a) => a.email === email);
-    state.ui.ownerTab = "dashboard";
-    navigate("ownerPanel");
-    showToast(`Welcome back! — ${acc ? acc.name : "Owner"} is now signed in.`);
-  } catch (e) {
-    errEl.textContent = "Wrong email or password.";
-  }
-}
-async function ownerGoogleAuth() {
-  const errEl = document.getElementById("ol-error");
-  try {
-    const cred = await signInWithPopup(auth, new GoogleAuthProvider());
-    const snap = await getDoc(doc(db, "accounts", cred.user.uid));
-    if (!snap.exists() || snap.data().role !== "owner") {
-      await signOut(auth);
-      if (errEl) errEl.textContent = "This Google account isn't registered as Owner.";
-      return;
-    }
-    state.ui.ownerTab = "dashboard";
-    navigate("ownerPanel");
-    showToast(`Welcome back! — ${cred.user.displayName || "Owner"} is now signed in.`);
-  } catch (e) {
-    if (errEl) errEl.textContent = e.message || "Google sign-in failed.";
-  }
+function friendlyAuthError(e) {
+  const code = e && e.code;
+  if (code === "auth/unauthorized-domain") return "This domain isn't authorized for Google sign-in yet. Ask the site owner to add it in Firebase Console → Authentication → Settings → Authorized domains.";
+  if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return "Sign-in was cancelled.";
+  if (code === "auth/network-request-failed") return "Network error — check your connection and try again.";
+  if (code === "auth/too-many-requests") return "Too many attempts. Please wait a moment and try again.";
+  if (code === "auth/popup-blocked") return "Your browser blocked the sign-in popup. Please allow popups and try again.";
+  return (e && e.message) || "Something went wrong. Please try again.";
 }
 function usernameToEmail(username) {
   return `${username.toLowerCase().replace(/[^a-z0-9_]/g, "")}@craftverse.users`;
@@ -2315,10 +2374,13 @@ async function creatorSignup() {
     const uid = cred.user.uid;
     await fsSetAccount(uid, { role: "admin", name, email, username, avatar: "", bio: "", links: [], profilePublic: true, banned: false });
     if (username) await setDoc(doc(db, "usernames", username), { uid });
+    addNotification(uid, "login_success", "Welcome to CraftVerse!", `Your creator account is ready, ${name}.`);
     navigate("submit");
     showToast(`Welcome, ${name}! Your creator account is ready.`);
   } catch (e) {
-    errEl.textContent = e.code === "auth/email-already-in-use" ? "An account with that email already exists." : (e.message || "Couldn't create your account.");
+    const msg = e.code === "auth/email-already-in-use" ? "An account with that email already exists." : friendlyAuthError(e);
+    errEl.textContent = msg;
+    showToast(msg, "error");
   }
 }
 async function creatorLoginSubmit() {
@@ -2329,25 +2391,48 @@ async function creatorLoginSubmit() {
   if (!identifier || !password) { errEl.textContent = "Enter your email/username and password."; return; }
   try {
     const email = await resolveLoginEmail(identifier);
-    if (!email) { errEl.textContent = "No account found with that email or username."; return; }
-    await signInWithEmailAndPassword(auth, email, password);
-    navigate("submit");
+    if (!email) { const msg = "No account found with that email or username."; errEl.textContent = msg; showToast(msg, "error"); return; }
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    const snap = await getDoc(doc(db, "accounts", cred.user.uid));
+    const name = snap.exists() ? snap.data().name : "there";
+    if (snap.exists() && snap.data().role === "owner") {
+      state.ui.ownerTab = "dashboard";
+      navigate("ownerPanel");
+    } else {
+      navigate("submit");
+    }
+    addNotification(cred.user.uid, "login_success", "Login successful", `Welcome back, ${name}!`);
+    showToast(`Welcome back! — ${name} is now signed in.`);
   } catch (e) {
-    errEl.textContent = "Wrong email/username or password.";
+    const msg = "Wrong email/username or password.";
+    errEl.textContent = msg;
+    showToast(msg, "error");
   }
 }
 async function creatorGoogleAuth() {
+  const errEl = document.getElementById("ca-error");
   try {
     const cred = await signInWithPopup(auth, new GoogleAuthProvider());
     const uid = cred.user.uid;
     const existing = await getDoc(doc(db, "accounts", uid));
+    let name = cred.user.displayName || "Creator";
     if (!existing.exists()) {
-      await fsSetAccount(uid, { role: "admin", name: cred.user.displayName || "Creator", email: cred.user.email || "", username: "", avatar: cred.user.photoURL || "", bio: "", links: [], profilePublic: true, banned: false });
+      await fsSetAccount(uid, { role: "admin", name, email: cred.user.email || "", username: "", avatar: cred.user.photoURL || "", bio: "", links: [], profilePublic: true, banned: false });
+      navigate("submit");
+    } else if (existing.data().role === "owner") {
+      name = existing.data().name || name;
+      state.ui.ownerTab = "dashboard";
+      navigate("ownerPanel");
+    } else {
+      name = existing.data().name || name;
+      navigate("submit");
     }
-    navigate("submit");
-    showToast("Signed in with Google.");
+    addNotification(uid, "login_success", "Login successful", `Welcome back, ${name}!`);
+    showToast(`Welcome back! — ${name} is now signed in.`);
   } catch (e) {
-    showToast(e.message || "Google sign-in failed.", "error");
+    const msg = friendlyAuthError(e);
+    if (errEl) errEl.textContent = msg;
+    showToast(msg, "error");
   }
 }
 async function forgotPassword(kind) {
@@ -2386,7 +2471,6 @@ document.addEventListener("click", async (e) => {
   switch (action) {
     case "nav": state.ui.exploreOpen = false; navigate(id); render(); break;
     case "open-language": showToast("Language settings coming soon."); break;
-    case "open-notifications": showToast("No new notifications yet."); break;
     case "open-explore": exploreQuery = ""; exploreCategory = null; state.ui.exploreOpen = true; render(); break;
     case "close-explore": state.ui.exploreOpen = false; render(); break;
     case "set-explore-category": exploreCategory = id; render(); break;
@@ -2398,7 +2482,13 @@ document.addEventListener("click", async (e) => {
     case "set-profile-tab": profileTab = id; render(); break;
     case "copy-map-code": handleCopyMapCode(id); break;
 
-    case "admin-new-post": startNewPost("admin"); break;
+    case "admin-new-post":
+      if (state.session && state.session.account && state.session.account.banned) {
+        showToast("Your account is banned from submitting maps. Check Notifications for details.", "error");
+      } else {
+        startNewPost("admin");
+      }
+      break;
     case "admin-edit-post": startEditPost(id, "admin"); break;
     case "admin-delete-post": deletePost(id); break;
     case "admin-toggle-hide": toggleHidePost(id); break;
@@ -2485,11 +2575,22 @@ document.addEventListener("click", async (e) => {
     case "save-gender": saveGender(id); break;
     case "save-dob": saveDob(); break;
     case "open-link-sheet": {
+      linkSheetContext = "profile";
       state.ui.linkSheetOpen = true;
       const i = id === "new" ? -1 : parseInt(id, 10);
       state.ui.linkSheetIndex = i;
       const existing = i >= 0 ? (state.session.account.links || [])[i] : null;
       linkDraft = existing ? { title: existing.label || "", url: existing.url || "", platform: existing.icon || "" } : { title: "", url: "", platform: "" };
+      render();
+      break;
+    }
+    case "open-post-link-sheet": {
+      linkSheetContext = "post";
+      state.ui.linkSheetOpen = true;
+      const i = id === "new" ? -1 : parseInt(id, 10);
+      state.ui.linkSheetIndex = i;
+      const existing = i >= 0 && postEditorDraft ? postEditorDraft.links[i] : null;
+      linkDraft = existing ? { title: existing.title || "", url: existing.url || "", platform: existing.icon || "" } : { title: "", url: "", platform: "" };
       render();
       break;
     }
@@ -2521,13 +2622,20 @@ document.addEventListener("click", async (e) => {
       break;
     }
 
-    case "owner-login": ownerLogin(); break;
-    case "owner-google-auth": ownerGoogleAuth(); break;
     case "creator-login-submit": creatorLoginSubmit(); break;
     case "creator-signup-submit": creatorSignup(); break;
     case "creator-google-auth": creatorGoogleAuth(); break;
     case "toggle-auth-mode": state.ui.authMode = state.ui.authMode === "signup" ? "login" : "signup"; render(); break;
     case "forgot-password": forgotPassword(id); break;
+    case "read-notification": {
+      const n = state.notifications.find((x) => x.id === id);
+      if (n && !n.read) updateDoc(doc(db, "notifications", id), { read: true }).catch(() => {});
+      break;
+    }
+    case "mark-all-read": {
+      state.notifications.filter((n) => !n.read).forEach((n) => updateDoc(doc(db, "notifications", n.id), { read: true }).catch(() => {}));
+      break;
+    }
     case "confirm-logout": askConfirm({ title: "Log out?", message: "You'll be signed out of the panel and returned to the login gate.", confirmLabel: "Log out", danger: true }, () => logout()); break;
     case "logout": logout(); break;
 
@@ -2594,7 +2702,7 @@ window.addEventListener("unhandledrejection", (e) => showFatalError(e.reason));
   const path = location.pathname.replace(/\/+$/, "").toLowerCase();
   if (path === "/admin") {
     history.replaceState(null, "", location.origin + "/" + location.search);
-    location.hash = "/ownerLogin";
+    location.hash = "/ownerPanel";
   }
 })();
 
