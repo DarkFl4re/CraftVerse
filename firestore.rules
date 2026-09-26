@@ -45,6 +45,16 @@ service cloud.firestore {
       allow delete: if isActiveAdmin() && (isOwner() || resource.data.authorId == request.auth.uid);
     }
 
+    // Notifications: any signed-in user can create one (e.g. Owner notifying a
+    // Creator about a moderation action), but only the person it's addressed
+    // to can read or mark it read.
+    match /notifications/{id} {
+      allow read: if isSignedIn() && (resource.data.uid == request.auth.uid || isOwner());
+      allow create: if isSignedIn() && request.resource.data.uid is string;
+      allow update: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow delete: if false;
+    }
+
     // Public username → uid lookup, used so a Creator can log in with a
     // username instead of an email. Anyone can read (to resolve a login);
     // a user may only ever claim/write the entry that points at themself.
