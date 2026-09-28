@@ -123,6 +123,8 @@ const DEFAULT_SITE_CONTENT = {
   about: "CraftVerse is a community hub for Free Fire Craftland creators to share map codes, previews and tutorials in one place.\n\nBrowse the home feed, copy a map code straight into your clipboard, and save your favorites for later.",
   terms: "By using this app you agree to keep submitted maps respectful and free of content you don't have rights to.\n\nAdmins are responsible for the maps they submit. The owner reviews and approves all admin-submitted maps before they go public.",
   dmca: "If you believe content posted on this app infringes your rights, please contact the owner through the official channel listed on the profile page with:\n\n1. A description of the content.\n2. The URL or post where it appears.\n3. Your contact information.\n\nValid requests will be reviewed and the content removed if confirmed.",
+  privacy: "We only store what's needed to run CraftVerse: your account info, submitted maps, and favorites. We don't sell your data.\n\nContact the owner if you'd like your account or data removed.",
+  contact: "Have a question, feedback, or a DMCA request? Reach out through the official social links in the footer, or the creator profile links on this site.",
 };
 
 const DEFAULT_AD_SETTINGS = {
@@ -138,12 +140,21 @@ const DEFAULT_BRANDING = {
   siteName: "CraftVerse",
   logo: "https://i.postimg.cc/8PBXwcSh/file-000000006544720bad38bb78a9528ad6.png",
   footerLogo: "https://i.postimg.cc/NMqRW863/file-000000001f307207805497354cbb729f.png",
+  headerTagline: "FreeFire Craftland Community",
   footerTagline: "Craftland map codes, previews & tutorials from the community.",
   categoryMode: "all", // 'all' | 'selected'
   selectedCategories: [],
   socialEnabled: true,
   socialLinks: [], // official site social accounts: [{id, icon, label, url, enabled}]
   bannerSlides: [], // home top image slider: [{id, image, link}]
+  showSignIn: true,
+  showLanguage: true,
+  showNotifications: true,
+  exploreTrendingEnabled: true,
+  exploreCategoryEnabled: true,
+  footerLinksEnabled: true,
+  footerPages: { about: true, terms: true, dmca: true, privacy: true, contact: true }, // preset pages on/off
+  footerCustomLinks: [], // extra footer links: [{id, label, url, enabled}]
 };
 
 const LINK_ICON_KEYS = { discord: "discord", github: "github", twitter: "twitter", youtube: "youtube", facebook: "facebook", telegram: "telegram", instagram: "instagram", whatsapp: "whatsapp", messenger: "messenger", tiktok: "tiktok", email: "email", other: "externalLink" };
@@ -503,7 +514,7 @@ function adSlot(variant = "native") {
     }
     if (s.postViewAdType === "image" && s.postViewAdImage) {
       const inner = `<img src="${escAttr(s.postViewAdImage)}" alt="Sponsored" class="w-full object-cover rounded-2xl mb-4" style="max-height:220px;" />`;
-      return s.postViewAdLink ? `<a href="${escAttr(s.postViewAdLink)}" target="_blank" rel="noopener noreferrer" class="block no-underline">${inner}</a>` : inner;
+      return s.postViewAdLink ? `<a href="${escAttr(sanitizeUrl(s.postViewAdLink))}" target="_blank" rel="noopener noreferrer" class="block no-underline">${inner}</a>` : inner;
     }
     return `<div class="border border-dashed border-bd rounded-2xl px-4 py-5 mb-4 text-center bg-panelalt">
       <div class="font-mono text-[10px] text-tfaint uppercase tracking-wide mb-2.5">Sponsored</div>
@@ -561,7 +572,7 @@ function bannerSliderHtml() {
   if (bannerSlideIndex >= slides.length) bannerSlideIndex = 0;
   const slide = slides[bannerSlideIndex];
   const img = `<img src="${escAttr(slide.image)}" class="w-full object-cover rounded-2xl" style="height:150px;" />`;
-  const clickable = slide.link ? `<a href="${escAttr(slide.link)}" target="_blank" rel="noopener noreferrer" class="block no-underline">${img}</a>` : img;
+  const clickable = slide.link ? `<a href="${escAttr(sanitizeUrl(slide.link))}" target="_blank" rel="noopener noreferrer" class="block no-underline">${img}</a>` : img;
   const dots = slides.length > 1
     ? `<div class="flex justify-center gap-1.5 mt-2.5">${slides.map((_, i) => `<button data-action="set-banner-slide" data-id="${i}" class="rounded-full" style="width:${i === bannerSlideIndex ? "18px" : "6px"};height:6px;background:${i === bannerSlideIndex ? "#34D399" : "#232D48"};transition:width .2s ease;"></button>`).join("")}</div>`
     : "";
@@ -629,15 +640,20 @@ function homeHeaderHtml() {
     </div>`;
   }
   const isLoggedInCreator = !!(state.session && state.session.role === "admin");
-  const rightHtml = isLoggedInCreator
-    ? `${iconBtn({ action: "open-language", icon: resizeIcon(ICONS.globe(), 19), size: 34, radius: 8 })}<button data-action="nav" data-id="notifications" class="relative border border-bd flex items-center justify-center flex-shrink-0 text-tmuted bg-panelalt" style="width:34px;height:34px;border-radius:8px;">${state.notifications.filter((n) => !n.read).length > 0 ? `<span class="absolute rounded-full bg-coral" style="top:5px;right:6px;width:7px;height:7px;"></span>` : ""}${resizeIcon(ICONS.notif(), 19)}</button>`
-    : `<button data-action="nav" data-id="creatorAuth" class="rounded-full font-sora font-semibold text-[12.5px] text-white px-4 py-2" style="background:linear-gradient(135deg,#3E8EFF,#7C5CFF);">Sign In</button>`;
+  const rightParts = [];
+  if (isLoggedInCreator) {
+    if (b.showLanguage !== false) rightParts.push(iconBtn({ action: "open-language", icon: resizeIcon(ICONS.globe(), 19), size: 34, radius: 8 }));
+    if (b.showNotifications !== false) rightParts.push(`<button data-action="nav" data-id="notifications" class="relative border border-bd flex items-center justify-center flex-shrink-0 text-tmuted bg-panelalt" style="width:34px;height:34px;border-radius:8px;">${state.notifications.filter((n) => !n.read).length > 0 ? `<span class="absolute rounded-full bg-coral" style="top:5px;right:6px;width:7px;height:7px;"></span>` : ""}${resizeIcon(ICONS.notif(), 19)}</button>`);
+  } else if (b.showSignIn !== false) {
+    rightParts.push(`<button data-action="nav" data-id="creatorAuth" class="rounded-full font-sora font-semibold text-[12.5px] text-white px-4 py-2" style="background:linear-gradient(135deg,#3E8EFF,#7C5CFF);">Sign In</button>`);
+  }
+  const rightHtml = rightParts.join("");
   return `<div id="site-header" class="sticky top-0 z-20" style="background:#0A0E17;transition:background-color .2s ease, backdrop-filter .2s ease;">
     <div class="flex items-center gap-2" style="height:52px;padding:12px;">
       ${headerLogoHtml(34)}
       <div class="flex flex-col justify-center leading-tight min-w-0">
         <div class="font-sora font-extrabold text-[16px] tracking-tight truncate">${esc(b.siteName)}</div>
-        <div class="font-inter text-[10px] text-tmuted truncate">${esc(HEADER_TAGLINE)}</div>
+        <div class="font-inter text-[10px] text-tmuted truncate">${esc(b.headerTagline)}</div>
       </div>
       <div class="flex-1"></div>
       <div class="flex items-center gap-2 flex-shrink-0">${rightHtml}</div>
@@ -716,9 +732,10 @@ function footerHtml() {
     <img src="${escAttr(b.footerLogo || b.logo)}" alt="${escAttr(b.siteName)}" class="object-contain" style="max-width:160px;max-height:64px;width:auto;height:auto;" />
     <div class="font-inter font-bold text-xs text-tmuted text-center">${esc(b.footerTagline)}</div>
     ${socials.length ? `<div class="flex flex-wrap justify-center gap-2">${socials.map((l) => `<a href="${escAttr(sanitizeUrl(l.url))}" target="_blank" rel="noopener noreferrer" class="no-underline" title="${escAttr(l.label || l.icon || "link")}">${modernIconBadgeHtml(l.icon || detectPlatformKey(l.url), 38)}</a>`).join("")}</div>` : ""}
-    <div class="flex gap-4">
-      ${["about", "terms", "dmca"].map((k) => `<button data-action="nav" data-id="${k}" class="bg-transparent border-none font-inter font-bold text-xs text-tmuted capitalize">${k}</button>`).join("")}
-    </div>
+    ${b.footerLinksEnabled !== false ? `<div class="flex flex-wrap justify-center gap-x-4 gap-y-1.5">
+      ${[["about", "About"], ["terms", "Terms"], ["dmca", "DMCA"], ["privacy", "Privacy"], ["contact", "Contact"]].filter(([k]) => (b.footerPages || {})[k] !== false).map(([k, label]) => `<button data-action="nav" data-id="${k}" class="bg-transparent border-none font-inter font-bold text-xs text-tmuted">${label}</button>`).join("")}
+      ${(b.footerCustomLinks || []).filter((l) => l.enabled !== false && l.url).map((l) => `<a href="${escAttr(sanitizeUrl(l.url))}" target="_blank" rel="noopener noreferrer" class="font-inter font-bold text-xs text-tmuted no-underline">${esc(l.label || "Link")}</a>`).join("")}
+    </div>` : ""}
     <div class="w-full h-px bg-bd my-1"></div>
     <div class="font-inter font-bold text-[11px] text-tfaint">© ${new Date().getFullYear()} ${esc(b.siteName)}. All rights reserved.</div>
   </div>`;
@@ -858,11 +875,22 @@ function exploreScreenHtml() {
   </div>`;
 
   if (!showResults) {
-    html += `<div class="px-4 pb-8">
-      <div class="font-mono text-[11px] text-tfaint uppercase mb-3">Categories</div>
+    html += `<div class="px-4 pb-8">`;
+    if (state.branding.exploreTrendingEnabled !== false) {
+      const counts = {};
+      visible.forEach((p) => { if (p.category) counts[p.category] = (counts[p.category] || 0) + 1; });
+      const trending = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([c]) => c);
+      if (trending.length) {
+        html += `<div class="font-mono text-[11px] text-tfaint uppercase mb-3">Trending</div>
+        <div class="flex flex-wrap gap-2.5 mb-5">${trending.map((c) => `<button data-action="set-explore-category" data-id="${escAttr(c)}" class="flex items-center gap-2 px-4 py-3 rounded-xl border border-bd bg-panelalt font-sora font-bold text-sm">${ICONS.sparkles()} ${esc(c)}</button>`).join("")}</div>`;
+      }
+    }
+    if (state.branding.exploreCategoryEnabled !== false) {
+      html += `<div class="font-mono text-[11px] text-tfaint uppercase mb-3">Categories</div>
       ${categories.length === 0 ? `<div class="text-tfaint font-inter text-sm py-2">No categories yet — add one when creating a map.</div>` :
-        `<div class="flex flex-wrap gap-2.5">${categories.map((c) => `<button data-action="set-explore-category" data-id="${escAttr(c)}" class="flex items-center gap-2 px-4 py-3 rounded-xl border border-bd bg-panelalt font-sora font-bold text-sm">${ICONS.sparkles()} ${esc(c)}</button>`).join("")}</div>`}
-    </div>`;
+        `<div class="flex flex-wrap gap-2.5">${categories.map((c) => `<button data-action="set-explore-category" data-id="${escAttr(c)}" class="flex items-center gap-2 px-4 py-3 rounded-xl border border-bd bg-panelalt font-sora font-bold text-sm">${ICONS.sparkles()} ${esc(c)}</button>`).join("")}</div>`}`;
+    }
+    html += `</div>`;
   } else {
     html += `<div class="px-4 pb-8">`;
     if (exploreCategory) {
@@ -885,7 +913,9 @@ function exploreScreenHtml() {
 /*  SCREEN: STATIC PAGES                                              */
 /* ---------------------------------------------------------------- */
 function staticPageHtml(title, content) {
-  return `${backHeaderHtml(title)}<div class="px-5 pt-1.5 pb-8 text-tmuted font-inter text-sm leading-relaxed whitespace-pre-wrap">${esc(content)}</div>`;
+  const looksLikeHtml = /<[a-z][\s\S]*>/i.test(content || "");
+  const body = looksLikeHtml ? content : esc(content).replace(/\n/g, "<br>");
+  return `${backHeaderHtml(title)}<div class="px-5 pt-1.5 pb-8 text-tmuted font-inter text-sm leading-relaxed">${body}</div>`;
 }
 
 /* ---------------------------------------------------------------- */
@@ -1664,8 +1694,9 @@ function ownerSiteHtml() {
 
   return `<div class="flex flex-col gap-4">
     <div class="bg-panel border border-bd rounded-2xl p-4">
-      <div class="flex items-center gap-2 mb-3.5">${ICONS.layoutDashboard()}<div class="font-sora font-bold text-sm">Branding &amp; Layout</div></div>
+      <div class="flex items-center gap-2 mb-3.5">${ICONS.layoutDashboard()}<div class="font-sora font-bold text-sm">Header</div></div>
       ${fieldWrap("Site name", `<input id="brand-name" class="${inputCls}" value="${escAttr(brand.siteName)}" />`)}
+      ${fieldWrap("Tagline", `<input id="brand-header-tagline" class="${inputCls}" value="${escAttr(brand.headerTagline || "")}" placeholder="e.g. FreeFire Craftland Community" />`)}
       ${fieldWrap("Header logo", `
         <div class="flex gap-2 items-center">
           ${siteLogoHtml(44)}
@@ -1674,12 +1705,28 @@ function ownerSiteHtml() {
           <input id="brand-logo-file" type="file" accept="image/*" class="hidden" />
         </div>
       `)}
-      ${fieldWrap("Footer logo", `<input id="brand-footer-logo" class="${inputCls}" value="${escAttr(brand.footerLogo || "")}" placeholder="https://..." />`)}
-      ${fieldWrap("Footer tagline", `<textarea id="brand-tagline" class="${inputCls}" style="min-height:60px;">${esc(brand.footerTagline)}</textarea>`)}
-      ${fieldWrap("Explore categories", `
+      ${fieldWrap("Header menu buttons", `
+        <div class="flex flex-col gap-2.5">
+          ${toggleHtml("brand.showSignIn", brand.showSignIn !== false, "Sign In — shown", "Sign In — hidden")}
+          ${toggleHtml("brand.showLanguage", brand.showLanguage !== false, "Language — shown", "Language — hidden")}
+          ${toggleHtml("brand.showNotifications", brand.showNotifications !== false, "Notification — shown", "Notification — hidden")}
+        </div>
+      `)}
+      ${primaryBtn({ action: "owner-save-branding", label: "Save header", icon: `<span class="mr-1">${ICONS.save()}</span>`, extra: "w-full" })}
+    </div>
+
+    <div class="bg-panel border border-bd rounded-2xl p-4">
+      <div class="flex items-center gap-2 mb-3.5">${ICONS.sparkles()}<div class="font-sora font-bold text-sm">Explore</div></div>
+      ${fieldWrap("Sections", `
+        <div class="flex flex-col gap-2.5">
+          ${toggleHtml("brand.exploreTrendingEnabled", brand.exploreTrendingEnabled !== false, "Trending — shown", "Trending — hidden")}
+          ${toggleHtml("brand.exploreCategoryEnabled", brand.exploreCategoryEnabled !== false, "Categories — shown", "Categories — hidden")}
+        </div>
+      `)}
+      ${fieldWrap("Category list", `
         <div class="flex gap-2 mb-2.5">
-          <button data-action="set-category-mode" data-id="all" class="flex-1 py-2 rounded-lg border font-inter text-xs font-semibold" style="border-color:${brand.categoryMode === "all" ? "#3E8EFF" : "#232D48"};background:${brand.categoryMode === "all" ? "rgba(62,142,255,.14)" : "transparent"};color:${brand.categoryMode === "all" ? "#3E8EFF" : "#8A93AC"};">Show all categories</button>
-          <button data-action="set-category-mode" data-id="selected" class="flex-1 py-2 rounded-lg border font-inter text-xs font-semibold" style="border-color:${brand.categoryMode === "selected" ? "#3E8EFF" : "#232D48"};background:${brand.categoryMode === "selected" ? "rgba(62,142,255,.14)" : "transparent"};color:${brand.categoryMode === "selected" ? "#3E8EFF" : "#8A93AC"};">Hand-pick categories</button>
+          <button data-action="set-category-mode" data-id="all" class="flex-1 py-2 rounded-lg border font-inter text-xs font-semibold" style="border-color:${brand.categoryMode === "all" ? "#3E8EFF" : "#232D48"};background:${brand.categoryMode === "all" ? "rgba(62,142,255,.14)" : "transparent"};color:${brand.categoryMode === "all" ? "#3E8EFF" : "#8A93AC"};">All categories</button>
+          <button data-action="set-category-mode" data-id="selected" class="flex-1 py-2 rounded-lg border font-inter text-xs font-semibold" style="border-color:${brand.categoryMode === "selected" ? "#3E8EFF" : "#232D48"};background:${brand.categoryMode === "selected" ? "rgba(62,142,255,.14)" : "transparent"};color:${brand.categoryMode === "selected" ? "#3E8EFF" : "#8A93AC"};">Selected categories</button>
         </div>
         ${brand.categoryMode === "selected" ? (
           allCategories.length === 0
@@ -1690,7 +1737,33 @@ function ownerSiteHtml() {
               }).join("")}</div>`
         ) : `<div class="text-tfaint font-inter text-xs py-1">Every category found on your maps will show in Explore.</div>`}
       `)}
-      ${primaryBtn({ action: "owner-save-branding", label: "Save branding", icon: `<span class="mr-1">${ICONS.save()}</span>`, extra: "w-full" })}
+      ${primaryBtn({ action: "owner-save-branding", label: "Save explore settings", icon: `<span class="mr-1">${ICONS.save()}</span>`, extra: "w-full" })}
+    </div>
+
+    <div class="bg-panel border border-bd rounded-2xl p-4">
+      <div class="flex items-center gap-2 mb-3.5">${ICONS.layoutDashboard()}<div class="font-sora font-bold text-sm">Footer</div></div>
+      ${fieldWrap("Footer logo", `<input id="brand-footer-logo" class="${inputCls}" value="${escAttr(brand.footerLogo || "")}" placeholder="https://..." />`)}
+      ${fieldWrap("Description", `<textarea id="brand-tagline" class="${inputCls}" style="min-height:60px;">${esc(brand.footerTagline)}</textarea>`)}
+      ${primaryBtn({ action: "owner-save-branding", label: "Save footer", icon: `<span class="mr-1">${ICONS.save()}</span>`, extra: "w-full" })}
+    </div>
+
+    <div class="bg-panel border border-bd rounded-2xl p-4">
+      <div class="flex items-center gap-2 mb-3.5">${ICONS.externalLink()}<div class="font-sora font-bold text-sm">Footer Links</div></div>
+      ${fieldWrap("Footer links section", toggleHtml("brand.footerLinksEnabled", brand.footerLinksEnabled !== false, "Shown in footer", "Hidden"))}
+      ${fieldWrap("Pages", `
+        <div class="flex flex-col gap-2.5">
+          ${[["about", "About"], ["dmca", "DMCA"], ["privacy", "Privacy Policy"], ["terms", "Terms of Service"], ["contact", "Contact Us"]].map(([k, label]) => toggleHtml(`brandpage.${k}`, (brand.footerPages || {})[k] !== false, `${label} — shown`, `${label} — hidden`)).join("")}
+        </div>
+      `)}
+      ${fieldWrap("Custom links", `
+        ${(brand.footerCustomLinks || []).map((l, i) => `<div class="bg-bgdeep border border-bd rounded-lg p-3 mb-2.5">
+          <div class="flex gap-2 mb-2"><input class="${inputCls} flex-1 fl-label" data-idx="${i}" value="${escAttr(l.label)}" placeholder="Label" />${dangerIconBtn({ action: "brand-remove-footer-link", id: String(i), size: 40 })}</div>
+          <input class="${inputCls} fl-url mb-2" data-idx="${i}" value="${escAttr(l.url)}" placeholder="https://..." />
+          ${toggleHtml(`footerlink.${i}`, l.enabled !== false, "Shown", "Hidden")}
+        </div>`).join("")}
+        <button data-action="brand-add-footer-link" class="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-lg border border-dashed border-bd text-tmuted font-inter text-sm">${ICONS.plus()} Add footer link</button>
+      `)}
+      ${primaryBtn({ action: "owner-save-branding", label: "Save footer links", icon: `<span class="mr-1">${ICONS.save()}</span>`, extra: "w-full" })}
     </div>
 
     <div class="bg-panel border border-bd rounded-2xl p-4">
@@ -1717,8 +1790,8 @@ function ownerSiteHtml() {
       ${fieldWrap("Home banner slider", toggleHtml("ads.bannerEnabled", ads.bannerEnabled, "Shown at top of Home", "Hidden"))}
       ${fieldWrap("Native ads in feed", toggleHtml("ads.nativeEnabled", ads.nativeEnabled, "Shown between maps", "Hidden"))}
       ${fieldWrap("Show every N maps", `<input id="ads-frequency" type="number" min="1" class="${inputCls}" value="${ads.nativeFrequency}" />`)}
-      ${fieldWrap("Ad on map view page", toggleHtml("ads.postViewEnabled", ads.postViewEnabled, "Shown below description", "Hidden"))}
-      ${fieldWrap("Map view ad type", `
+      ${fieldWrap("Post body ad", toggleHtml("ads.postViewEnabled", ads.postViewEnabled, "Shown below description", "Hidden"))}
+      ${fieldWrap("Post body ad type", `
         <div class="flex gap-2">
           <button data-action="set-postview-ad-type" data-id="image" class="flex-1 py-2 rounded-lg border font-inter text-xs font-semibold" style="border-color:${ads.postViewAdType === "image" ? "#3E8EFF" : "#232D48"};background:${ads.postViewAdType === "image" ? "rgba(62,142,255,.14)" : "transparent"};color:${ads.postViewAdType === "image" ? "#3E8EFF" : "#8A93AC"};">Image + Link</button>
           <button data-action="set-postview-ad-type" data-id="code" class="flex-1 py-2 rounded-lg border font-inter text-xs font-semibold" style="border-color:${ads.postViewAdType === "code" ? "#3E8EFF" : "#232D48"};background:${ads.postViewAdType === "code" ? "rgba(62,142,255,.14)" : "transparent"};color:${ads.postViewAdType === "code" ? "#3E8EFF" : "#8A93AC"};">AdSense / Monetag / Adsterra code</button>
@@ -1742,9 +1815,12 @@ function ownerSiteHtml() {
 
     <div class="bg-panel border border-bd rounded-2xl p-4">
       <div class="flex items-center gap-2 mb-3.5">${ICONS.fileText()}<div class="font-sora font-bold text-sm">Page content</div></div>
+      <div class="font-inter text-xs text-tmuted mb-3">Plain text or full HTML/JavaScript is supported — if you paste HTML tags, they're rendered as-is.</div>
       ${fieldWrap("About page", `<textarea id="sc-about" class="${inputCls}" style="min-height:100px;">${esc(content.about)}</textarea>`)}
-      ${fieldWrap("Terms page", `<textarea id="sc-terms" class="${inputCls}" style="min-height:100px;">${esc(content.terms)}</textarea>`)}
+      ${fieldWrap("Terms of Service page", `<textarea id="sc-terms" class="${inputCls}" style="min-height:100px;">${esc(content.terms)}</textarea>`)}
       ${fieldWrap("DMCA page", `<textarea id="sc-dmca" class="${inputCls}" style="min-height:100px;">${esc(content.dmca)}</textarea>`)}
+      ${fieldWrap("Privacy Policy page", `<textarea id="sc-privacy" class="${inputCls}" style="min-height:100px;">${esc(content.privacy || "")}</textarea>`)}
+      ${fieldWrap("Contact Us page", `<textarea id="sc-contact" class="${inputCls}" style="min-height:100px;">${esc(content.contact || "")}</textarea>`)}
       ${primaryBtn({ action: "owner-save-site-content", label: "Save page content", icon: `<span class="mr-1">${ICONS.save()}</span>`, extra: "w-full" })}
     </div>
   </div>`;
@@ -1768,16 +1844,18 @@ function bindOwnerSiteInputs() {
       catch (err) { showToast("Couldn't read that image.", "error"); }
     });
   }
-  const scMap = { "sc-about": "about", "sc-terms": "terms", "sc-dmca": "dmca" };
+  const scMap = { "sc-about": "about", "sc-terms": "terms", "sc-dmca": "dmca", "sc-privacy": "privacy", "sc-contact": "contact" };
   Object.entries(scMap).forEach(([id, key]) => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("input", (e) => { siteContentDraft[key] = e.target.value; });
   });
-  const brandMap = { "brand-name": "siteName", "brand-logo": "logo", "brand-footer-logo": "footerLogo", "brand-tagline": "footerTagline" };
+  const brandMap = { "brand-name": "siteName", "brand-logo": "logo", "brand-footer-logo": "footerLogo", "brand-tagline": "footerTagline", "brand-header-tagline": "headerTagline" };
   Object.entries(brandMap).forEach(([id, key]) => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("input", (e) => { brandingDraft[key] = e.target.value; });
   });
+  document.querySelectorAll(".fl-label").forEach((el) => el.addEventListener("input", (e) => { brandingDraft.footerCustomLinks[+e.target.dataset.idx].label = e.target.value; }));
+  document.querySelectorAll(".fl-url").forEach((el) => el.addEventListener("input", (e) => { brandingDraft.footerCustomLinks[+e.target.dataset.idx].url = e.target.value; }));
   document.querySelectorAll(".soc-label").forEach((el) => el.addEventListener("input", (e) => { brandingDraft.socialLinks[+e.target.dataset.idx].label = e.target.value; }));
   document.querySelectorAll(".soc-url").forEach((el) => el.addEventListener("input", (e) => { brandingDraft.socialLinks[+e.target.dataset.idx].url = e.target.value; }));
   document.querySelectorAll(".soc-icon").forEach((el) => el.addEventListener("change", (e) => { brandingDraft.socialLinks[+e.target.dataset.idx].icon = e.target.value; }));
@@ -1952,6 +2030,8 @@ function renderInner() {
     case "about": html = staticPageHtml("About", state.siteContent.about); break;
     case "terms": html = staticPageHtml("Terms", state.siteContent.terms); break;
     case "dmca": html = staticPageHtml("DMCA Policy", state.siteContent.dmca); break;
+    case "privacy": html = staticPageHtml("Privacy Policy", state.siteContent.privacy); break;
+    case "contact": html = staticPageHtml("Contact Us", state.siteContent.contact); break;
     case "post": {
       const post = state.posts.find((p) => p.id === (param || selectedPostId));
       html = post ? postViewScreenHtml(post) : feedScreen("home");
@@ -2524,6 +2604,15 @@ document.addEventListener("click", async (e) => {
     case "brand-remove-social":
       if (brandingDraft) { brandingDraft.socialLinks.splice(+id, 1); render(); }
       break;
+    case "brand-add-footer-link":
+      if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
+      brandingDraft.footerCustomLinks = brandingDraft.footerCustomLinks || [];
+      brandingDraft.footerCustomLinks.push({ id: "f" + Date.now(), label: "", url: "", enabled: true });
+      render();
+      break;
+    case "brand-remove-footer-link":
+      if (brandingDraft) { brandingDraft.footerCustomLinks.splice(+id, 1); render(); }
+      break;
     case "brand-add-slide":
       if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
       brandingDraft.bannerSlides.push({ id: "b" + Date.now(), image: "", link: "" });
@@ -2617,6 +2706,15 @@ document.addEventListener("click", async (e) => {
         if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
         const idx = +id.slice(7);
         brandingDraft.socialLinks[idx].enabled = !checked;
+      } else if (id.startsWith("brand.")) {
+        if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
+        brandingDraft[id.slice(6)] = !checked;
+      } else if (id.startsWith("brandpage.")) {
+        if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
+        brandingDraft.footerPages = { ...(brandingDraft.footerPages || {}), [id.slice(10)]: !checked };
+      } else if (id.startsWith("footerlink.")) {
+        if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
+        brandingDraft.footerCustomLinks[+id.slice(11)].enabled = !checked;
       }
       render();
       break;
