@@ -155,6 +155,7 @@ const DEFAULT_BRANDING = {
   footerLinksEnabled: true,
   footerPages: { about: true, terms: true, dmca: true, privacy: true, contact: true }, // preset pages on/off
   footerCustomLinks: [], // extra footer links: [{id, label, url, enabled}]
+  footerSocialDesign: "design2", // 'design1' (labeled pill) | 'design2' (icon badge)
 };
 
 const LINK_ICON_KEYS = { discord: "discord", github: "github", twitter: "twitter", youtube: "youtube", facebook: "facebook", telegram: "telegram", instagram: "instagram", whatsapp: "whatsapp", messenger: "messenger", tiktok: "tiktok", email: "email", other: "externalLink" };
@@ -255,6 +256,8 @@ const state = {
     linkSheetOpen: false,
     linkSheetIndex: -1,
     platformSheetOpen: false,
+    genderSheetOpen: false,
+    dobSheetOpen: false,
     toast: null,
     confirm: null,
     postOrigin: "home",
@@ -720,7 +723,11 @@ function footerHtml() {
   if (!state.brandingLoaded) {
     return `<div class="mt-2 bg-panel border-t border-bd rounded-t-[20px] flex flex-col items-center gap-3.5 animate-pulse" style="padding:20px;padding-bottom:calc(70px + env(safe-area-inset-bottom, 0px));">
       <div class="rounded-lg" style="width:56px;height:56px;background:#1C2540;"></div>
-      <div class="rounded-md" style="width:200px;height:11px;background:#1C2540;"></div>
+      <div class="flex flex-col items-center gap-1.5 w-full px-6">
+        <div class="rounded-md" style="width:88%;height:10px;background:#1C2540;"></div>
+        <div class="rounded-md" style="width:76%;height:10px;background:#1C2540;"></div>
+        <div class="rounded-md" style="width:60%;height:10px;background:#1C2540;"></div>
+      </div>
       <div class="flex gap-2">${Array.from({ length: 4 }).map(() => `<div class="rounded-lg" style="width:32px;height:32px;background:#1C2540;"></div>`).join("")}</div>
       <div class="rounded-md" style="width:140px;height:10px;background:#1C2540;"></div>
       <div class="w-full h-px bg-bd my-1"></div>
@@ -731,7 +738,13 @@ function footerHtml() {
   return `<div class="mt-2 bg-panel border-t border-bd rounded-t-[20px] flex flex-col items-center gap-3.5" style="padding:20px;padding-bottom:calc(70px + env(safe-area-inset-bottom, 0px));">
     <img src="${escAttr(b.footerLogo || b.logo)}" alt="${escAttr(b.siteName)}" class="object-contain" style="max-width:160px;max-height:64px;width:auto;height:auto;" />
     <div class="font-inter font-bold text-xs text-tmuted text-center">${esc(b.footerTagline)}</div>
-    ${socials.length ? `<div class="flex flex-wrap justify-center gap-2">${socials.map((l) => `<a href="${escAttr(sanitizeUrl(l.url))}" target="_blank" rel="noopener noreferrer" class="no-underline" title="${escAttr(l.label || l.icon || "link")}">${modernIconBadgeHtml(l.icon || detectPlatformKey(l.url), 38)}</a>`).join("")}</div>` : ""}
+    ${socials.length ? (b.footerSocialDesign === "design1"
+      ? `<div class="flex flex-wrap justify-center gap-2.5">${socials.map((l) => {
+          const meta = PLATFORM_META[l.icon || detectPlatformKey(l.url)] || PLATFORM_META.other;
+          return `<a href="${escAttr(sanitizeUrl(l.url))}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 no-underline rounded-full pl-2 pr-4 py-2" style="background:#1C2540;border:1px solid ${meta.border};">${modernIconBadgeHtml(l.icon || detectPlatformKey(l.url), 30)}<span class="font-sora font-bold text-[13px] text-tprimary">${esc(l.label || meta.name)}</span></a>`;
+        }).join("")}</div>`
+      : `<div class="flex flex-wrap justify-center gap-2">${socials.map((l) => `<a href="${escAttr(sanitizeUrl(l.url))}" target="_blank" rel="noopener noreferrer" class="no-underline" title="${escAttr(l.label || l.icon || "link")}">${modernIconBadgeHtml(l.icon || detectPlatformKey(l.url), 38)}</a>`).join("")}</div>`
+    ) : ""}
     ${b.footerLinksEnabled !== false ? `<div class="flex flex-wrap justify-center gap-x-4 gap-y-1.5">
       ${[["about", "About"], ["terms", "Terms"], ["dmca", "DMCA"], ["privacy", "Privacy"], ["contact", "Contact"]].filter(([k]) => (b.footerPages || {})[k] !== false).map(([k, label]) => `<button data-action="nav" data-id="${k}" class="bg-transparent border-none font-inter font-bold text-xs text-tmuted">${label}</button>`).join("")}
       ${(b.footerCustomLinks || []).filter((l) => l.enabled !== false && l.url).map((l) => `<a href="${escAttr(sanitizeUrl(l.url))}" target="_blank" rel="noopener noreferrer" class="font-inter font-bold text-xs text-tmuted no-underline">${esc(l.label || "Link")}</a>`).join("")}
@@ -915,7 +928,9 @@ function exploreScreenHtml() {
 function staticPageHtml(title, content) {
   const looksLikeHtml = /<[a-z][\s\S]*>/i.test(content || "");
   const body = looksLikeHtml ? content : esc(content).replace(/\n/g, "<br>");
-  return `${backHeaderHtml(title)}<div class="px-5 pt-1.5 pb-8 text-tmuted font-inter text-sm leading-relaxed">${body}</div>`;
+  return `${backHeaderHtml(title)}<div class="px-5 pt-1.5 pb-8">
+    <div class="bg-panel border border-bd rounded-2xl p-4 text-tmuted font-inter text-sm leading-relaxed">${body}</div>
+  </div>`;
 }
 
 /* ---------------------------------------------------------------- */
@@ -1356,11 +1371,11 @@ function editAccountScreenHtml() {
         <span class="font-inter text-sm text-tmuted flex-shrink-0">Bio</span>
         <span class="flex items-center gap-1.5 font-inter text-[13px] text-right flex-1 justify-end line-clamp-2">${a.bio ? esc(a.bio) : "Add a bio"}${ICONS.chevronRight()}</span>
       </button>
-      <button data-action="nav" data-id="editGender" class="w-full flex items-center justify-between px-4 py-3.5 border-b border-bd">
+      <button data-action="open-gender-sheet" class="w-full flex items-center justify-between px-4 py-3.5 border-b border-bd">
         <span class="font-inter text-sm text-tmuted">Gender</span>
         <span class="flex items-center gap-1.5 font-sora font-semibold text-sm">${a.gender ? esc(a.gender) : "Add gender"}${ICONS.chevronRight()}</span>
       </button>
-      <button data-action="nav" data-id="editDob" class="w-full flex items-center justify-between px-4 py-3.5">
+      <button data-action="open-dob-sheet" class="w-full flex items-center justify-between px-4 py-3.5">
         <span class="font-inter text-sm text-tmuted">Date of birth</span>
         <span class="flex items-center gap-1.5 font-sora font-semibold text-sm">${a.dob ? esc(a.dob) : "Add date of birth"}${ICONS.chevronRight()}</span>
       </button>
@@ -1375,32 +1390,37 @@ function editAccountScreenHtml() {
       </button>`).join("")}
     </div>
   </div>
-  ${photoSheetHtml()}${photoLightboxHtml()}${linkFormSheetHtml()}`;
+  ${photoSheetHtml()}${photoLightboxHtml()}${linkFormSheetHtml()}${genderSheetHtml()}${dobSheetHtml()}`;
 }
-function editGenderScreenHtml() {
+function genderSheetHtml() {
+  if (!state.ui.genderSheetOpen) return "";
   const a = state.session.account;
   const options = ["Male", "Female", "Other", "Prefer not to say"];
-  return `<div class="flex items-center justify-between px-4 pt-4 pb-2.5">
-    <button data-action="nav" data-id="editAccount" class="font-inter text-[15px] bg-transparent border-none">Cancel</button>
-    <div class="font-sora font-bold text-[15px]">Gender</div>
-    <div style="width:52px;"></div>
-  </div>
-  <div class="px-5 pt-2 pb-10">
-    ${options.map((o) => `<button data-action="save-gender" data-id="${escAttr(o)}" class="w-full flex items-center justify-between bg-panel border border-bd rounded-xl px-4 py-3.5 mb-2.5 text-left">
-      <span class="font-inter text-[15px]">${o}</span>
-      <span class="rounded-full flex-shrink-0" style="width:20px;height:20px;border:2px solid ${a.gender === o ? "#3E8EFF" : "#3A445E"};display:flex;align-items:center;justify-content:center;">${a.gender === o ? `<span class="rounded-full" style="width:10px;height:10px;background:#3E8EFF;"></span>` : ""}</span>
-    </button>`).join("")}
+  return `<div data-action="close-gender-sheet" class="fixed inset-0 z-[200] flex items-end justify-center" style="background:rgba(0,0,0,0.6);">
+    <div data-action="noop" class="w-full max-w-[480px] bg-panel rounded-t-[20px] p-[18px] pb-7 fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <div class="font-sora font-extrabold text-[17px]">Gender</div>
+        <button data-action="close-gender-sheet" class="text-tmuted text-2xl leading-none px-1 bg-transparent border-none">&times;</button>
+      </div>
+      ${options.map((o) => `<button data-action="save-gender" data-id="${escAttr(o)}" class="w-full flex items-center justify-between bg-bgdeep border border-bd rounded-xl px-4 py-3.5 mb-2.5 text-left">
+        <span class="font-inter text-[15px]">${o}</span>
+        <span class="rounded-full flex-shrink-0" style="width:20px;height:20px;border:2px solid ${a.gender === o ? "#3E8EFF" : "#3A445E"};display:flex;align-items:center;justify-content:center;">${a.gender === o ? `<span class="rounded-full" style="width:10px;height:10px;background:#3E8EFF;"></span>` : ""}</span>
+      </button>`).join("")}
+    </div>
   </div>`;
 }
-function editDobScreenHtml() {
+function dobSheetHtml() {
+  if (!state.ui.dobSheetOpen) return "";
   const a = state.session.account;
-  return `<div class="flex items-center justify-between px-4 pt-4 pb-2.5">
-    <button data-action="nav" data-id="editAccount" class="font-inter text-[15px] bg-transparent border-none">Cancel</button>
-    <button data-action="save-dob" class="font-sora font-bold text-[15px] bg-transparent border-none" style="color:#FF5D6C;">Save</button>
-  </div>
-  <div class="px-5 pt-3">
-    <div class="font-sora font-extrabold text-2xl mb-4">Date of birth</div>
-    <input id="ed-dob" type="date" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px]" value="${escAttr(a.dob || "")}" />
+  return `<div data-action="close-dob-sheet" class="fixed inset-0 z-[200] flex items-end justify-center" style="background:rgba(0,0,0,0.6);">
+    <div data-action="noop" class="w-full max-w-[480px] bg-panel rounded-t-[20px] p-[18px] pb-7 fade-in">
+      <div class="flex items-center justify-between mb-4">
+        <div class="font-sora font-extrabold text-[17px]">Date of birth</div>
+        <button data-action="close-dob-sheet" class="text-tmuted text-2xl leading-none px-1 bg-transparent border-none">&times;</button>
+      </div>
+      <input id="ed-dob" type="date" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px] mb-4" value="${escAttr(a.dob || "")}" />
+      ${roleBtn("save-dob", "Save", "owner", "w-full")}
+    </div>
   </div>`;
 }
 function editNameScreenHtml() {
@@ -1506,6 +1526,7 @@ function linkFormSheetHtml() {
       </button>
       <input id="el-title" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px] mb-3" placeholder="Title (e.g. Follow me on Instagram)" value="${escAttr(linkDraft.title)}" />
       <input id="el-url" class="w-full bg-panelalt border-none rounded-xl px-4 py-3.5 font-inter text-[15px]" placeholder="URL (https://...)" value="${escAttr(linkDraft.url)}" />
+      ${linkSheetContext === "footer-social" ? `<div class="mt-3">${toggleHtml("linkdraft.enabled", linkDraft.enabled !== false, "Shown in footer", "Hidden from footer")}</div>` : ""}
       <div id="el-error" class="text-coral text-xs mt-3 font-inter"></div>
       ${roleBtn("save-link", isNew ? "Add link" : "Save changes", "owner", "w-full mt-4")}
       ${!isNew ? `<button data-action="delete-link" class="w-full text-center mt-3 font-inter text-sm bg-transparent border-none" style="color:#FF5D6C;">Remove link</button>` : ""}
@@ -1661,19 +1682,11 @@ let brandingDraft = null;
 let activeSlideUploadIndex = null;
 
 function socialLinkRowHtml(link, idx) {
-  return `<div class="bg-bgdeep border border-bd rounded-lg p-3 mb-2.5">
-    <div class="flex gap-2 mb-2">
-      <input class="${inputCls} flex-1 soc-label" data-idx="${idx}" value="${escAttr(link.label)}" placeholder="Label e.g. Telegram Channel" />
-      ${dangerIconBtn({ action: "brand-remove-social", id: String(idx), size: 40 })}
-    </div>
-    <input class="${inputCls} mb-2 soc-url" data-idx="${idx}" value="${escAttr(link.url)}" placeholder="https://..." />
-    <div class="flex gap-2 items-center">
-      <select class="${inputCls} soc-icon flex-1" data-idx="${idx}">
-        ${Object.keys(LINK_ICON_KEYS).map((k) => `<option value="${k}" ${link.icon === k ? "selected" : ""}>${k}</option>`).join("")}
-      </select>
-      ${toggleHtml(`social.${idx}`, link.enabled !== false, "On", "Off")}
-    </div>
-  </div>`;
+  return `<button data-action="open-social-link-sheet" data-id="${idx}" class="w-full flex items-center gap-3 bg-bgdeep border border-bd rounded-2xl px-4 py-3.5 mb-2.5 text-left">
+    ${modernIconBadgeHtml(link.icon || detectPlatformKey(link.url), 34)}
+    <div class="flex-1 min-w-0"><div class="font-sora font-semibold text-sm truncate">${esc(link.label || "Untitled")}</div><div class="font-inter text-[11.5px] text-tfaint truncate">${esc(link.url)}</div></div>
+    <span class="font-mono text-[10px] uppercase px-2 py-0.5 rounded-md flex-shrink-0" style="background:${link.enabled !== false ? "rgba(52,211,153,.14)" : "rgba(255,93,108,.14)"};color:${link.enabled !== false ? "#34D399" : "#FF5D6C"};">${link.enabled !== false ? "On" : "Off"}</span>
+  </button>`;
 }
 function bannerSlideRowHtml(slide, idx) {
   return `<div class="bg-bgdeep border border-bd rounded-lg p-3 mb-2.5">
@@ -1698,10 +1711,9 @@ function ownerSiteHtml() {
       ${fieldWrap("Site name", `<input id="brand-name" class="${inputCls}" value="${escAttr(brand.siteName)}" />`)}
       ${fieldWrap("Tagline", `<input id="brand-header-tagline" class="${inputCls}" value="${escAttr(brand.headerTagline || "")}" placeholder="e.g. FreeFire Craftland Community" />`)}
       ${fieldWrap("Header logo", `
-        <div class="flex gap-2 items-center">
-          ${siteLogoHtml(44)}
-          <input id="brand-logo" class="${inputCls} flex-1" value="${brand.logo && brand.logo.startsWith("data:") ? "(uploaded image)" : escAttr(brand.logo)}" ${brand.logo && brand.logo.startsWith("data:") ? "readonly" : ""} placeholder="https://... or upload from device" />
-          <button data-action="brand-upload-logo" class="rounded-lg border border-bd bg-panelalt flex items-center justify-center flex-shrink-0" style="width:44px;height:44px;">${ICONS.upload()}</button>
+        <div class="flex items-center gap-3">
+          <img src="${escAttr(brand.logo)}" alt="Header logo" class="object-contain rounded-lg flex-shrink-0" style="width:52px;height:52px;background:#1C2540;" />
+          <button data-action="brand-upload-logo" class="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-bd bg-panelalt font-inter text-sm text-tmuted" style="height:52px;">${ICONS.upload()} Upload from device</button>
           <input id="brand-logo-file" type="file" accept="image/*" class="hidden" />
         </div>
       `)}
@@ -1742,7 +1754,13 @@ function ownerSiteHtml() {
 
     <div class="bg-panel border border-bd rounded-2xl p-4">
       <div class="flex items-center gap-2 mb-3.5">${ICONS.layoutDashboard()}<div class="font-sora font-bold text-sm">Footer</div></div>
-      ${fieldWrap("Footer logo", `<input id="brand-footer-logo" class="${inputCls}" value="${escAttr(brand.footerLogo || "")}" placeholder="https://..." />`)}
+      ${fieldWrap("Footer logo", `
+        <div class="flex items-center gap-3">
+          <img src="${escAttr(brand.footerLogo)}" alt="Footer logo" class="object-contain rounded-lg flex-shrink-0" style="width:52px;height:52px;background:#1C2540;" />
+          <button data-action="brand-upload-footer-logo" class="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-bd bg-panelalt font-inter text-sm text-tmuted" style="height:52px;">${ICONS.upload()} Upload from device</button>
+          <input id="brand-footer-logo-file" type="file" accept="image/*" class="hidden" />
+        </div>
+      `)}
       ${fieldWrap("Description", `<textarea id="brand-tagline" class="${inputCls}" style="min-height:60px;">${esc(brand.footerTagline)}</textarea>`)}
       ${primaryBtn({ action: "owner-save-branding", label: "Save footer", icon: `<span class="mr-1">${ICONS.save()}</span>`, extra: "w-full" })}
     </div>
@@ -1770,8 +1788,14 @@ function ownerSiteHtml() {
       <div class="flex items-center gap-2 mb-3.5">${ICONS.share()}<div class="font-sora font-bold text-sm">Official Social Links</div></div>
       <div class="font-inter text-xs text-tmuted mb-3">Shown in the footer to everyone. Not tied to any creator's profile.</div>
       ${fieldWrap("Footer social icons", toggleHtml("social-enabled", brand.socialEnabled, "Shown in footer", "Hidden"))}
+      ${fieldWrap("Style", `
+        <div class="flex gap-2">
+          <button data-action="set-footer-social-design" data-id="design1" class="flex-1 py-2.5 rounded-lg border font-inter text-xs font-semibold" style="border-color:${brand.footerSocialDesign === "design1" ? "#3E8EFF" : "#232D48"};background:${brand.footerSocialDesign === "design1" ? "rgba(62,142,255,.14)" : "transparent"};color:${brand.footerSocialDesign === "design1" ? "#3E8EFF" : "#8A93AC"};">Design 1 — Labeled pills</button>
+          <button data-action="set-footer-social-design" data-id="design2" class="flex-1 py-2.5 rounded-lg border font-inter text-xs font-semibold" style="border-color:${brand.footerSocialDesign !== "design1" ? "#3E8EFF" : "#232D48"};background:${brand.footerSocialDesign !== "design1" ? "rgba(62,142,255,.14)" : "transparent"};color:${brand.footerSocialDesign !== "design1" ? "#3E8EFF" : "#8A93AC"};">Design 2 — Icon only</button>
+        </div>
+      `)}
       ${brand.socialLinks.map((l, i) => socialLinkRowHtml(l, i)).join("")}
-      <button data-action="brand-add-social" class="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-lg border border-dashed border-bd text-tmuted font-inter text-sm mb-4">${ICONS.plus()} Add social link</button>
+      <button data-action="open-social-link-sheet" data-id="new" class="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-lg border border-dashed border-bd text-tmuted font-inter text-sm mb-4">${ICONS.plus()} Add social link</button>
       ${primaryBtn({ action: "owner-save-branding", label: "Save social links", icon: `<span class="mr-1">${ICONS.save()}</span>`, extra: "w-full" })}
     </div>
 
@@ -1823,7 +1847,8 @@ function ownerSiteHtml() {
       ${fieldWrap("Contact Us page", `<textarea id="sc-contact" class="${inputCls}" style="min-height:100px;">${esc(content.contact || "")}</textarea>`)}
       ${primaryBtn({ action: "owner-save-site-content", label: "Save page content", icon: `<span class="mr-1">${ICONS.save()}</span>`, extra: "w-full" })}
     </div>
-  </div>`;
+  </div>
+  ${linkFormSheetHtml()}`;
 }
 function bindOwnerSiteInputs() {
   if (!adsDraft) adsDraft = { ...state.adSettings };
@@ -1849,7 +1874,7 @@ function bindOwnerSiteInputs() {
     const el = document.getElementById(id);
     if (el) el.addEventListener("input", (e) => { siteContentDraft[key] = e.target.value; });
   });
-  const brandMap = { "brand-name": "siteName", "brand-logo": "logo", "brand-footer-logo": "footerLogo", "brand-tagline": "footerTagline", "brand-header-tagline": "headerTagline" };
+  const brandMap = { "brand-name": "siteName", "brand-tagline": "footerTagline", "brand-header-tagline": "headerTagline" };
   Object.entries(brandMap).forEach(([id, key]) => {
     const el = document.getElementById(id);
     if (el) el.addEventListener("input", (e) => { brandingDraft[key] = e.target.value; });
@@ -1867,7 +1892,17 @@ function bindOwnerSiteInputs() {
       const file = e.target.files[0];
       if (!file) return;
       if (file.size > MAX_IMAGE_BYTES) { showToast("Image too large — please pick something under 5MB.", "error"); return; }
-      try { brandingDraft.logo = await fileToCompressedDataUrl(file); render(); }
+      try { if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding)); brandingDraft.logo = await fileToCompressedDataUrl(file); render(); }
+      catch (err) { showToast("Couldn't read that image.", "error"); }
+    });
+  }
+  const footerLogoFile = document.getElementById("brand-footer-logo-file");
+  if (footerLogoFile) {
+    footerLogoFile.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > MAX_IMAGE_BYTES) { showToast("Image too large — please pick something under 5MB.", "error"); return; }
+      try { if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding)); brandingDraft.footerLogo = await fileToCompressedDataUrl(file); render(); }
       catch (err) { showToast("Couldn't read that image.", "error"); }
     });
   }
@@ -2022,14 +2057,10 @@ function renderInner() {
       html = isLoggedInCreator ? editUsernameScreenHtml() : creatorAuthScreenHtml(); break;
     case "editBio":
       html = isLoggedInCreator ? editBioScreenHtml() : creatorAuthScreenHtml(); break;
-    case "editGender":
-      html = isLoggedInCreator ? editGenderScreenHtml() : creatorAuthScreenHtml(); break;
-    case "editDob":
-      html = isLoggedInCreator ? editDobScreenHtml() : creatorAuthScreenHtml(); break;
     case "creatorAuth": html = creatorAuthScreenHtml(); break;
-    case "about": html = staticPageHtml("About", state.siteContent.about); break;
-    case "terms": html = staticPageHtml("Terms", state.siteContent.terms); break;
-    case "dmca": html = staticPageHtml("DMCA Policy", state.siteContent.dmca); break;
+    case "about": html = staticPageHtml("About CraftVerse", state.siteContent.about); break;
+    case "terms": html = staticPageHtml("Terms of Service", state.siteContent.terms); break;
+    case "dmca": html = staticPageHtml("DMCA Copyright Policy", state.siteContent.dmca); break;
     case "privacy": html = staticPageHtml("Privacy Policy", state.siteContent.privacy); break;
     case "contact": html = staticPageHtml("Contact Us", state.siteContent.contact); break;
     case "post": {
@@ -2294,6 +2325,14 @@ async function saveLink() {
     render();
     return;
   }
+  if (linkSheetContext === "footer-social") {
+    if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
+    const entry = { id: (idx >= 0 && brandingDraft.socialLinks[idx] && brandingDraft.socialLinks[idx].id) || ("s" + Date.now()), url, label: title, icon: platform, enabled: linkDraft.enabled !== false };
+    if (idx >= 0) brandingDraft.socialLinks[idx] = entry; else brandingDraft.socialLinks.push(entry);
+    state.ui.linkSheetOpen = false;
+    render();
+    return;
+  }
   const links = [...(a.links || [])];
   if (idx < 0 && links.length >= 5) { errEl.textContent = "You can only add up to 5 links."; return; }
   const entry = { id: (idx >= 0 && links[idx] && links[idx].id) || ("l" + Date.now()), url, label: title, icon: platform };
@@ -2305,6 +2344,13 @@ function deleteLink() {
   const idx = state.ui.linkSheetIndex;
   if (linkSheetContext === "post") {
     postEditorDraft.links.splice(idx, 1);
+    state.ui.linkSheetOpen = false;
+    render();
+    return;
+  }
+  if (linkSheetContext === "footer-social") {
+    if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
+    brandingDraft.socialLinks.splice(idx, 1);
     state.ui.linkSheetOpen = false;
     render();
     return;
@@ -2397,19 +2443,34 @@ function ownerToggleBan(id) {
 /*  OWNER: SAVE ADS / SITE CONTENT                                    */
 /* ---------------------------------------------------------------- */
 async function ownerSaveAds() {
-  const ok = await fsSaveAdSettings(adsDraft || state.adSettings);
-  showToast(ok ? "Ad settings saved." : "Couldn't save — try again.", ok ? "success" : "error");
+  const data = adsDraft || state.adSettings;
+  const prev = state.adSettings;
+  state.adSettings = data;
   adsDraft = null;
+  showToast("Ad settings saved.");
+  render();
+  const ok = await fsSaveAdSettings(data);
+  if (!ok) { state.adSettings = prev; render(); showToast("Couldn't save — try again.", "error"); }
 }
 async function ownerSaveSiteContent() {
-  const ok = await fsSaveSiteContent(siteContentDraft || state.siteContent);
-  showToast(ok ? "Page content saved." : "Couldn't save — try again.", ok ? "success" : "error");
+  const data = siteContentDraft || state.siteContent;
+  const prev = state.siteContent;
+  state.siteContent = data;
   siteContentDraft = null;
+  showToast("Page content saved.");
+  render();
+  const ok = await fsSaveSiteContent(data);
+  if (!ok) { state.siteContent = prev; render(); showToast("Couldn't save — try again.", "error"); }
 }
 async function ownerSaveBranding() {
-  const ok = await fsSaveBranding(brandingDraft || state.branding);
-  showToast(ok ? "Branding saved." : "Couldn't save — try again.", ok ? "success" : "error");
+  const data = brandingDraft || state.branding;
+  const prev = state.branding;
+  state.branding = data;
   brandingDraft = null;
+  showToast("Branding saved.");
+  render();
+  const ok = await fsSaveBranding(data);
+  if (!ok) { state.branding = prev; render(); showToast("Couldn't save — try again.", "error"); }
 }
 
 /* ---------------------------------------------------------------- */
@@ -2422,6 +2483,9 @@ function friendlyAuthError(e) {
   if (code === "auth/network-request-failed") return "Network error — check your connection and try again.";
   if (code === "auth/too-many-requests") return "Too many attempts. Please wait a moment and try again.";
   if (code === "auth/popup-blocked") return "Your browser blocked the sign-in popup. Please allow popups and try again.";
+  if (code === "auth/wrong-password") return "Wrong password.";
+  if (code === "auth/user-not-found") return "No password is set for this email — this account may only be set up for Google sign-in. Try \"Continue with Google\" instead.";
+  if (code === "auth/invalid-credential") return "Wrong password, or this account has no password set (it may be Google-only) — try \"Continue with Google\" instead.";
   return (e && e.message) || "Something went wrong. Please try again.";
 }
 function usernameToEmail(username) {
@@ -2484,7 +2548,7 @@ async function creatorLoginSubmit() {
     addNotification(cred.user.uid, "login_success", "Login successful", `Welcome back, ${name}!`);
     showToast(`Welcome back! — ${name} is now signed in.`);
   } catch (e) {
-    const msg = "Wrong email/username or password.";
+    const msg = friendlyAuthError(e);
     errEl.textContent = msg;
     showToast(msg, "error");
   }
@@ -2583,9 +2647,15 @@ document.addEventListener("click", async (e) => {
     case "owner-save-site-content": ownerSaveSiteContent(); break;
     case "owner-save-branding": ownerSaveBranding(); break;
     case "brand-upload-logo": document.getElementById("brand-logo-file")?.click(); break;
+    case "brand-upload-footer-logo": document.getElementById("brand-footer-logo-file")?.click(); break;
     case "set-category-mode":
       if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
       brandingDraft.categoryMode = id;
+      render();
+      break;
+    case "set-footer-social-design":
+      if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
+      brandingDraft.footerSocialDesign = id;
       render();
       break;
     case "toggle-selected-category": {
@@ -2663,6 +2733,10 @@ document.addEventListener("click", async (e) => {
     case "save-bio": saveBio(); break;
     case "save-gender": saveGender(id); break;
     case "save-dob": saveDob(); break;
+    case "open-gender-sheet": state.ui.genderSheetOpen = true; render(); break;
+    case "close-gender-sheet": state.ui.genderSheetOpen = false; render(); break;
+    case "open-dob-sheet": state.ui.dobSheetOpen = true; render(); break;
+    case "close-dob-sheet": state.ui.dobSheetOpen = false; render(); break;
     case "open-link-sheet": {
       linkSheetContext = "profile";
       state.ui.linkSheetOpen = true;
@@ -2680,6 +2754,17 @@ document.addEventListener("click", async (e) => {
       state.ui.linkSheetIndex = i;
       const existing = i >= 0 && postEditorDraft ? postEditorDraft.links[i] : null;
       linkDraft = existing ? { title: existing.title || "", url: existing.url || "", platform: existing.icon || "" } : { title: "", url: "", platform: "" };
+      render();
+      break;
+    }
+    case "open-social-link-sheet": {
+      linkSheetContext = "footer-social";
+      state.ui.linkSheetOpen = true;
+      if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
+      const i = id === "new" ? -1 : parseInt(id, 10);
+      state.ui.linkSheetIndex = i;
+      const existing = i >= 0 ? brandingDraft.socialLinks[i] : null;
+      linkDraft = existing ? { title: existing.label || "", url: existing.url || "", platform: existing.icon || "", enabled: existing.enabled !== false } : { title: "", url: "", platform: "", enabled: true };
       render();
       break;
     }
@@ -2715,6 +2800,8 @@ document.addEventListener("click", async (e) => {
       } else if (id.startsWith("footerlink.")) {
         if (!brandingDraft) brandingDraft = JSON.parse(JSON.stringify(state.branding));
         brandingDraft.footerCustomLinks[+id.slice(11)].enabled = !checked;
+      } else if (id === "linkdraft.enabled") {
+        linkDraft.enabled = !checked;
       }
       render();
       break;
