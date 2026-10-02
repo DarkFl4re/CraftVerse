@@ -263,6 +263,7 @@ const state = {
     platformSheetOpen: false,
     genderSheetOpen: false,
     dobSheetOpen: false,
+    sidebarCollapsed: (() => { try { return localStorage.getItem("cv_sidebar_collapsed") === "1"; } catch (e) { return false; } })(),
     toast: null,
     confirm: null,
     postOrigin: "home",
@@ -690,8 +691,8 @@ function sectionHeadHtml(title, seeAllTabId, seeAllAction = "set-owner-tab") {
     ${seeAllTabId ? `<button data-action="${seeAllAction}" data-id="${seeAllTabId}" class="flex items-center gap-0.5 font-inter text-xs text-tmuted">See all ${ICONS.chevronRight()}</button>` : ""}
   </div>`;
 }
-function bottomRailHtml(items) {
-  return `<div class="fixed left-1/2 bottom-0 z-40 flex items-center" style="transform:translateX(-50%);width:100%;max-width:480px;height:calc(52px + env(safe-area-inset-bottom, 0px));padding:4px 6px calc(4px + env(safe-area-inset-bottom, 0px));background:rgba(10,14,23,.96);border-top:1px solid #232D48;backdrop-filter:blur(10px);">
+function bottomRailHtml(items, extraClass = "") {
+  return `<div class="fixed left-1/2 bottom-0 z-40 flex items-center ${extraClass}" style="transform:translateX(-50%);width:100%;max-width:480px;height:calc(52px + env(safe-area-inset-bottom, 0px));padding:4px 6px calc(4px + env(safe-area-inset-bottom, 0px));background:rgba(10,14,23,.96);border-top:1px solid #232D48;backdrop-filter:blur(10px);">
     ${items.map((item) => item.label
       ? `<button data-action="${item.action}" data-id="${item.id}" class="flex-1 flex flex-col items-center gap-1 font-inter relative" style="font-size:10px;color:${item.active ? "#3E8EFF" : "#8A93AC"};padding:2px 0;">
         ${item.badge > 0 ? `<span class="absolute rounded-full bg-coral text-white flex items-center justify-center font-inter" style="top:-3px;right:22%;min-width:15px;height:15px;font-size:9px;padding:0 3px;">${item.badge}</span>` : ""}
@@ -721,7 +722,47 @@ function publicBottomNavHtml(activeScreen) {
     { action: "nav", id: gate("submit"), icon: big(isSubmit ? ICONS.plusFilled() : ICONS.plus()), active: isSubmit },
     { action: "nav", id: gate("favorites"), icon: big(ICONS.navFavorite()), active: isFav },
     { action: "nav", id: gate("account"), icon: big(ICONS.navProfile()), active: isProfile },
-  ]);
+  ], "md:hidden");
+}
+function sidebarNavHtml(activeScreen) {
+  const isLoggedInCreator = !!(state.session && state.session.role === "admin");
+  const collapsed = !!state.ui.sidebarCollapsed;
+  const gate = (id) => (isLoggedInCreator ? id : "creatorAuth");
+  const items = [
+    { action: "nav", id: "home", label: "Home", icon: ICONS.navHome(), active: activeScreen === "home" },
+    { action: "open-explore", id: "", label: "Explore", icon: ICONS.navExplore(), active: state.ui.exploreOpen },
+    { action: "nav", id: gate("submit"), label: "Submit", icon: ICONS.plus(), active: activeScreen === "submit" },
+    { action: "nav", id: gate("favorites"), label: "Favorites", icon: ICONS.navFavorite(), active: activeScreen === "favorites" },
+    { action: "nav", id: gate("account"), label: "Profile", icon: ICONS.navProfile(), active: activeScreen === "account" },
+  ];
+  const account = state.session && state.session.account;
+  const w = collapsed ? "76px" : "232px";
+  return `<div class="hidden md:flex flex-col flex-shrink-0 border-r border-bd" style="background:#0A0E17;width:${w};transition:width .18s ease;height:100vh;position:sticky;top:0;">
+    <div class="flex items-center gap-2.5 px-4" style="height:60px;">
+      ${headerLogoHtml(32)}
+      ${!collapsed ? `<div class="font-sora font-extrabold text-[15px] truncate flex-1">${esc(state.branding.siteName)}</div>` : ""}
+      <button data-action="toggle-sidebar" class="flex-shrink-0 text-tmuted bg-transparent border-none flex items-center justify-center" style="width:24px;height:24px;${collapsed ? "margin:0 auto;" : ""}">
+        <span style="display:inline-flex;transform:rotate(${collapsed ? "180deg" : "0deg"});transition:transform .18s ease;">${resizeIcon(ICONS.arrowLeft(), 16)}</span>
+      </button>
+    </div>
+    <div class="flex flex-col gap-1 px-3 mt-2 flex-1 overflow-y-auto">
+      ${items.map((it) => `<button data-action="${it.action}" data-id="${it.id}" title="${esc(it.label)}" class="flex items-center gap-3 rounded-xl font-sora font-semibold text-[13.5px] transition-all" style="padding:10px ${collapsed ? "0" : "12px"};justify-content:${collapsed ? "center" : "flex-start"};color:${it.active ? "#3E8EFF" : "#8A93AC"};background:${it.active ? "rgba(62,142,255,.14)" : "transparent"};">
+        <span style="width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">${resizeIcon(it.icon, 20)}</span>
+        ${!collapsed ? `<span class="truncate">${it.label}</span>` : ""}
+      </button>`).join("")}
+    </div>
+    <div class="border-t border-bd px-3 py-3.5 flex-shrink-0">
+      ${account ? `
+        <div class="flex items-center gap-2.5 mb-2.5" style="${collapsed ? "justify-content:center;" : ""}">
+          ${avatarHtml(account.name, account.avatar, 32)}
+          ${!collapsed ? `<div class="min-w-0"><div class="font-sora font-semibold text-[13px] truncate">${esc(account.name)}</div></div>` : ""}
+        </div>
+        <button data-action="confirm-logout" title="Logout" class="flex items-center gap-2.5 w-full rounded-lg font-inter text-[12.5px] bg-transparent border-none" style="padding:8px ${collapsed ? "0" : "10px"};justify-content:${collapsed ? "center" : "flex-start"};color:#FF5D6C;">
+          ${resizeIcon(ICONS.logOut(), 17)}${!collapsed ? `<span>Logout</span>` : ""}
+        </button>`
+      : `<button data-action="nav" data-id="creatorAuth" title="Sign In" class="w-full rounded-lg font-sora font-semibold text-[12.5px] text-white py-2.5 flex items-center justify-center" style="background:linear-gradient(135deg,#3E8EFF,#7C5CFF);">${collapsed ? resizeIcon(ICONS.userCircle(), 18) : "Sign In"}</button>`}
+    </div>
+  </div>`;
 }
 function footerHtml() {
   const b = state.branding;
@@ -2157,7 +2198,8 @@ function renderInner() {
   }
 
   const page = `<div class="flex-1" style="${showBottomNav && !showFooter ? "padding-bottom:calc(72px + env(safe-area-inset-bottom, 0px));" : ""}">${html}</div>${showFooter ? footerHtml() : ""}`;
-  app.innerHTML = page + (showBottomNav ? publicBottomNavHtml(screen) : "") + (state.ui.exploreOpen ? exploreScreenHtml() : "") + confirmModalHtml() + toastHtml();
+  const mainCol = `<div class="w-full md:max-w-[560px] md:mx-auto md:min-h-screen">${page}${showBottomNav ? publicBottomNavHtml(screen) : ""}</div>`;
+  app.innerHTML = `<div class="md:flex">${showBottomNav ? sidebarNavHtml(screen) : ""}${mainCol}</div>` + (state.ui.exploreOpen ? exploreScreenHtml() : "") + confirmModalHtml() + toastHtml();
 
   // Re-bind form inputs for whichever editor is currently visible.
   if (document.getElementById("post-editor")) bindPostEditorInputs();
@@ -2697,6 +2739,11 @@ document.addEventListener("click", async (e) => {
 
   switch (action) {
     case "nav": state.ui.exploreOpen = false; navigate(id); render(); break;
+    case "toggle-sidebar":
+      state.ui.sidebarCollapsed = !state.ui.sidebarCollapsed;
+      try { localStorage.setItem("cv_sidebar_collapsed", state.ui.sidebarCollapsed ? "1" : "0"); } catch (e) {}
+      render();
+      break;
     case "open-language": showToast("Language settings coming soon."); break;
     case "open-explore": exploreQuery = ""; exploreCategory = null; state.ui.exploreOpen = true; render(); break;
     case "close-explore": state.ui.exploreOpen = false; render(); break;
@@ -2959,6 +3006,21 @@ function showFatalError(err) {
 }
 window.addEventListener("error", (e) => showFatalError(e.error || e.message));
 window.addEventListener("unhandledrejection", (e) => showFatalError(e.reason));
+
+// index.html/styles.css fix #app to a 480px phone-width column. On >=768px
+// (tablet/desktop) we need that relaxed so the sidebar + content layout has
+// room; on mobile it must stay exactly as-is. Injected here (rather than
+// edited in the static CSS files) so this works regardless of their exact
+// current rules, with !important so it reliably wins the cascade.
+(function injectResponsiveOverride() {
+  const style = document.createElement("style");
+  style.textContent = `
+    @media (min-width: 768px) {
+      #app { max-width: 100% !important; width: 100% !important; }
+    }
+  `;
+  document.head.appendChild(style);
+})();
 
 // Pretty "/admin" URL → the app is hash-routed (index.html + #/screen), so a
 // direct request to /admin needs the host to serve index.html for that path
