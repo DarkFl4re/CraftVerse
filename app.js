@@ -677,7 +677,7 @@ function homeHeaderHtml() {
 function backHeaderHtml(title, backAction = "nav", backId = "home", rightHtml = "") {
   return `<div class="flex items-center gap-2" style="height:52px;padding:12px;">
     ${sidebarMenuToggleHtml()}
-    ${iconBtn({ action: backAction, id: backId, icon: resizeIcon(ICONS.arrowLeft(), 21), size: 36, radius: 8 })}
+    ${iconBtn({ action: backAction, id: backId, icon: resizeIcon(ICONS.arrowLeft(), 21), size: 34, radius: 8 })}
     <div class="flex-1 font-sora font-bold text-[15px]">${esc(title)}</div>
     ${rightHtml}
   </div>`;
@@ -822,8 +822,8 @@ function postCardHtml(post, author) {
         <div class="font-sora font-semibold text-[13.5px] truncate">${esc(author.name)}</div>
       </div>
       <div class="flex-1"></div>
-      ${iconBtn({ action: "toggle-like", id: post.id, active: liked, size: 36, icon: `<span style="color:${liked ? "#FF5D6C" : "#8A93AC"}">${ICONS.heart(liked)}</span>` })}
-      ${iconBtn({ action: "share-post", id: post.id, size: 36, icon: ICONS.share() })}
+      ${iconBtn({ action: "toggle-like", id: post.id, active: liked, size: 34, icon: `<span style="color:${liked ? "#FF5D6C" : "#8A93AC"}">${ICONS.heart(liked)}</span>` })}
+      ${iconBtn({ action: "share-post", id: post.id, size: 34, icon: ICONS.share() })}
     </div>
     <div data-action="open-post" data-id="${post.id}" class="mt-2.5 cursor-pointer font-sora font-bold text-[15px] uppercase tracking-wide">${esc(post.title)}</div>
   </div>`;
@@ -1026,8 +1026,8 @@ function postViewScreenHtml(post) {
         ${avatarHtml(author.name, author.avatar, 34)}
         <div class="font-sora font-semibold text-sm">${esc(author.name)}</div>
       </div>
-      ${iconBtn({ action: "toggle-like", id: post.id, active: liked, size: 36, icon: `<span style="color:${liked ? "#FF5D6C" : "#8A93AC"}">${ICONS.heart(liked)}</span>` })}
-      ${iconBtn({ action: "share-post", id: post.id, size: 36, icon: ICONS.share() })}
+      ${iconBtn({ action: "toggle-like", id: post.id, active: liked, size: 34, icon: `<span style="color:${liked ? "#FF5D6C" : "#8A93AC"}">${ICONS.heart(liked)}</span>` })}
+      ${iconBtn({ action: "share-post", id: post.id, size: 34, icon: ICONS.share() })}
     </div>
     <div class="mt-4.5 font-sora font-extrabold text-xl tracking-wide uppercase">${esc(post.title)}</div>
     <div class="mt-3 pl-3 border-l-[3px] border-accent text-tmuted font-inter font-bold text-sm leading-relaxed whitespace-pre-wrap">${esc(post.description)}</div>`;
@@ -1603,7 +1603,7 @@ function editLinksScreenHtml() {
   const links = a.links || [];
   const atMax = links.length >= 5;
   return `<div class="flex items-center gap-2" style="height:52px;padding:12px;">
-    ${iconBtn({ action: "nav", id: "editAccount", icon: resizeIcon(ICONS.arrowLeft(), 21), size: 36, radius: 8 })}
+    ${iconBtn({ action: "nav", id: "editAccount", icon: resizeIcon(ICONS.arrowLeft(), 21), size: 34, radius: 8 })}
     <div class="flex-1 font-sora font-bold text-[15px]">Links</div>
   </div>
   <div class="px-4 pt-1 pb-10">
